@@ -8,13 +8,20 @@ import ru.electronikas.diagonal.model.Pos;
  */
 public class NewCellAction implements DiAction {
     private Pos pos;
+    private int value;
 
-    public NewCellAction(Pos pos) {
+    public NewCellAction(Pos pos, int value) {
         this.pos = pos;
+        this.value = value;
     }
 
     public Pos newPos() {
         return pos;
+    }
+
+    @Override
+    public int getValue() {
+        return value;
     }
 
     @Override

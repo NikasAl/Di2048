@@ -6,18 +6,16 @@ import ru.electronikas.diagonal.model.Pos;
 /**
  * Created by nikas on 6/20/16.
  */
-public class MoveAction implements DiAction {
-    private Pos newPos;
-    private CellModel cell;
+public class DeleteCellAction implements DiAction {
 
-    public MoveAction(Pos newPos, CellModel cell) {
-        this.newPos = newPos;
-        this.cell = cell;
+    private CellModel cellModel;
+
+    public DeleteCellAction(CellModel cellModel) {
+        this.cellModel = cellModel;
     }
 
-
     public Pos newPos() {
-        return newPos;
+        return null;
     }
 
     @Override
@@ -27,12 +25,12 @@ public class MoveAction implements DiAction {
 
     @Override
     public CellModel cellModel() {
-        return cell;
+        return cellModel;
     }
 
     @Override
     public ActType type() {
-        return ActType.move;
+        return ActType.delCell;
     }
 
 }

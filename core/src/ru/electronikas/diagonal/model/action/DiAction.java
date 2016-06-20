@@ -8,6 +8,7 @@ import ru.electronikas.diagonal.model.Pos;
  */
 public interface DiAction {
     public Pos newPos();
+    public int getValue();
     public CellModel cellModel();
     public ActType type();
 

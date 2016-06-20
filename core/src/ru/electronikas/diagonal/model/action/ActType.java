@@ -6,6 +6,6 @@ package ru.electronikas.diagonal.model.action;
 public enum ActType {
     newCell,
     move,
-    remove,
+    delCell,
 
 }

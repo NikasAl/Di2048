@@ -10,15 +10,17 @@ import ru.electronikas.diagonal.ui.Textures;
  */
 public class CellModel {
 
+    public int value;
     protected Pos pos;
     protected float size;
 
     public TextButton cell;
 
-    public CellModel(Pos pos) {
+    public CellModel(Pos pos, int value) {
         size = Gdx.graphics.getWidth() / DiGameModel.FIELD_SIZE;
         this.pos = pos;
-        cell = new TextButton("2", Textures.getUiSkin());
+        this.value = value;
+        cell = new TextButton("" + value, Textures.getUiSkin());
         setPositionByPosXY(pos);
 
         cell.setUserObject(this);
@@ -36,4 +38,8 @@ public class CellModel {
         cell.setPosition(pos.x * size, pos.y * size);
     }
 
+    public void fadeInCell() {
+        cell.setColor(1,1,1,0);
+        cell.addAction(Actions.fadeIn(1f));
+    }
 }

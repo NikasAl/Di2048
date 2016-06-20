@@ -3,6 +3,7 @@ package ru.electronikas.diagonal.model;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import ru.electronikas.diagonal.model.action.DeleteCellAction;
 import ru.electronikas.diagonal.model.action.DiAction;
 import ru.electronikas.diagonal.model.action.MoveAction;
 import ru.electronikas.diagonal.model.action.NewCellAction;
@@ -55,14 +56,31 @@ public class DiGameModel implements Json.Serializable {
 
         cells[xRnd][yRnd] = 2;
 
-        stepActions.add(new NewCellAction(new Pos(xRnd, yRnd)));
+        stepActions.add(new NewCellAction(new Pos(xRnd, yRnd), 2));
     }
 
     private void runReplaceSameCells() {
-
+        while (findDubles().size() > 0) {
+            List<CellModel> cellModels = findDubles();
+            stepActions.add(new DeleteCellAction(cellModels.get(0)));
+            stepActions.add(new DeleteCellAction(cellModels.get(1)));
+            stepActions.add(new NewCellAction(cellModels.get(0).pos, cellModels.get(0).value*2));
+        }
     }
 
-    List<CellModel> cellModels = new ArrayList<CellModel>();
+    private List<CellModel> findDubles() {
+        List<CellModel> dubCells = new ArrayList<CellModel>();
+        for(CellModel cellModel : LevelField.cells) {
+            for (CellModel cellModel1 : LevelField.cells) {
+                if(!cellModel.equals(cellModel1) & cellModel.pos.equals(cellModel1.pos)) {
+                    dubCells.add(cellModel);
+                    dubCells.add(cellModel1);
+                    return dubCells;
+                }
+            }
+        }
+        return dubCells;
+    }
 
     private void runMoveCells(Dir dir) {
         switch (dir) {
@@ -71,21 +89,33 @@ public class DiGameModel implements Json.Serializable {
                     Pos pos = cellModel.pos;
                     cells[pos.x][pos.y]=0;
                     int x = pos.x;
+                    int v = cells[x][pos.y];
                     while(cells[x][pos.y] == 0) {
                         x--;
-                        if(x < 0) {
-                            x=0; break;
+                        if(x < 0 || cells[x][pos.y] != v) {
+                            x++; break;
                         }
                     }
                     stepActions.add(new MoveAction(new Pos(x, pos.y), cellModel));
                 }
-                /*
-                for(int x=0; x < cells.length; x++) {
-                    for(int y=0; y < cells[x].length; y++) {
-
-                    }
-                }*/
                 break;
+
+            case right:
+                for(CellModel cellModel : LevelField.cells) {
+                    Pos pos = cellModel.pos;
+                    cells[pos.x][pos.y]=0;
+                    int x = pos.x;
+                    int v = cells[x][pos.y];
+                    while(cells[x][pos.y] == 0) {
+                        x++;
+                        if(x > FIELD_SIZE-1 || cells[x][pos.y] != v) {
+                            x--; break;
+                        }
+                    }
+                    stepActions.add(new MoveAction(new Pos(x, pos.y), cellModel));
+                }
+                break;
+
         }
 
     }

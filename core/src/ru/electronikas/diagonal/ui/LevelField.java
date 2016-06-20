@@ -10,10 +10,6 @@ import ru.electronikas.diagonal.model.action.DiAction;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by nikas on 0/8/06.
- * Здесь информация о расположении ячеек в уровне
- */
 public class LevelField {
 
     //set by level manager
@@ -35,8 +31,9 @@ public class LevelField {
 
             switch (diAction.type()) {
                 case newCell:
-                    CellModel cellModel = new CellModel(diAction.newPos());
+                    CellModel cellModel = new CellModel(diAction.newPos(), diAction.getValue());
                     cells.add(cellModel);
+                    cellModel.fadeInCell();
                     stage.addActor(cellModel.cell);
                     break;
 
@@ -44,6 +41,10 @@ public class LevelField {
                     Pos newPos = diAction.newPos();
                     CellModel cell = diAction.cellModel();
                     cell.moveTo(newPos);
+                    break;
+
+                case delCell:
+                    diAction.cellModel().cell.remove();
                     break;
             }
 

@@ -16,11 +16,12 @@ public class DiGameModel implements Json.Serializable {
 
     public static final byte FIELD_SIZE = 4;
 
-    int[][] cells = new int[FIELD_SIZE][FIELD_SIZE];
+    int[][] cells;
 
     List<DiAction> stepActions;
 
-    public void createNewCell()  {
+    public DiGameModel() {
+        cells = new int[FIELD_SIZE][FIELD_SIZE];
         stepActions = new ArrayList<DiAction>();
     }
 
@@ -43,10 +44,11 @@ public class DiGameModel implements Json.Serializable {
         byte yRnd;
         byte tryNum = 0;
         do {
-             xRnd = (byte)MathUtils.random(1, FIELD_SIZE);
-             yRnd = (byte)MathUtils.random(1, FIELD_SIZE);
+             xRnd = (byte)MathUtils.random(0, FIELD_SIZE-1);
+             yRnd = (byte)MathUtils.random(0, FIELD_SIZE-1);
             tryNum++;
-        } while (cells[xRnd][yRnd] != 0 | tryNum < 120);
+            if(tryNum > 120) break;
+        } while (cells[xRnd][yRnd] != 0);
 
         cells[xRnd][yRnd] = 2;
 

@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,13 +15,11 @@ import ru.electronikas.diagonal.ui.LevelFieldActor;
 
 public class Di2048Game extends ApplicationAdapter {
 	SpriteBatch spriteBatch;
-	Texture img;
 	private Stage stage;
 
 	@Override
 	public void create () {
 		spriteBatch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
 
 		Viewport viewport = new ScreenViewport();
 		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true); //false
@@ -38,7 +35,7 @@ public class Di2048Game extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		stage.draw();

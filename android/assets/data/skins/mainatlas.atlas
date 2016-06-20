@@ -1,0 +1,182 @@
+
+mainatlas.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+icon_small
+  rotate: false
+  xy: 1, 127
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+knob
+  rotate: false
+  xy: 1, 50
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+Button_Close
+  rotate: false
+  xy: 131, 191
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+blue-round-but
+  rotate: false
+  xy: 197, 191
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+cursor
+  rotate: false
+  xy: 263, 191
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+inyan
+  rotate: false
+  xy: 329, 191
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+bluepane
+  rotate: false
+  xy: 395, 191
+  size: 64, 64
+  split: 24, 19, 23, 19
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+music-on
+  rotate: false
+  xy: 131, 125
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+Go-up-icon
+  rotate: false
+  xy: 197, 125
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+star-score
+  rotate: false
+  xy: 263, 125
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+Status-dialog-information-icon
+  rotate: false
+  xy: 329, 125
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+Shuffle-icon-1
+  rotate: false
+  xy: 395, 125
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+slide-line
+  rotate: false
+  xy: 1, 18
+  size: 60, 30
+  split: 16, 22, 15, 13
+  orig: 60, 30
+  offset: 0, 0
+  index: -1
+slide-line-v
+  rotate: false
+  xy: 461, 212
+  size: 43, 43
+  split: 0, 43, 12, 13
+  orig: 43, 43
+  offset: 0, 0
+  index: -1
+music-off
+  rotate: false
+  xy: 78, 59
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+redpane
+  rotate: false
+  xy: 144, 61
+  size: 62, 62
+  split: 18, 15, 15, 17
+  orig: 62, 62
+  offset: 0, 0
+  index: -1
+select-box-pane
+  rotate: false
+  xy: 208, 61
+  size: 62, 62
+  split: 16, 38, 0, 62
+  orig: 62, 62
+  offset: 0, 0
+  index: -1
+greenpane
+  rotate: false
+  xy: 272, 61
+  size: 62, 62
+  split: 18, 16, 17, 18
+  orig: 62, 62
+  offset: 0, 0
+  index: -1
+scroll-knob
+  rotate: false
+  xy: 144, 1
+  size: 58, 58
+  split: 26, 31, 38, 18
+  orig: 58, 58
+  offset: 0, 0
+  index: -1
+coins
+  rotate: false
+  xy: 78, 6
+  size: 64, 51
+  orig: 64, 51
+  offset: 0, 0
+  index: -1
+textfield_blue
+  rotate: false
+  xy: 461, 178
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+textfield_orange
+  rotate: false
+  xy: 336, 91
+  size: 32, 32
+  split: 8, 9, 7, 7
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+textfield
+  rotate: false
+  xy: 204, 27
+  size: 32, 32
+  split: 5, 5, 5, 5
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+button_gray
+  rotate: false
+  xy: 461, 144
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1

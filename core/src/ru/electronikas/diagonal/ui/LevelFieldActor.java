@@ -1,7 +1,6 @@
 package ru.electronikas.diagonal.ui;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Dir;
@@ -33,7 +32,17 @@ public class LevelFieldActor extends Group {
 
             switch (diAction.type()) {
                 case newCell:
+//                    for(int x=0; x<4; x++) {
+//                        for(int y=0; y<4; y++) {
+//                            TextButton tbCell = new TextButton("2", Textures.getUiSkin());
+//                            tbCell.setSize(Gdx.graphics.getWidth()/4,Gdx.graphics.getHeight()/4);
+//                            tbCell.setPosition(x * Gdx.graphics.getWidth()/4, y * Gdx.graphics.getHeight()/4);
+//                            tbCell.setPosition(diAction.pos().x * Gdx.graphics.getWidth()/4, diAction.pos().y * Gdx.graphics.getWidth()/4);
+//                    addActor(tbCell);
                     CellActor cellActor = new CellActor(diAction.pos());
+//                        }
+//                    }
+                    cells.add(cellActor);
                     addActor(cellActor);
                     break;
             }
@@ -61,11 +70,11 @@ public class LevelFieldActor extends Group {
 */
     }
 
-    @Override
+/*    @Override
     public void addActor(Actor actor) {
         super.addActor(actor);
         cells.add((CellActor) actor);
-    }
+    }*/
 
     public void setLevelSize(float needSizeLevel) {
         float scale = 1;
@@ -73,22 +82,6 @@ public class LevelFieldActor extends Group {
             scale += 0.5f;
             setScale(scale);
         }
-    }
-
-    public float getWidth() {
-        int maxX = 0;
-        for (CellActor cell : cells) {
-            if (cell.posX > maxX) maxX = cell.posX;
-        }
-        return (maxX + 1) * cells.get(0).size * 2;
-    }
-
-    public float getHeight() {
-        int maxY = 0;
-        for (CellActor cell : cells) {
-            if (cell.posY > maxY) maxY = cell.posY;
-        }
-        return (maxY + 1) * cells.get(0).size * 2;
     }
 
     public void onMove(Dir dir) {

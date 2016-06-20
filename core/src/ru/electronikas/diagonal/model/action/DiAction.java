@@ -1,5 +1,6 @@
 package ru.electronikas.diagonal.model.action;
 
+import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.Pos;
 
 /**
@@ -7,7 +8,7 @@ import ru.electronikas.diagonal.model.Pos;
  */
 public interface DiAction {
     public Pos newPos();
-    public Pos pos();
+    public CellModel cellModel();
     public ActType type();
 
 }

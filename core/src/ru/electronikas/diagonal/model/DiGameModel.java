@@ -4,7 +4,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import ru.electronikas.diagonal.model.action.DiAction;
+import ru.electronikas.diagonal.model.action.MoveAction;
 import ru.electronikas.diagonal.model.action.NewCellAction;
+import ru.electronikas.diagonal.ui.LevelField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ public class DiGameModel implements Json.Serializable {
     }
 
     public List<DiAction> onMove(Dir dir) {
+        stepActions.clear();
         runMoveCells(dir);
         runReplaceSameCells();
         runCheckGameOver();
@@ -59,7 +62,31 @@ public class DiGameModel implements Json.Serializable {
 
     }
 
+    List<CellModel> cellModels = new ArrayList<CellModel>();
+
     private void runMoveCells(Dir dir) {
+        switch (dir) {
+            case left:
+                for(CellModel cellModel : LevelField.cells) {
+                    Pos pos = cellModel.pos;
+                    cells[pos.x][pos.y]=0;
+                    int x = pos.x;
+                    while(cells[x][pos.y] == 0) {
+                        x--;
+                        if(x < 0) {
+                            x=0; break;
+                        }
+                    }
+                    stepActions.add(new MoveAction(new Pos(x, pos.y), cellModel));
+                }
+                /*
+                for(int x=0; x < cells.length; x++) {
+                    for(int y=0; y < cells[x].length; y++) {
+
+                    }
+                }*/
+                break;
+        }
 
     }
 
@@ -78,7 +105,7 @@ public class DiGameModel implements Json.Serializable {
 
 /*    @Override
     public void write(Json json) {
-//        json.setTypeName("cell");
+//        json.setTypeName("cellModel");
 //        json.writeValue("x", getX());
         json.writeValue("posX", posX);
 //        json.writeValue("y", getY());

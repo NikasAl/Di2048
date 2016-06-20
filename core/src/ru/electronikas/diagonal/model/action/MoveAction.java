@@ -6,25 +6,28 @@ import ru.electronikas.diagonal.model.Pos;
 /**
  * Created by nikas on 6/20/16.
  */
-public class NewCellAction implements DiAction {
-    private Pos pos;
+public class MoveAction implements DiAction {
+    private Pos newPos;
+    private CellModel cell;
 
-    public NewCellAction(Pos pos) {
-        this.pos = pos;
+    public MoveAction(Pos newPos, CellModel cell) {
+        this.newPos = newPos;
+        this.cell = cell;
     }
 
+
     public Pos newPos() {
-        return pos;
+        return newPos;
     }
 
     @Override
     public CellModel cellModel() {
-        return null;
+        return cell;
     }
 
     @Override
     public ActType type() {
-        return ActType.newCell;
+        return ActType.move;
     }
 
 }

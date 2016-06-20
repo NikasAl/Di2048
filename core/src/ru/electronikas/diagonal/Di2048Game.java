@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import ru.electronikas.diagonal.listeners.DiGestureListener;
 import ru.electronikas.diagonal.model.DiGameModel;
-import ru.electronikas.diagonal.ui.LevelFieldActor;
+import ru.electronikas.diagonal.ui.LevelField;
 
 public class Di2048Game extends ApplicationAdapter {
 	SpriteBatch spriteBatch;
@@ -26,9 +26,8 @@ public class Di2048Game extends ApplicationAdapter {
 
 		stage = new Stage(viewport, spriteBatch);
 		DiGameModel diGameModel = new DiGameModel(); //TODO load from storage
-		LevelFieldActor levelFieldActor = new LevelFieldActor(diGameModel);
-		stage.addActor(levelFieldActor);
-		DiGestureListener gestureListener = new DiGestureListener(levelFieldActor);
+		LevelField levelField = new LevelField(diGameModel, stage);
+		DiGestureListener gestureListener = new DiGestureListener(levelField);
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
 
 	}

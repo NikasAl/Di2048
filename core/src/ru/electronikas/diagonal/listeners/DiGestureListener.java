@@ -3,14 +3,14 @@ package ru.electronikas.diagonal.listeners;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import ru.electronikas.diagonal.model.Dir;
-import ru.electronikas.diagonal.ui.LevelFieldActor;
+import ru.electronikas.diagonal.ui.LevelField;
 
 public class DiGestureListener implements GestureDetector.GestureListener {
 
-    private LevelFieldActor levelFieldActor;
+    private LevelField levelField;
 
-    public DiGestureListener(LevelFieldActor levelFieldActor) {
-        this.levelFieldActor = levelFieldActor;
+    public DiGestureListener(LevelField levelField) {
+        this.levelField = levelField;
     }
 
     @Override
@@ -36,12 +36,12 @@ public class DiGestureListener implements GestureDetector.GestureListener {
             if(velocityX < 0) dir = Dir.left;
         }
 
-        if(Math.abs(velocityX) > Math.abs(velocityY)) {
+        if(Math.abs(velocityX) < Math.abs(velocityY)) {
             if(velocityY > 0) dir = Dir.up;
             if(velocityY < 0) dir = Dir.down;
         }
 
-        levelFieldActor.onMove(dir);
+        levelField.onMove(dir);
         return false;
     }
 

@@ -60,18 +60,22 @@ public class DiGameModel implements Json.Serializable {
     }
 
     private void runReplaceSameCells() {
-        while (findDubles().size() > 0) {
-            List<CellModel> cellModels = findDubles();
+        ArrayList<CellModel> cms = new ArrayList<CellModel>();
+        cms.addAll(LevelField.cells);
+        while (findDubles(cms).size() > 0) {
+            List<CellModel> cellModels = findDubles(cms);
             stepActions.add(new DeleteCellAction(cellModels.get(0)));
             stepActions.add(new DeleteCellAction(cellModels.get(1)));
+            cms.remove(cellModels.get(0));
+            cms.remove(cellModels.get(1));
             stepActions.add(new NewCellAction(cellModels.get(0).pos, cellModels.get(0).value*2));
         }
     }
 
-    private List<CellModel> findDubles() {
+    private List<CellModel> findDubles(ArrayList<CellModel> cms) {
         List<CellModel> dubCells = new ArrayList<CellModel>();
-        for(CellModel cellModel : LevelField.cells) {
-            for (CellModel cellModel1 : LevelField.cells) {
+        for(CellModel cellModel : cms) {
+            for (CellModel cellModel1 : cms) {
                 if(!cellModel.equals(cellModel1) & cellModel.pos.equals(cellModel1.pos)) {
                     dubCells.add(cellModel);
                     dubCells.add(cellModel1);
@@ -85,39 +89,119 @@ public class DiGameModel implements Json.Serializable {
     private void runMoveCells(Dir dir) {
         switch (dir) {
             case left:
-                for(CellModel cellModel : LevelField.cells) {
+                List<CellModel> lefterCells = getCellModelsByDir(dir);
+                for(CellModel cellModel : lefterCells) {
                     Pos pos = cellModel.pos;
                     cells[pos.x][pos.y]=0;
                     int x = pos.x;
-                    int v = cells[x][pos.y];
                     while(cells[x][pos.y] == 0) {
                         x--;
-                        if(x < 0 || cells[x][pos.y] != v) {
-                            x++; break;
+                        if(x < 0 || (cells[x][pos.y] != 0 & cells[x][pos.y] != cellModel.value)) {
+                            x++;
+                            break;
                         }
                     }
-                    stepActions.add(new MoveAction(new Pos(x, pos.y), cellModel));
+                    cells[x][pos.y] = cellModel.value;
+                    cellModel.pos = new Pos(x, pos.y);
+                    stepActions.add(new MoveAction(cellModel.pos, cellModel));
                 }
                 break;
 
             case right:
-                for(CellModel cellModel : LevelField.cells) {
+                List<CellModel> rightCells = getCellModelsByDir(dir);
+                for(CellModel cellModel : rightCells) {
                     Pos pos = cellModel.pos;
                     cells[pos.x][pos.y]=0;
                     int x = pos.x;
-                    int v = cells[x][pos.y];
                     while(cells[x][pos.y] == 0) {
                         x++;
-                        if(x > FIELD_SIZE-1 || cells[x][pos.y] != v) {
-                            x--; break;
+                        if(x > FIELD_SIZE-1 || (cells[x][pos.y] != 0 & cells[x][pos.y] != cellModel.value)) {
+                            x--;
+                            break;
                         }
                     }
-                    stepActions.add(new MoveAction(new Pos(x, pos.y), cellModel));
+                    cells[x][pos.y] = cellModel.value;
+                    cellModel.pos = new Pos(x, pos.y);
+                    stepActions.add(new MoveAction(cellModel.pos, cellModel));
                 }
                 break;
 
+            case up:
+                List<CellModel> upCells = getCellModelsByDir(dir);
+                for(CellModel cellModel : upCells) {
+                    Pos pos = cellModel.pos;
+                    cells[pos.x][pos.y]=0;
+                    int y = pos.y;
+                    while(cells[pos.x][y] == 0) {
+                        y++;
+                        if(y > FIELD_SIZE-1 || (cells[pos.x][y] != 0 & cells[pos.x][y] != cellModel.value)) {
+                            y--;
+                            break;
+                        }
+                    }
+                    cells[pos.x][y] = cellModel.value;
+                    cellModel.pos = new Pos(pos.x, y);
+                    stepActions.add(new MoveAction(cellModel.pos, cellModel));
+                }
+                break;
+
+            case down:
+                List<CellModel> downCells = getCellModelsByDir(dir);
+                for(CellModel cellModel : downCells) {
+                    Pos pos = cellModel.pos;
+                    cells[pos.x][pos.y]=0;
+                    int y = pos.y;
+                    while(cells[pos.x][y] == 0) {
+                        y--;
+                        if(y < 0 || (cells[pos.x][y] != 0 & cells[pos.x][y] != cellModel.value)) {
+                            y++;
+                            break;
+                        }
+                    }
+                    cells[pos.x][y] = cellModel.value;
+                    cellModel.pos = new Pos(pos.x, y);
+                    stepActions.add(new MoveAction(cellModel.pos, cellModel));
+                }
+                break;
         }
 
+    }
+
+    private List<CellModel> getCellModelsByDir(Dir dir) {
+        List<CellModel> lefterCells = new ArrayList<CellModel>();
+        List<CellModel> cms = new ArrayList<CellModel>();
+        cms.addAll(LevelField.cells);
+
+        while(!cms.isEmpty()) {
+            CellModel minCell = cms.get(0);
+            for (CellModel cm : cms) {
+                switch (dir) {
+                    case left:
+                        if (cm.pos.x < minCell.pos.x) {
+                            minCell = cm;
+                        }
+                        break;
+                    case right:
+                        if (cm.pos.x > minCell.pos.x) {
+                            minCell = cm;
+                        }
+                        break;
+                    case up:
+                        if (cm.pos.y > minCell.pos.y) {
+                            minCell = cm;
+                        }
+                        break;
+                    case down:
+                        if (cm.pos.y < minCell.pos.y) {
+                            minCell = cm;
+                        }
+                        break;
+                }
+            }
+            cms.remove(minCell);
+            lefterCells.add(minCell);
+        }
+        return lefterCells;
     }
 
     @Override

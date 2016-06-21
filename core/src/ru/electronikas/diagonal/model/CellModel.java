@@ -21,16 +21,17 @@ public class CellModel {
         this.pos = pos;
         this.value = value;
         cell = new TextButton("" + value, Textures.getUiSkin());
+        cell.setDisabled(true);
+        cell.clearListeners();
         setPositionByPosXY(pos);
 
         cell.setUserObject(this);
 //        setDebug(true);
     }
 
-    public void moveTo(Pos pos) {
+    public void moveToNewPos() {
         cell.addAction(Actions.moveTo(
                 pos.x * size, pos.y * size , 0.2f));
-        this.pos = pos;
     }
 
     private void setPositionByPosXY(Pos pos) {

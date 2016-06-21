@@ -4,7 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Dir;
-import ru.electronikas.diagonal.model.Pos;
 import ru.electronikas.diagonal.model.action.DiAction;
 
 import java.util.ArrayList;
@@ -38,13 +37,14 @@ public class LevelField {
                     break;
 
                 case move:
-                    Pos newPos = diAction.newPos();
                     CellModel cell = diAction.cellModel();
-                    cell.moveTo(newPos);
+                    cell.moveToNewPos();
                     break;
 
                 case delCell:
                     diAction.cellModel().cell.remove();
+                    cells.remove(diAction.cellModel());
+//                    Gdx.app.log("INFO", "" + cells.remove(diAction.cellModel()));
                     break;
             }
 

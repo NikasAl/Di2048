@@ -37,8 +37,8 @@ public class DiGestureListener implements GestureDetector.GestureListener {
         }
 
         if(Math.abs(velocityX) < Math.abs(velocityY)) {
-            if(velocityY > 0) dir = Dir.up;
-            if(velocityY < 0) dir = Dir.down;
+            if(velocityY > 0) dir = Dir.down;
+            if(velocityY < 0) dir = Dir.up;
         }
 
         levelField.onMove(dir);

@@ -8,5 +8,6 @@ public enum Dir {
     left,
     right,
     up,
-    down, none,
+    down,
+    none,
 }

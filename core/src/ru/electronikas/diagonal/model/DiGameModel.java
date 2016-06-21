@@ -101,8 +101,8 @@ public class DiGameModel implements Json.Serializable {
                             break;
                         }
                     }
-                    cells[x][pos.y] = cellModel.value;
                     cellModel.pos = new Pos(x, pos.y);
+                    cells[x][pos.y] = cellModel.value * countCellsInThePos(cellModel.pos);
                     stepActions.add(new MoveAction(cellModel.pos, cellModel));
                 }
                 break;
@@ -120,8 +120,8 @@ public class DiGameModel implements Json.Serializable {
                             break;
                         }
                     }
-                    cells[x][pos.y] = cellModel.value;
                     cellModel.pos = new Pos(x, pos.y);
+                    cells[x][pos.y] = cellModel.value * countCellsInThePos(cellModel.pos);
                     stepActions.add(new MoveAction(cellModel.pos, cellModel));
                 }
                 break;
@@ -139,8 +139,8 @@ public class DiGameModel implements Json.Serializable {
                             break;
                         }
                     }
-                    cells[pos.x][y] = cellModel.value;
                     cellModel.pos = new Pos(pos.x, y);
+                    cells[pos.x][y] = cellModel.value * countCellsInThePos(cellModel.pos);
                     stepActions.add(new MoveAction(cellModel.pos, cellModel));
                 }
                 break;
@@ -158,13 +158,22 @@ public class DiGameModel implements Json.Serializable {
                             break;
                         }
                     }
-                    cells[pos.x][y] = cellModel.value;
                     cellModel.pos = new Pos(pos.x, y);
+                    cells[pos.x][y] = cellModel.value * countCellsInThePos(cellModel.pos);
                     stepActions.add(new MoveAction(cellModel.pos, cellModel));
                 }
                 break;
         }
 
+    }
+
+    private int countCellsInThePos(Pos pos) {
+        int c = 0;
+        for(CellModel cellModel : LevelField.cells) {
+            if(cellModel.pos.equals(pos)) c++;
+        }
+
+        return c;
     }
 
     private List<CellModel> getCellModelsByDir(Dir dir) {

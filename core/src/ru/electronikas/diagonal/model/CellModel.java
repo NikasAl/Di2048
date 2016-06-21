@@ -21,7 +21,19 @@ public class CellModel {
         size = Gdx.graphics.getWidth() / DiGameModel.FIELD_SIZE;
         this.pos = pos;
         this.value = value;
-        cell = new TextButton("" + value, Textures.getUiSkin());
+        switch (value) {
+            case 4:
+                cell = new TextButton("" + value,
+                        Textures.getUiSkin().get("green-but", TextButton.TextButtonStyle.class));
+                break;
+            case 8:
+                cell = new TextButton("" + value,
+                        Textures.getUiSkin().get("red-but", TextButton.TextButtonStyle.class));
+                break;
+        }
+        if(cell==null)
+            cell = new TextButton("" + value, Textures.getUiSkin());
+
         cell.setDisabled(true);
         cell.clearListeners();
         setPositionByPosXY(pos);
@@ -32,7 +44,7 @@ public class CellModel {
 
     public void moveToNewPos() {
         cell.addAction(Actions.moveTo(
-                pos.x * size, pos.y * size , 0.2f));
+                pos.x * size, pos.y * size , 0.1f));
     }
 
     private void setPositionByPosXY(Pos pos) {

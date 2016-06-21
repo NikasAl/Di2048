@@ -42,9 +42,10 @@ public class LevelField {
                     break;
 
                 case delCell:
-                    diAction.cellModel().cell.remove();
-                    cells.remove(diAction.cellModel());
-//                    Gdx.app.log("INFO", "" + cells.remove(diAction.cellModel()));
+//                    diAction.cellModel().cell.remove();
+                    CellModel cellModel1 = diAction.cellModel();
+                    cellModel1.remove();
+                    cells.remove(cellModel1);
                     break;
             }
 

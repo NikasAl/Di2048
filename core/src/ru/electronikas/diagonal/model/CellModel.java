@@ -1,6 +1,7 @@
 package ru.electronikas.diagonal.model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import ru.electronikas.diagonal.ui.Textures;
@@ -42,5 +43,17 @@ public class CellModel {
     public void fadeInCell() {
         cell.setColor(1,1,1,0);
         cell.addAction(Actions.fadeIn(1f));
+    }
+
+    public void remove() {
+        //cell.remove();
+        cell.addAction(new Action() {
+            @Override
+            public boolean act(float delta) {
+                if(cell.getActions().size > 1) return false;
+                cell.remove();
+                return true;
+            }
+        });
     }
 }

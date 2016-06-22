@@ -2,6 +2,7 @@
 com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: comic.fnt } },
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },
+	yellow: { a: 1, b: 1, g: 1, r: 0 },
 	blue: { a: 1, b: 1, g: 0, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
 	white-t: { a: 0.5, b: 1, g: 1, r: 1 },
@@ -16,23 +17,29 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	redpane-t: { name: bluepane, color: red-t }
 	inyan-t: { name: inyan, color: white-t }
 	greenpane-t: { name: greenpane, color: white-t }
-	shuffle-icon-t: { name: Shuffle-icon-1, color: white-t }
-	go-up-t: { name: Go-up-icon, color: white-t }
-	settings-t: { name: Status-dialog-information-icon, color: white-t }
+	settings-t: { name: settings, color: white-t }
 	close-t: { name: Button_Close, color: white-t }
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: { down: bluepane-t, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
+	default-round-but: { down: blue-round-but-t, up: blue-round-but, font: default-font, fontColor: red, downFontColor: red-t},
 	green-but: { down: greenpane-t, up: greenpane, font: default-font, fontColor: white, downFontColor: white-t},
 	red-but: { down: redpane-t, up: redpane, font: default-font, fontColor: white, downFontColor: white-t},
-	default-round-but: { down: blue-round-but-t, up: blue-round-but, font: default-font, fontColor: red, downFontColor: red-t},
+
+	yellow: { down: yellowpane, up: yellowpane, font: default-font, fontColor: white, downFontColor: white-t},
+	red: { down: redpane, up: redpane, font: default-font, fontColor: white, downFontColor: white-t},
+	green: { down: greenpane, up: greenpane, font: default-font, fontColor: white, downFontColor: white-t},
+	blue: { down: bluepane, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
+	ledenec: { down: ledenecpane, up: ledenecpane, font: default-font, fontColor: white, downFontColor: white-t},
+	magenta: { down: magentapane, up: magentapane, font: default-font, fontColor: white, downFontColor: white-t},
+	orange: { down: orangepane, up: orangepane, font: default-font, fontColor: white, downFontColor: white-t},
+	violet: { down: violetpane, up: violetpane, font: default-font, fontColor: white, downFontColor: white-t},
+
 },
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	default: { down: bluepane-t, up: bluepane},
-	shuffle-but: { down: shuffle-icon-t, up: Shuffle-icon-1},
-	go-up-but: { down: go-up-t, up: Go-up-icon},
 	go-advice-but: { down: inyan-t, up: inyan},
-	settings-but: { down: settings-t, up: Status-dialog-information-icon},
+	settings-but: { down: settings-t, up: settings},
 	close-but: { down: close-t, up: Button_Close },
 	sound-but: { down: music-off, up: music-on, checked: music-off },
 },
@@ -52,13 +59,13 @@ com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
 },
 com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
   default: {
-    font: default-font, fontColor: white, background: select-box-pane,
+    font: default-font, fontColor: white, background: bluepane,
     scrollStyle: default,
     listStyle: { font: default-font, selection: greenpane, background: bluepane }
   }
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
-	default: { selection: textfield_orange, background: textfield, font: default-font, fontColor: blue, cursor: cursor }
+	default: { selection: greenpane, background: bluepane, font: default-font, fontColor: blue, cursor: redpane }
 },
 }

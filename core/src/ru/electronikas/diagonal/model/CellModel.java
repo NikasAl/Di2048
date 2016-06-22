@@ -24,12 +24,34 @@ public class CellModel {
         switch (value) {
             case 4:
                 cell = new TextButton("" + value,
-                        Textures.getUiSkin().get("green-but", TextButton.TextButtonStyle.class));
+                        Textures.getUiSkin().get("yellow", TextButton.TextButtonStyle.class));
                 break;
             case 8:
                 cell = new TextButton("" + value,
-                        Textures.getUiSkin().get("red-but", TextButton.TextButtonStyle.class));
+                        Textures.getUiSkin().get("red", TextButton.TextButtonStyle.class));
                 break;
+            case 16:
+                cell = new TextButton("" + value,
+                        Textures.getUiSkin().get("green", TextButton.TextButtonStyle.class));
+                break;
+            case 32:
+                cell = new TextButton("" + value,
+                        Textures.getUiSkin().get("orange", TextButton.TextButtonStyle.class));
+                break;
+            case 64:
+                cell = new TextButton("" + value,
+                        Textures.getUiSkin().get("violet", TextButton.TextButtonStyle.class));
+                break;
+            case 128:
+                cell = new TextButton("" + value,
+                        Textures.getUiSkin().get("ledenec", TextButton.TextButtonStyle.class));
+                break;
+            case 256:
+                cell = new TextButton("" + value,
+                        Textures.getUiSkin().get("magenta", TextButton.TextButtonStyle.class));
+                break;
+
+
         }
         if(cell==null)
             cell = new TextButton("" + value, Textures.getUiSkin());
@@ -53,8 +75,14 @@ public class CellModel {
     }
 
     public void fadeInCell() {
-        cell.setColor(1,1,1,0);
-        cell.addAction(Actions.fadeIn(1f));
+//        cell.setColor(1,1,1,0);
+        cell.setSize(size, size);
+//        cell.setPosition(cell.getX() - (size - 0.6f)/2, cell.getY() + (size - 0.6f)/2);
+//        cell.setPosition(cell.getX() + size, cell.getY() + size);
+//        cell.addAction(Actions.fadeIn(1f));
+        cell.addAction(Actions.sequence(Actions.sizeTo(size*1.1f,size*1.1f, 0.3f), Actions.sizeTo(size,size, 0.3f)));
+//        cell.addAction(Actions.scaleTo(1,1,0.3f));//moveBy(-0.6f,-0.6f, 0.6f));
+
     }
 
     public void remove() {

@@ -7,6 +7,7 @@ import ru.electronikas.diagonal.model.action.DeleteCellAction;
 import ru.electronikas.diagonal.model.action.DiAction;
 import ru.electronikas.diagonal.model.action.MoveAction;
 import ru.electronikas.diagonal.model.action.NewCellAction;
+import ru.electronikas.diagonal.settings.GameSounds;
 import ru.electronikas.diagonal.ui.LevelField;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public class DiGameModel implements Json.Serializable {
 
-    public static final byte FIELD_SIZE = 4;
+    public static final byte FIELD_SIZE = 3;
 
     int[][] cells;
 
@@ -34,24 +35,40 @@ public class DiGameModel implements Json.Serializable {
         runReplaceSameCells();
         runCheckGameOver();
         runCreateNewCell();
-
+//        dbprint(cells);
+        GameSounds.flipSoundPlay();
         return stepActions;
     }
 
 
     private void runCheckGameOver() {
+        if(isGameOverState()) {
 
+        }
     }
 
+    private boolean isGameOverState() {
+        boolean noEmptyFields = true;
+        for (int i=0;i<FIELD_SIZE; i++) {
+            for(int j=0; j<FIELD_SIZE; j++) {
+                if(countCellsInThePos(i,j)==0) {
+                    noEmptyFields = false;
+                }
+            }
+        }
+        return noEmptyFields;
+    }
     private void runCreateNewCell() {
         byte xRnd;
         byte yRnd;
-        byte tryNum = 0;
+        int tryNum = 0;
         do {
              xRnd = (byte)MathUtils.random(0, FIELD_SIZE-1);
              yRnd = (byte)MathUtils.random(0, FIELD_SIZE-1);
             tryNum++;
-            if(tryNum > 120) break;
+            if(tryNum > 12000) {
+                runCheckGameOver();
+            }
         } while (cells[xRnd][yRnd] != 0);
 
         cells[xRnd][yRnd] = 2;
@@ -102,6 +119,16 @@ public class DiGameModel implements Json.Serializable {
                         }
                     }
                     cellModel.pos = new Pos(x, pos.y);
+                    if(countCellsInThePos(x, pos.y)==3) {
+                        x++;
+                        cellModel.pos = new Pos(x, pos.y);
+//                        System.out.print("ok. c3 for model this value:" + cellModel.value);
+                    }
+
+                    if(countCellsInThePos(cellModel.pos)==3) {
+                        throw new RuntimeException("c3 for model this value:" + cellModel.value + "pos x:"+cellModel.pos.x+" y:"+cellModel.pos.y);
+                    }
+
                     cells[x][pos.y] = cellModel.value * countCellsInThePos(cellModel.pos);
                     stepActions.add(new MoveAction(cellModel.pos, cellModel));
                 }
@@ -121,6 +148,13 @@ public class DiGameModel implements Json.Serializable {
                         }
                     }
                     cellModel.pos = new Pos(x, pos.y);
+                    if(countCellsInThePos(x,pos.y)==3) {
+                        x--;
+                        cellModel.pos = new Pos(x, pos.y);
+                    }
+
+                    if(countCellsInThePos(cellModel.pos)==3)
+                        throw new RuntimeException("odd must be");
                     cells[x][pos.y] = cellModel.value * countCellsInThePos(cellModel.pos);
                     stepActions.add(new MoveAction(cellModel.pos, cellModel));
                 }
@@ -140,6 +174,13 @@ public class DiGameModel implements Json.Serializable {
                         }
                     }
                     cellModel.pos = new Pos(pos.x, y);
+                    if(countCellsInThePos(pos.x, y)==3) {
+                        y--;
+                        cellModel.pos = new Pos(pos.x, y);
+                    }
+                    cellModel.pos = new Pos(pos.x, y);
+                    if(countCellsInThePos(cellModel.pos)==3)
+                        throw new RuntimeException("odd must be");
                     cells[pos.x][y] = cellModel.value * countCellsInThePos(cellModel.pos);
                     stepActions.add(new MoveAction(cellModel.pos, cellModel));
                 }
@@ -159,12 +200,41 @@ public class DiGameModel implements Json.Serializable {
                         }
                     }
                     cellModel.pos = new Pos(pos.x, y);
+                    if(countCellsInThePos(pos.x, y)==3) {
+                        y++;
+                        cellModel.pos = new Pos(pos.x, y);
+                    }
+                    cellModel.pos = new Pos(pos.x, y);
+                    if(countCellsInThePos(cellModel.pos)==3)
+                        throw new RuntimeException("odd must be");
                     cells[pos.x][y] = cellModel.value * countCellsInThePos(cellModel.pos);
                     stepActions.add(new MoveAction(cellModel.pos, cellModel));
                 }
                 break;
         }
+    }
 
+    private void dbprint(int[][] cells) {
+        for(int i=cells.length-1; i>=0; i--) {
+            for(int j=0; j<cells[i].length; j++) {
+                System.out.print(cells[j][i]);
+
+            }
+
+            System.out.println();
+        }
+
+        System.out.println();
+        for(CellModel cm : LevelField.cells) {
+            System.out.println("" + cm.pos + " v:" + cm.value);
+        }
+    }
+
+//    Pos tmp = new Pos(0,0);
+    private int countCellsInThePos(int x, int y) {
+//        tmp.x = x;
+//        tmp.y = y;
+        return countCellsInThePos(new Pos(x,y));
     }
 
     private int countCellsInThePos(Pos pos) {
@@ -172,7 +242,6 @@ public class DiGameModel implements Json.Serializable {
         for(CellModel cellModel : LevelField.cells) {
             if(cellModel.pos.equals(pos)) c++;
         }
-
         return c;
     }
 

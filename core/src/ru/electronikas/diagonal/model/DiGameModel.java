@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class DiGameModel implements Json.Serializable {
 
-    public static final byte FIELD_SIZE = 4;
+    public static byte FIELD_SIZE;// = 4;
 
     int[][] cells;
     int score = 0;
@@ -26,8 +26,9 @@ public class DiGameModel implements Json.Serializable {
 
     List<DiAction> stepActions;
 
-    public DiGameModel() {
+    public DiGameModel(byte FIELD_SIZE) {
         cells = new int[FIELD_SIZE][FIELD_SIZE];
+        this.FIELD_SIZE = FIELD_SIZE;
         stepActions = new ArrayList<DiAction>();
     }
 

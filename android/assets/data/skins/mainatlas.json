@@ -40,6 +40,9 @@ ru.electronikas.diagonal.ui.actors.CustomTextButton$TextButtonStyle: {
 	magenta: { down: magentapane, up: magentapane, font: default-font, fontColor: white, downFontColor: white-t},
 	orange: { down: orangepane, up: orangepane, font: default-font, fontColor: white, downFontColor: white-t},
 	violet: { down: violetpane, up: violetpane, font: default-font, fontColor: white, downFontColor: white-t},
+	reddy: { down: reddypane, up: reddypane, font: default-font, fontColor: white, downFontColor: white-t},
+	cyan: { down: cyanpane, up: cyanpane, font: default-font, fontColor: white, downFontColor: white-t},
+	lgreen: { down: lgreenpane, up: lgreenpane, font: default-font, fontColor: white, downFontColor: white-t},
 
 }
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {

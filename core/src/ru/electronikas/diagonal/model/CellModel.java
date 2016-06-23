@@ -1,6 +1,7 @@
 package ru.electronikas.diagonal.model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.electronikas.diagonal.ui.Textures;
@@ -27,7 +28,10 @@ public class CellModel {
         orange,
         violet,
         ledenec,
-        magenta  //256
+        magenta,  //256
+        reddy,
+        cyan,
+        lgreen
 
     }
 
@@ -37,10 +41,10 @@ public class CellModel {
         this.value = value;
 
         CellColors cellColor;
-        if(value <= 256)
+        if(value <= 2048)
             cellColor = CellColors.values()[getBitNum(value)];
         else
-            cellColor = CellColors.blue;
+            cellColor = CellColors.values()[MathUtils.random(0, CellColors.values().length-1)];
 
         cell = new CustomTextButton("" + value,
                 Textures.getUiSkin().get(cellColor.name(), CustomTextButton.TextButtonStyle.class));

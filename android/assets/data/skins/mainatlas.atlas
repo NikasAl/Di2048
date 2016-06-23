@@ -3,30 +3,23 @@ mainatlas.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-icon_small
-  rotate: false
-  xy: 1, 127
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
 knob
   rotate: false
-  xy: 1, 50
+  xy: 1, 180
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 Button_Close
   rotate: false
-  xy: 131, 191
+  xy: 1, 114
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 magentapane
   rotate: false
-  xy: 197, 191
+  xy: 78, 191
   size: 64, 64
   split: 24, 19, 23, 19
   orig: 64, 64
@@ -34,14 +27,30 @@ magentapane
   index: -1
 blue-round-but
   rotate: false
-  xy: 263, 191
+  xy: 1, 48
   size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+cyanpane
+  rotate: false
+  xy: 144, 191
+  size: 64, 64
+  split: 24, 19, 23, 19
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+reddypane
+  rotate: false
+  xy: 210, 191
+  size: 64, 64
+  split: 24, 19, 23, 19
   orig: 64, 64
   offset: 0, 0
   index: -1
 graypane
   rotate: false
-  xy: 329, 191
+  xy: 276, 191
   size: 64, 64
   split: 24, 19, 23, 19
   orig: 64, 64
@@ -49,22 +58,45 @@ graypane
   index: -1
 inyan
   rotate: false
-  xy: 395, 191
+  xy: 342, 191
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 bluepane
   rotate: false
-  xy: 131, 125
+  xy: 408, 191
   size: 64, 64
   split: 24, 19, 23, 19
   orig: 64, 64
   offset: 0, 0
   index: -1
+slide-line
+  rotate: false
+  xy: 1, 16
+  size: 60, 30
+  split: 16, 22, 15, 13
+  orig: 60, 30
+  offset: 0, 0
+  index: -1
+coins
+  rotate: false
+  xy: 78, 138
+  size: 64, 51
+  orig: 64, 51
+  offset: 0, 0
+  index: -1
 yellowpane
   rotate: false
-  xy: 197, 125
+  xy: 67, 72
+  size: 64, 64
+  split: 24, 19, 23, 19
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+lgreenpane
+  rotate: false
+  xy: 144, 125
   size: 64, 64
   split: 24, 19, 23, 19
   orig: 64, 64
@@ -72,44 +104,28 @@ yellowpane
   index: -1
 music-on
   rotate: false
-  xy: 263, 125
+  xy: 210, 125
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 settings
   rotate: false
-  xy: 329, 125
+  xy: 276, 125
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 star-score
   rotate: false
-  xy: 395, 125
+  xy: 342, 125
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-slide-line
-  rotate: false
-  xy: 1, 18
-  size: 60, 30
-  split: 16, 22, 15, 13
-  orig: 60, 30
-  offset: 0, 0
-  index: -1
-slide-line-v
-  rotate: false
-  xy: 461, 212
-  size: 43, 43
-  split: 0, 43, 12, 13
-  orig: 43, 43
-  offset: 0, 0
-  index: -1
 ledenecpane
   rotate: false
-  xy: 78, 59
+  xy: 408, 125
   size: 64, 64
   split: 24, 19, 23, 19
   orig: 64, 64
@@ -117,7 +133,7 @@ ledenecpane
   index: -1
 orangepane
   rotate: false
-  xy: 144, 59
+  xy: 133, 59
   size: 64, 64
   split: 24, 19, 23, 19
   orig: 64, 64
@@ -125,7 +141,7 @@ orangepane
   index: -1
 violetpane
   rotate: false
-  xy: 210, 59
+  xy: 199, 59
   size: 64, 64
   split: 24, 19, 23, 19
   orig: 64, 64
@@ -133,39 +149,40 @@ violetpane
   index: -1
 music-off
   rotate: false
-  xy: 276, 59
+  xy: 265, 59
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 redpane
   rotate: false
-  xy: 342, 61
+  xy: 331, 61
   size: 62, 62
   split: 18, 15, 15, 17
   orig: 62, 62
   offset: 0, 0
   index: -1
-scroll-knob
-  rotate: false
-  xy: 342, 1
-  size: 58, 58
-  split: 26, 31, 38, 18
-  orig: 58, 58
-  offset: 0, 0
-  index: -1
 greenpane
   rotate: false
-  xy: 406, 61
+  xy: 395, 61
   size: 62, 62
   split: 18, 16, 17, 18
   orig: 62, 62
   offset: 0, 0
   index: -1
-coins
+scroll-knob
   rotate: false
-  xy: 402, 8
-  size: 64, 51
-  orig: 64, 51
+  xy: 331, 1
+  size: 58, 58
+  split: 26, 31, 38, 18
+  orig: 58, 58
+  offset: 0, 0
+  index: -1
+slide-line-v
+  rotate: false
+  xy: 391, 16
+  size: 43, 43
+  split: 0, 43, 12, 13
+  orig: 43, 43
   offset: 0, 0
   index: -1

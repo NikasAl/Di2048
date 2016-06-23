@@ -26,7 +26,7 @@ public class Di2048Game extends ApplicationAdapter {
 		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true); //false
 
 		stage = new Stage(viewport, spriteBatch);
-		DiGameModel diGameModel = new DiGameModel(); //TODO load from storage
+		DiGameModel diGameModel = new DiGameModel((byte)4); //TODO load from storage
 		LevelField levelField = new LevelField(diGameModel, stage);
 		DiGestureListener gestureListener = new DiGestureListener(levelField);
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));

@@ -74,7 +74,7 @@ public class CellModel {
         cell.setPosition(pos.x * size, pos.y * size);
     }
 
-    public static final float dt = 0.15f;
+    public static final float dt = 0.3f;
     public void fadeInCell() {
         cell.setSize(size, size);
         cell.setColor(1,1,1,0);

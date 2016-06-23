@@ -44,9 +44,10 @@ public class DiGameModel implements Json.Serializable {
         runCheckGameOver();
         if(!afterLoad | countCellsInTheGame()==0)
             runCreateNewCell();
-//        dbprint(cells);
         GameSounds.flipSoundPlay();
         Storage.saveGameState(this);
+
+//        dbprint(cells);
         return stepActions;
     }
 

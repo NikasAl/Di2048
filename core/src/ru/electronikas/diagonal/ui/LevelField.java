@@ -65,6 +65,10 @@ public class LevelField {
                     cellModel1.remove();
                     cells.remove(cellModel1);
                     break;
+
+                case gameOver:
+
+                    break;
             }
 
         }

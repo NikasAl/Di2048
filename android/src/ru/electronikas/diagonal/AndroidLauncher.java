@@ -11,4 +11,11 @@ public class AndroidLauncher extends AndroidApplication {
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new Di2048Game(), config);
 	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		android.os.Process.killProcess(android.os.Process.myPid());
+	}
+
 }

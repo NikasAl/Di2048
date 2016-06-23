@@ -3,10 +3,7 @@ package ru.electronikas.diagonal.model;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import ru.electronikas.diagonal.model.action.DeleteCellAction;
-import ru.electronikas.diagonal.model.action.DiAction;
-import ru.electronikas.diagonal.model.action.MoveAction;
-import ru.electronikas.diagonal.model.action.NewCellAction;
+import ru.electronikas.diagonal.model.action.*;
 import ru.electronikas.diagonal.settings.GameSounds;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.LevelField;
@@ -41,7 +38,10 @@ public class DiGameModel implements Json.Serializable {
             stepActions.clear();
         runMoveCells(dir);
         runReplaceSameCells();
-        runCheckGameOver();
+        if(isGameOverState()) {
+            stepActions.add(new GameOverAction());
+            return stepActions;
+        }
         if(!afterLoad | countCellsInTheGame()==0)
             runCreateNewCell();
         GameSounds.flipSoundPlay();

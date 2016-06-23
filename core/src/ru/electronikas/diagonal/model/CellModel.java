@@ -58,7 +58,6 @@ public class CellModel {
     private int getBitNum(int value) {
         String binStr = Integer.toBinaryString(value);
         return new StringBuffer(binStr).reverse().toString().indexOf("1") - 1;
-
     }
 
     public void moveToNewPos() {
@@ -71,19 +70,23 @@ public class CellModel {
         cell.setPosition(pos.x * size, pos.y * size);
     }
 
+    public static final float dt = 0.15f;
     public void fadeInCell() {
-//        cell.setColor(1,1,1,0);
         cell.setSize(size, size);
-//        cell.setPosition(cell.getX() - (size - 0.6f)/2, cell.getY() + (size - 0.6f)/2);
-//        cell.setPosition(cell.getX() + size, cell.getY() + size);
-//        cell.addAction(Actions.fadeIn(1f));
-        cell.addAction(Actions.sequence(Actions.sizeTo(size*1.1f,size*1.1f, 0.3f), Actions.sizeTo(size,size, 0.3f)));
-//        cell.addAction(Actions.scaleTo(1,1,0.3f));//moveBy(-0.6f,-0.6f, 0.6f));
-
+        cell.setColor(1,1,1,0);
+        cell.addAction(Actions.fadeIn(dt*2));
+        float d = size/12;
+        cell.addAction(
+                Actions.sequence(Actions.sizeTo(size+d,size+d, dt), Actions.sizeTo(size,size, dt))
+        );
+        float xx = cell.getX();
+        float yy = cell.getY();
+        cell.addAction(
+                Actions.sequence(Actions.moveTo(xx - d/2, yy - d/2, dt), Actions.moveTo(xx, yy, dt))
+        );
     }
 
     public void remove() {
-        //cell.remove();
         cell.addAction(new Action() {
             @Override
             public boolean act(float delta) {

@@ -29,7 +29,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 
 },
 
-ru.electronikas.diagonal.ui.CustomTextButton$TextButtonStyle: {
+ru.electronikas.diagonal.ui.actors.CustomTextButton$TextButtonStyle: {
 	default: { down: bluepane-t, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
 
 	yellow: { down: yellowpane, up: yellowpane, font: default-font, fontColor: white, downFontColor: white-t},

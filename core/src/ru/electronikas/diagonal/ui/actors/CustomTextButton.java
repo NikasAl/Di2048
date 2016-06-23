@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package ru.electronikas.diagonal.ui;
+package ru.electronikas.diagonal.ui.actors;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;

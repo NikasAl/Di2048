@@ -3,8 +3,8 @@ package ru.electronikas.diagonal.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import ru.electronikas.diagonal.ui.CustomTextButton;
 import ru.electronikas.diagonal.ui.Textures;
+import ru.electronikas.diagonal.ui.actors.CustomTextButton;
 
 import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
 
@@ -75,7 +75,7 @@ public class CellModel {
         cell.setSize(size, size);
         cell.setColor(1,1,1,0);
         cell.addAction(Actions.fadeIn(dt*2));
-        float d = size/12;
+        float d = size/11;
         cell.addAction(
                 Actions.sequence(Actions.sizeTo(size+d,size+d, dt), Actions.sizeTo(size,size, dt))
         );

@@ -15,7 +15,7 @@ public class CellModel {
 
     public int value;
     protected Pos pos;
-    protected float size;
+    public static float size;
 
     public CustomTextButton cell;
 

@@ -10,14 +10,24 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 public class Utils {
 
     public static void textSizeTuning(Label nameLabel, float width) {
-        float scale = 3f;
-        nameLabel.setFontScale(scale);
+        float maxScale = 3f;
+        nameLabel.setFontScale(maxScale);
         while (nameLabel.getPrefWidth() > width / 3f) {
-            scale -= 0.1f;
-            nameLabel.setFontScale(scale);
+            maxScale -= 0.1f;
+            nameLabel.setFontScale(maxScale);
             nameLabel.layout();
         }
-        Gdx.app.log("FONT", "calibrated scale: " + scale);
+
+//        float minScale = 0.05f;
+//        nameLabel.setFontScale(maxScale);
+//        while (nameLabel.getPrefWidth() < width / 4f) {
+//            maxScale += 0.1f;
+//            nameLabel.setFontScale(maxScale);
+//            nameLabel.layout();
+//        }
+//        Math.round(maxScale)
+
+        Gdx.app.log("FONT", "calibrated maxScale: " + maxScale);
     }
 
     private static ShaderProgram fontShader;

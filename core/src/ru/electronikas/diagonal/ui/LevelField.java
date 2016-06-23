@@ -1,6 +1,8 @@
 package ru.electronikas.diagonal.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Dir;
@@ -20,8 +22,22 @@ public class LevelField {
     public LevelField(DiGameModel diGameModel, Stage stage) {
         this.diGameModel = diGameModel;
         this.stage = stage;
+        createFields();
         cells = new ArrayList<CellModel>();
         applyActions(diGameModel.onMove(Dir.none));
+
+    }
+
+    private void createFields() {
+        float size = Gdx.graphics.getWidth() / DiGameModel.FIELD_SIZE;
+        for(int x=0; x < DiGameModel.FIELD_SIZE; x++) {
+            for(int y=0; y < DiGameModel.FIELD_SIZE; y++) {
+                Image img = new Image(Textures.getUiSkin().getPatch("graypane"));
+                img.setPosition(x * size, y * size);
+                img.setSize(size,size);
+                stage.addActor(img);
+            }
+        }
     }
 
     private void applyActions(List<DiAction> stepActions) {

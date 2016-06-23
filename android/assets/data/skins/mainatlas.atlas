@@ -39,22 +39,22 @@ blue-round-but
   orig: 64, 64
   offset: 0, 0
   index: -1
-inyan
+graypane
   rotate: false
   xy: 329, 191
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-bluepane
-  rotate: false
-  xy: 395, 191
   size: 64, 64
   split: 24, 19, 23, 19
   orig: 64, 64
   offset: 0, 0
   index: -1
-yellowpane
+inyan
+  rotate: false
+  xy: 395, 191
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+bluepane
   rotate: false
   xy: 131, 125
   size: 64, 64
@@ -62,32 +62,32 @@ yellowpane
   orig: 64, 64
   offset: 0, 0
   index: -1
-music-on
+yellowpane
   rotate: false
   xy: 197, 125
   size: 64, 64
+  split: 24, 19, 23, 19
   orig: 64, 64
   offset: 0, 0
   index: -1
-settings
+music-on
   rotate: false
   xy: 263, 125
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-star-score
+settings
   rotate: false
   xy: 329, 125
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-ledenecpane
+star-score
   rotate: false
   xy: 395, 125
   size: 64, 64
-  split: 24, 19, 23, 19
   orig: 64, 64
   offset: 0, 0
   index: -1
@@ -107,7 +107,7 @@ slide-line-v
   orig: 43, 43
   offset: 0, 0
   index: -1
-orangepane
+ledenecpane
   rotate: false
   xy: 78, 59
   size: 64, 64
@@ -115,7 +115,7 @@ orangepane
   orig: 64, 64
   offset: 0, 0
   index: -1
-violetpane
+orangepane
   rotate: false
   xy: 144, 59
   size: 64, 64
@@ -123,40 +123,48 @@ violetpane
   orig: 64, 64
   offset: 0, 0
   index: -1
-music-off
+violetpane
   rotate: false
   xy: 210, 59
+  size: 64, 64
+  split: 24, 19, 23, 19
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+music-off
+  rotate: false
+  xy: 276, 59
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 redpane
   rotate: false
-  xy: 276, 61
+  xy: 342, 61
   size: 62, 62
   split: 18, 15, 15, 17
   orig: 62, 62
   offset: 0, 0
   index: -1
-greenpane
-  rotate: false
-  xy: 340, 61
-  size: 62, 62
-  split: 18, 16, 17, 18
-  orig: 62, 62
-  offset: 0, 0
-  index: -1
 scroll-knob
   rotate: false
-  xy: 276, 1
+  xy: 342, 1
   size: 58, 58
   split: 26, 31, 38, 18
   orig: 58, 58
   offset: 0, 0
   index: -1
+greenpane
+  rotate: false
+  xy: 406, 61
+  size: 62, 62
+  split: 18, 16, 17, 18
+  orig: 62, 62
+  offset: 0, 0
+  index: -1
 coins
   rotate: false
-  xy: 336, 8
+  xy: 402, 8
   size: 64, 51
   orig: 64, 51
   offset: 0, 0

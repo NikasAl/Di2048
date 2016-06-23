@@ -2,7 +2,9 @@ package ru.electronikas.diagonal.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.utils.Json;
 import ru.electronikas.diagonal.model.ActiveRes;
+import ru.electronikas.diagonal.model.DiGameModel;
 
 /**
  * Created by navdonin on 09/01/15.
@@ -12,6 +14,7 @@ public class Storage {
 
     private static final String PREFS_NAME = "prefs_di2048";
     private static final String SOUND_VOLUME = "soundVolume";
+    private static final String GAME_MODEL_STRING = "game_";
 //    public static final String MUSIC_VOLUME = "musicVolume";
     private static Preferences prefs;
 
@@ -75,12 +78,33 @@ public class Storage {
     }
 
     public static Integer getIntParam(ActiveRes activeResource) {
-//        if (activeResource.equals(ActiveRes.coins))
-//            return getPrefs().getInteger(activeResource.name(), DEFAULT_COINS);
+        if (activeResource.equals(ActiveRes.gameFieldType))
+            return getPrefs().getInteger(activeResource.name(), 4);
         return getPrefs().getInteger(activeResource.name(), 0);
     }
 
     public static String getStrParam(ActiveRes activeResource) {
         return getPrefs().getString(activeResource.name(), "");
+    }
+
+    private static Json json = new Json();
+    public static DiGameModel getGameFromFileByFieldSize(Integer fieldSize) {
+        String gameStringJSON = getPrefs().getString(GAME_MODEL_STRING + fieldSize, "");
+        if(!"".equals(gameStringJSON)) {
+            DiGameModel diGameModel = json.fromJson(DiGameModel.class, gameStringJSON);
+            return diGameModel;
+        } else {
+            return new DiGameModel(fieldSize);
+        }
+    }
+
+    public static int getCurrentFieldType() {
+        return getIntParam(ActiveRes.gameFieldType);
+    }
+
+    public static void saveGameState(DiGameModel diGameModel) {
+        String gameJSON = json.prettyPrint(diGameModel);
+        getPrefs().putString(GAME_MODEL_STRING + getCurrentFieldType(), gameJSON);
+        getPrefs().flush();
     }
 }

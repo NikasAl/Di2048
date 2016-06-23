@@ -12,7 +12,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import ru.electronikas.diagonal.listeners.DiGestureListener;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.settings.GameSounds;
+import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.LevelField;
+import ru.electronikas.diagonal.ui.StaticPanel;
 
 public class Di2048Game extends ApplicationAdapter {
 	SpriteBatch spriteBatch;
@@ -26,12 +28,15 @@ public class Di2048Game extends ApplicationAdapter {
 		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true); //false
 
 		stage = new Stage(viewport, spriteBatch);
-		DiGameModel diGameModel = new DiGameModel((byte)4); //TODO load from storage
+
+		int fieldType = Storage.getCurrentFieldType();
+		DiGameModel diGameModel = Storage.getGameFromFileByFieldSize(fieldType);
 		LevelField levelField = new LevelField(diGameModel, stage);
 		DiGestureListener gestureListener = new DiGestureListener(levelField);
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
 
 		GameSounds.soundsInit();
+		StaticPanel staticPanel = new StaticPanel(stage);
 	}
 
 	@Override

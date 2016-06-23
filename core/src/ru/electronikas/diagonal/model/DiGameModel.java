@@ -8,6 +8,7 @@ import ru.electronikas.diagonal.model.action.DiAction;
 import ru.electronikas.diagonal.model.action.MoveAction;
 import ru.electronikas.diagonal.model.action.NewCellAction;
 import ru.electronikas.diagonal.settings.GameSounds;
+import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.LevelField;
 
 import java.util.ArrayList;
@@ -18,29 +19,45 @@ import java.util.List;
  */
 public class DiGameModel implements Json.Serializable {
 
-    public static byte FIELD_SIZE;// = 4;
+    public static int FIELD_SIZE = 4;// = 4;
 
     int[][] cells;
     int score = 0;
 
 
-    List<DiAction> stepActions;
+    List<DiAction> stepActions = new ArrayList<DiAction>();
 
-    public DiGameModel(byte FIELD_SIZE) {
-        cells = new int[FIELD_SIZE][FIELD_SIZE];
+    public DiGameModel(Integer FIELD_SIZE) {
+        this();
         this.FIELD_SIZE = FIELD_SIZE;
-        stepActions = new ArrayList<DiAction>();
+        cells = new int[FIELD_SIZE][FIELD_SIZE];
     }
 
-    public List<DiAction> onMove(Dir dir) {
-        stepActions.clear();
+    public DiGameModel() {
+    }
+
+    public List<DiAction> onMove(Dir dir, boolean afterLoad) {
+        if(!afterLoad)
+            stepActions.clear();
         runMoveCells(dir);
         runReplaceSameCells();
         runCheckGameOver();
-        runCreateNewCell();
+        if(!afterLoad | countCellsInTheGame()==0)
+            runCreateNewCell();
 //        dbprint(cells);
         GameSounds.flipSoundPlay();
+        Storage.saveGameState(this);
         return stepActions;
+    }
+
+    private int countCellsInTheGame() {
+        int c=0;
+        for (int i=0;i<FIELD_SIZE; i++) {
+            for(int j=0; j<FIELD_SIZE; j++) {
+                if(cells[i][j]!=0) c++;
+            }
+        }
+        return c;
     }
 
 
@@ -288,14 +305,26 @@ public class DiGameModel implements Json.Serializable {
     @Override
     public void write(Json json) {
         json.writeValue("cells", cells);
+        json.writeValue("score", score);
+        json.writeValue("fieldType", FIELD_SIZE);
     }
 
     @Override
     public void read(Json json, JsonValue jsonData) {
-//        ArrayList<CellActor> cs = json.readValue("cells", ArrayList.class, jsonData);
-//        for (CellActor v : cs) {
-//            addActor(v);
-//        }
+        FIELD_SIZE = json.readValue("fieldType", Integer.class, jsonData);
+
+//        cells = new int[FIELD_SIZE][FIELD_SIZE];
+
+        cells = json.readValue("cells", int[][].class, jsonData);
+        score = json.readValue("score", Integer.class, jsonData);
+
+        for(int x=0; x<cells.length; x++) {
+            for(int y=0; y<cells[x].length; y++) {
+                if(cells[x][y]!=0) {
+                    stepActions.add(new NewCellAction(new Pos(x,y), cells[x][y]));
+                }
+            }
+        }
     }
 
 /*    @Override

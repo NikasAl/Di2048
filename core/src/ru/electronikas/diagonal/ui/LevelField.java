@@ -24,7 +24,7 @@ public class LevelField {
         this.stage = stage;
         createFields();
         cells = new ArrayList<CellModel>();
-        applyActions(diGameModel.onMove(Dir.none));
+        applyActions(diGameModel.onMove(Dir.none, true));
 
     }
 
@@ -70,7 +70,7 @@ public class LevelField {
     }
 
     public void onMove(Dir dir) {
-        applyActions(diGameModel.onMove(dir));
+        applyActions(diGameModel.onMove(dir, false));
     }
 
 /*

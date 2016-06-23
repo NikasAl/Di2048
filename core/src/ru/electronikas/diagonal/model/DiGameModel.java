@@ -18,9 +18,11 @@ import java.util.List;
  */
 public class DiGameModel implements Json.Serializable {
 
-    public static final byte FIELD_SIZE = 3;
+    public static final byte FIELD_SIZE = 4;
 
     int[][] cells;
+    int score = 0;
+
 
     List<DiAction> stepActions;
 
@@ -67,7 +69,7 @@ public class DiGameModel implements Json.Serializable {
              yRnd = (byte)MathUtils.random(0, FIELD_SIZE-1);
             tryNum++;
             if(tryNum > 12000) {
-                runCheckGameOver();
+                throw new RuntimeException("no stes");
             }
         } while (cells[xRnd][yRnd] != 0);
 

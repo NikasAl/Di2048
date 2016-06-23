@@ -7,8 +7,8 @@ import ru.electronikas.diagonal.Di2048Game;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = 600;
-		config.height = 800;
+		config.width = 800;
+		config.height = 1100;
 		new LwjglApplication(new Di2048Game(), config);
 	}
 }

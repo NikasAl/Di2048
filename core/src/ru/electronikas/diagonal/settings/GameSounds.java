@@ -41,7 +41,8 @@ public class GameSounds {
 */
 
     public static void flipSoundPlay() {
-        flipSound.play(Storage.getSoundVolume());
+        if(flipSound!=null)
+            flipSound.play(Storage.getSoundVolume());
     }
 
 /*

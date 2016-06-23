@@ -1,5 +1,6 @@
 {
-com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: comic.fnt } },
+com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: test.fnt } },
+//com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: hoefler.fnt } },
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },
 	yellow: { a: 1, b: 1, g: 1, r: 0 },
@@ -26,6 +27,11 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	green-but: { down: greenpane-t, up: greenpane, font: default-font, fontColor: white, downFontColor: white-t},
 	red-but: { down: redpane-t, up: redpane, font: default-font, fontColor: white, downFontColor: white-t},
 
+},
+
+ru.electronikas.diagonal.ui.CustomTextButton$TextButtonStyle: {
+	default: { down: bluepane-t, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
+
 	yellow: { down: yellowpane, up: yellowpane, font: default-font, fontColor: white, downFontColor: white-t},
 	red: { down: redpane, up: redpane, font: default-font, fontColor: white, downFontColor: white-t},
 	green: { down: greenpane, up: greenpane, font: default-font, fontColor: white, downFontColor: white-t},
@@ -35,7 +41,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	orange: { down: orangepane, up: orangepane, font: default-font, fontColor: white, downFontColor: white-t},
 	violet: { down: violetpane, up: violetpane, font: default-font, fontColor: white, downFontColor: white-t},
 
-},
+}
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	default: { down: bluepane-t, up: bluepane},
 	go-advice-but: { down: inyan-t, up: inyan},

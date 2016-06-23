@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -18,8 +19,15 @@ public class Di2048Game extends ApplicationAdapter {
 	SpriteBatch spriteBatch;
 	private Stage stage;
 
+	public static ShaderProgram fontShader;
+
 	@Override
 	public void create () {
+		fontShader = new ShaderProgram(Gdx.files.internal("data/shader/font.vert"), Gdx.files.internal("data/shader/font.frag"));
+		if (!fontShader.isCompiled()) {
+			Gdx.app.error("fontShader", "compilation failed:\n" + fontShader.getLog());
+		}
+
 		spriteBatch = new SpriteBatch();
 
 		Viewport viewport = new ScreenViewport();

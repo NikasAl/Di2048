@@ -3,8 +3,10 @@ package ru.electronikas.diagonal.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import ru.electronikas.diagonal.ui.CustomTextButton;
 import ru.electronikas.diagonal.ui.Textures;
+
+import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
 
 /**
  * Created by nikas on 1/9/16.
@@ -15,46 +17,33 @@ public class CellModel {
     protected Pos pos;
     protected float size;
 
-    public TextButton cell;
+    public CustomTextButton cell;
+
+    private enum CellColors {
+        blue,    //2
+        yellow,  //4
+        red,
+        green,
+        orange,
+        violet,
+        ledenec,
+        magenta  //256
+
+    }
 
     public CellModel(Pos pos, int value) {
         size = Gdx.graphics.getWidth() / DiGameModel.FIELD_SIZE;
         this.pos = pos;
         this.value = value;
-        switch (value) {
-            case 4:
-                cell = new TextButton("" + value,
-                        Textures.getUiSkin().get("yellow", TextButton.TextButtonStyle.class));
-                break;
-            case 8:
-                cell = new TextButton("" + value,
-                        Textures.getUiSkin().get("red", TextButton.TextButtonStyle.class));
-                break;
-            case 16:
-                cell = new TextButton("" + value,
-                        Textures.getUiSkin().get("green", TextButton.TextButtonStyle.class));
-                break;
-            case 32:
-                cell = new TextButton("" + value,
-                        Textures.getUiSkin().get("orange", TextButton.TextButtonStyle.class));
-                break;
-            case 64:
-                cell = new TextButton("" + value,
-                        Textures.getUiSkin().get("violet", TextButton.TextButtonStyle.class));
-                break;
-            case 128:
-                cell = new TextButton("" + value,
-                        Textures.getUiSkin().get("ledenec", TextButton.TextButtonStyle.class));
-                break;
-            case 256:
-                cell = new TextButton("" + value,
-                        Textures.getUiSkin().get("magenta", TextButton.TextButtonStyle.class));
-                break;
 
+        CellColors cellColor;
+        if(value <= 256)
+            cellColor = CellColors.values()[getBitNum(value)];
+        else
+            cellColor = CellColors.blue;
 
-        }
-        if(cell==null)
-            cell = new TextButton("" + value, Textures.getUiSkin());
+        cell = new CustomTextButton("" + value,
+                Textures.getUiSkin().get(cellColor.name(), CustomTextButton.TextButtonStyle.class));
 
         cell.setDisabled(true);
         cell.clearListeners();
@@ -62,6 +51,14 @@ public class CellModel {
 
         cell.setUserObject(this);
 //        setDebug(true);
+
+        textSizeTuning(cell.getLabel(), size);
+    }
+
+    private int getBitNum(int value) {
+        String binStr = Integer.toBinaryString(value);
+        return new StringBuffer(binStr).reverse().toString().indexOf("1") - 1;
+
     }
 
     public void moveToNewPos() {

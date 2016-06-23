@@ -22,7 +22,7 @@ public class DiGameModel implements Json.Serializable {
     public static int FIELD_SIZE = 4;// = 4;
 
     int[][] cells;
-    int score = 0;
+    public int score = 0;
 
 
     List<DiAction> stepActions = new ArrayList<DiAction>();

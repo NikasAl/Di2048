@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import ru.electronikas.diagonal.ui.LevelField;
 import ru.electronikas.diagonal.ui.Textures;
 import ru.electronikas.diagonal.ui.actors.CustomTextButton;
 
@@ -66,12 +67,12 @@ public class CellModel {
 
     public void moveToNewPos() {
         cell.addAction(Actions.moveTo(
-                pos.x * size, pos.y * size , 0.1f));
+                pos.x * size, pos.y * size + LevelField.DY, 0.1f));
     }
 
     private void setPositionByPosXY(Pos pos) {
         cell.setSize(size,size);
-        cell.setPosition(pos.x * size, pos.y * size);
+        cell.setPosition(pos.x * size, pos.y * size + LevelField.DY);
     }
 
     public static final float dt = 0.3f;

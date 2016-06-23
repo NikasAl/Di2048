@@ -13,6 +13,7 @@ import java.util.List;
 
 public class LevelField {
 
+    public static float DY;
     //set by level manager
 
     public static List<CellModel> cells;
@@ -30,10 +31,11 @@ public class LevelField {
 
     private void createFields() {
         float size = Gdx.graphics.getWidth() / DiGameModel.FIELD_SIZE;
+        DY = size / 2;
         for(int x=0; x < DiGameModel.FIELD_SIZE; x++) {
             for(int y=0; y < DiGameModel.FIELD_SIZE; y++) {
                 Image img = new Image(Textures.getUiSkin().getPatch("graypane"));
-                img.setPosition(x * size, y * size);
+                img.setPosition(x * size, y * size + DY);
                 img.setSize(size,size);
                 stage.addActor(img);
             }

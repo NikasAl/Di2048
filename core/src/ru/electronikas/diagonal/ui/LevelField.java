@@ -20,11 +20,16 @@ public class LevelField {
     public static List<CellModel> cells;
     private DiGameModel diGameModel;
     private Stage stage;
+    private StaticPanel staticPanel;
+    private boolean isPause = false;
 
     public LevelField(DiGameModel diGameModel, Stage stage) {
         this.diGameModel = diGameModel;
         this.stage = stage;
         createFields();
+
+        staticPanel = new StaticPanel(stage, diGameModel);
+
         cells = new ArrayList<CellModel>();
         applyActions(diGameModel.onMove(Dir.none, true));
     }
@@ -43,6 +48,7 @@ public class LevelField {
     }
 
     private void applyActions(List<DiAction> stepActions) {
+        if(isPause) return;
 
         for(DiAction diAction : stepActions) {
 
@@ -60,7 +66,6 @@ public class LevelField {
                     break;
 
                 case delCell:
-//                    diAction.cellModel().cell.remove();
                     CellModel cellModel1 = diAction.cellModel();
                     cellModel1.remove();
                     cells.remove(cellModel1);
@@ -69,6 +74,11 @@ public class LevelField {
                 case gameOver:
                     GameOverMenu gameOverMenu = new GameOverMenu(stage);
                     gameOverMenu.animateOpen();
+                    isPause = true;
+                    break;
+
+                case scoreAnimation:
+                    staticPanel.animatePlusScore(diAction.getValue());
                     break;
             }
 

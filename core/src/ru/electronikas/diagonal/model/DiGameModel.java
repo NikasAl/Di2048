@@ -107,6 +107,8 @@ public class DiGameModel implements Json.Serializable {
             cms.remove(cellModels.get(0));
             cms.remove(cellModels.get(1));
             stepActions.add(new NewCellAction(cellModels.get(0).pos, cellModels.get(0).value*2));
+            score += cellModels.get(0).value*2;
+            stepActions.add(new ScoreAnimationAction(cellModels.get(0).value*2));
         }
     }
 

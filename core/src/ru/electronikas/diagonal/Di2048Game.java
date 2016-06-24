@@ -14,7 +14,6 @@ import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.settings.GameSounds;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.LevelField;
-import ru.electronikas.diagonal.ui.StaticPanel;
 
 public class Di2048Game extends ApplicationAdapter {
 	SpriteBatch spriteBatch;
@@ -39,7 +38,6 @@ public class Di2048Game extends ApplicationAdapter {
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
 
 		GameSounds.soundsInit();
-		StaticPanel staticPanel = new StaticPanel(stage, diGameModel);
 	}
 
 	@Override

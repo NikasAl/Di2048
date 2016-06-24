@@ -43,22 +43,20 @@ public class GameOverMenu {
         rateMenu.add(createHeader(w - butW));
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(gameOverButton()).pad(10).width(butW * 2.5f);
+        rateMenu.add(tryAgaingButton(butW * 4f)).pad(10).width(butW * 4f);
 
-        rateMenu.setDebug(true);
+//        rateMenu.setDebug(true);
 
         stage.addActor(rateMenu);
 
     }
 
-    private Actor gameOverButton() {
-        TextButton openTipsBut = new TextButton(Assets.bdl().get("gameOver"),
+    private Actor tryAgaingButton(float width) {
+        TextButton openTipsBut = new TextButton(Assets.bdl().get("tryAgain"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
-        openTipsBut.getLabel().setFontScale(0.3f);
+        textSizeTuning(openTipsBut.getLabel(), width);
         openTipsBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-//                UserStatus.userDontWantRate();
-//                Mahjong3DBoxGame.requestHandler.trackEvent(TrCategory.target.name(), "userDontWantRateApp", "");
 
                 animateHide();
             }

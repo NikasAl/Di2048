@@ -21,15 +21,12 @@ public class LevelField {
     private DiGameModel diGameModel;
     private Stage stage;
 
-    private GameOverMenu gameOverMenu;
     public LevelField(DiGameModel diGameModel, Stage stage) {
         this.diGameModel = diGameModel;
         this.stage = stage;
         createFields();
         cells = new ArrayList<CellModel>();
         applyActions(diGameModel.onMove(Dir.none, true));
-        gameOverMenu = new GameOverMenu(stage);
-
     }
 
     private void createFields() {
@@ -70,6 +67,7 @@ public class LevelField {
                     break;
 
                 case gameOver:
+                    GameOverMenu gameOverMenu = new GameOverMenu(stage);
                     gameOverMenu.animateOpen();
                     break;
             }

@@ -12,7 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.materials.Assets;
+import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.Textures;
 
 import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
@@ -57,7 +59,8 @@ public class GameOverMenu {
         textSizeTuning(openTipsBut.getLabel(), width);
         openTipsBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-
+                Storage.resetCurrentGame();
+                Di2048Game.game.create();
                 animateHide();
             }
         });

@@ -20,8 +20,11 @@ public class Di2048Game extends ApplicationAdapter {
 	SpriteBatch spriteBatch;
 	private Stage stage;
 
+	public static Di2048Game game;
+
 	@Override
 	public void create () {
+		game = this;
 		spriteBatch = new SpriteBatch();
 
 		Viewport viewport = new ScreenViewport();

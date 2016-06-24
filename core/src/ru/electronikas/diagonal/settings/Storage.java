@@ -107,4 +107,9 @@ public class Storage {
         getPrefs().putString(GAME_MODEL_STRING + getCurrentFieldType(), gameJSON);
         getPrefs().flush();
     }
+
+    public static void resetCurrentGame() {
+        getPrefs().putString(GAME_MODEL_STRING + getCurrentFieldType(), "");
+        getPrefs().flush();
+    }
 }

@@ -9,13 +9,15 @@ import ru.electronikas.diagonal.model.Pos;
 public class ScoreAnimationAction implements DiAction {
 
     private int value;
+    private Pos pos;
 
-    public ScoreAnimationAction(int value) {
+    public ScoreAnimationAction(int value, Pos pos) {
        this.value = value;
+        this.pos = pos;
     }
 
     public Pos newPos() {
-        return null;
+        return pos;
     }
 
     @Override

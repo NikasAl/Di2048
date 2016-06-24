@@ -78,7 +78,7 @@ public class LevelField {
                     break;
 
                 case scoreAnimation:
-                    staticPanel.animatePlusScore(diAction.getValue());
+                    staticPanel.animatePlusScore(diAction.getValue(), diAction.newPos());
                     break;
             }
 

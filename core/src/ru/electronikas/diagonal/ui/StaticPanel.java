@@ -1,13 +1,14 @@
 package ru.electronikas.diagonal.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import ru.electronikas.diagonal.materials.Assets;
+import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
+import ru.electronikas.diagonal.model.Pos;
 
 /**
  * Created by nikas on 6/23/16.
@@ -50,13 +51,13 @@ public class StaticPanel {
         scoreLabel.setText(getScoreText());
     }
 
-    public void animatePlusScore(int value) {
+    public void animatePlusScore(int value, Pos pos) {
         final Label scoreAnimLabel = new Label("+" + value, Textures.getUiSkin());
         scoreAnimLabel.setColor(Utils.getRandomColor());
-        scoreAnimLabel.setPosition(w/17, MathUtils.random(8f,8.5f)*h/10);
-        scoreAnimLabel.setFontScale(0.6f);
+        scoreAnimLabel.setPosition(pos.x * CellModel.size + CellModel.size / 4, pos.y * CellModel.size + CellModel.size);
         scoreAnimLabel.pack();
         stage.addActor(scoreAnimLabel);
+        scoreAnimLabel.addAction(Actions.fadeOut(1f));
         scoreAnimLabel.addAction(Actions.sequence(
                 Actions.moveBy(0, 20, 1f),
                 new Action() {

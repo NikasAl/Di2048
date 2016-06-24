@@ -54,11 +54,6 @@ public class Storage {
         getPrefs().flush();
     }*/
 
-    public static void saveRecord(int rec) {
-        getPrefs().putInteger("record", rec);
-        getPrefs().flush();
-    }
-
     public static <T> void saveParam(ActiveRes activeResource, T storingParam) {
         if (storingParam instanceof Boolean) {
             getPrefs().putBoolean(activeResource.name(), (Boolean) storingParam);
@@ -112,4 +107,14 @@ public class Storage {
         getPrefs().putString(GAME_MODEL_STRING + getCurrentFieldType(), "");
         getPrefs().flush();
     }
+
+    public static Integer getRecord() {
+        return getPrefs().getInteger(ActiveRes.record.name() + getCurrentFieldType(), 0);
+    }
+
+    public static void saveScoreAsRecord(int score) {
+        getPrefs().putInteger(ActiveRes.record.name() + getCurrentFieldType(), score);
+        getPrefs().flush();
+    }
+
 }

@@ -5,6 +5,5 @@ package ru.electronikas.diagonal.model;
  */
 public enum ActiveRes {
     record,
-    gameFieldType,
-    gameState
+    gameFieldType
 }

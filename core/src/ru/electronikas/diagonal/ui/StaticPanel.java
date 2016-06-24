@@ -9,6 +9,7 @@ import ru.electronikas.diagonal.materials.Assets;
 import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Pos;
+import ru.electronikas.diagonal.settings.Storage;
 
 /**
  * Created by nikas on 6/23/16.
@@ -32,7 +33,20 @@ public class StaticPanel {
         scoreLabel = createScoreLabel(w/3, h/10);
         stage.addActor(scoreLabel);
 
+        Label recordLabel = createRecordLabel();
+        stage.addActor(recordLabel);
+    }
 
+    private Label createRecordLabel() {
+        Label label = new Label(getRecordText(), Textures.getUiSkin());
+        label.setPosition(w/3, 8.8f*h/10);
+        label.setFontScale(0.6f);
+        label.pack();
+        return label;
+    }
+
+    private String getRecordText() {
+        return Assets.bdl().get("record") + "\n" + Storage.getRecord();
     }
 
     private Label createScoreLabel(float width, float height) {

@@ -7,6 +7,7 @@ import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Dir;
 import ru.electronikas.diagonal.model.action.DiAction;
+import ru.electronikas.diagonal.ui.menu.GameOverMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +21,14 @@ public class LevelField {
     private DiGameModel diGameModel;
     private Stage stage;
 
+    private GameOverMenu gameOverMenu;
     public LevelField(DiGameModel diGameModel, Stage stage) {
         this.diGameModel = diGameModel;
         this.stage = stage;
         createFields();
         cells = new ArrayList<CellModel>();
         applyActions(diGameModel.onMove(Dir.none, true));
+        gameOverMenu = new GameOverMenu(stage);
 
     }
 
@@ -67,7 +70,7 @@ public class LevelField {
                     break;
 
                 case gameOver:
-
+                    gameOverMenu.animateOpen();
                     break;
             }
 

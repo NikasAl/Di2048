@@ -9,23 +9,31 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
  */
 public class Utils {
 
-    public static void textSizeTuning(Label nameLabel, float width) {
+    public static void cellTextSizeTuning(Label nameLabel, float width) {
+        String saveStr = nameLabel.getText().toString();
+        nameLabel.setText("1024");
+
         float maxScale = 3f;
         nameLabel.setFontScale(maxScale);
-        while (nameLabel.getPrefWidth() > width / 3f) {
+        while (nameLabel.getPrefWidth() > width / 1.4f) {
             maxScale -= 0.1f;
             nameLabel.setFontScale(maxScale);
             nameLabel.layout();
         }
 
-//        float minScale = 0.05f;
-//        nameLabel.setFontScale(maxScale);
-//        while (nameLabel.getPrefWidth() < width / 4f) {
-//            maxScale += 0.1f;
-//            nameLabel.setFontScale(maxScale);
-//            nameLabel.layout();
-//        }
-//        Math.round(maxScale)
+        nameLabel.setText(saveStr);
+
+        Gdx.app.log("FONT", "calibrated maxScale: " + maxScale);
+    }
+
+    public static void textSizeTuning(Label nameLabel, float width) {
+        float maxScale = 3f;
+        nameLabel.setFontScale(maxScale);
+        while (nameLabel.getPrefWidth() > width / 2f) {
+            maxScale -= 0.1f;
+            nameLabel.setFontScale(maxScale);
+            nameLabel.layout();
+        }
 
         Gdx.app.log("FONT", "calibrated maxScale: " + maxScale);
     }

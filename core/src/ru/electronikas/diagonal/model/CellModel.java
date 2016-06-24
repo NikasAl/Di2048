@@ -8,7 +8,7 @@ import ru.electronikas.diagonal.ui.LevelField;
 import ru.electronikas.diagonal.ui.Textures;
 import ru.electronikas.diagonal.ui.actors.CustomTextButton;
 
-import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
+import static ru.electronikas.diagonal.ui.Utils.cellTextSizeTuning;
 
 /**
  * Created by nikas on 1/9/16.
@@ -57,7 +57,7 @@ public class CellModel {
         cell.setUserObject(this);
 //        setDebug(true);
 
-        textSizeTuning(cell.getLabel(), size);
+        cellTextSizeTuning(cell.getLabel(), size);
     }
 
     private int getBitNum(int value) {

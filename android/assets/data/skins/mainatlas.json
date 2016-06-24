@@ -7,7 +7,7 @@ com.badlogic.gdx.graphics.Color: {
 	blue: { a: 1, b: 1, g: 0, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
 	white-t: { a: 0.5, b: 1, g: 1, r: 1 },
-	reddy-t: { a: 0.5, b: 0.8, g: 0.8, r: 1 },
+	reddy-t: { a: 0.9, b: 0.8, g: 0.8, r: 1 },
 	red: { a: 1, b: 0.5, g: 0.5, r: 1 },
 	red-t: { a: 0.5, b: 0.5, g: 0.5, r: 1 },
 	black: { a: 1, b: 0, g: 0, r: 0 }

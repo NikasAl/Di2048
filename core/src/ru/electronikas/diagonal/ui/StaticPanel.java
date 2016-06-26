@@ -3,17 +3,20 @@ package ru.electronikas.diagonal.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import ru.electronikas.diagonal.materials.Assets;
 import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Pos;
 import ru.electronikas.diagonal.settings.Storage;
+import ru.electronikas.diagonal.ui.menu.SettingsMenu;
 
 /**
  * Created by nikas on 6/23/16.
@@ -26,6 +29,8 @@ public class StaticPanel {
     float w;
 
     Label scoreLabel;
+
+    SettingsMenu settingsMenu;
 
     public StaticPanel(Stage stage, DiGameModel diGameModel) {
         this.stage = stage;
@@ -48,14 +53,20 @@ public class StaticPanel {
         table.add(createSettingsBut()).width(h/8).pad(w/80);
 
         table.pack();
-        table.setDebug(true);
+//        table.setDebug(true);
         stage.addActor(table);
     }
 
     private Actor createSettingsBut() {
-        ImageButton imgBut = new ImageButton(
+        final ImageButton settingsBut = new ImageButton(
                 Textures.getUiSkin().get("settings-but", ImageButton.ImageButtonStyle.class));
-        return imgBut;
+        settingsBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                settingsMenu = new SettingsMenu(stage);
+                settingsMenu.animateOpen();
+            }
+        });
+        return settingsBut;
     }
 
     private Label createRecordLabel(float width) {

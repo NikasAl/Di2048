@@ -40,7 +40,7 @@ public class Utils {
         Gdx.app.log("FONT", "calibrated maxScale: " + maxScale);
     }
 
-    public static void textSizeTuning(Label nameLabel, float width, int widthPercent) {
+    public static float textSizeTuning(Label nameLabel, float width, int widthPercent) {
         float maxScale = 3f;
         nameLabel.setFontScale(maxScale);
         while (nameLabel.getPrefWidth() > (width / 100) * widthPercent) {
@@ -49,7 +49,7 @@ public class Utils {
             nameLabel.layout();
         }
 
-        Gdx.app.log("FONT", "calibrated maxScale: " + maxScale);
+        return maxScale;
     }
 
     private static ShaderProgram fontShader;

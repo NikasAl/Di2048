@@ -19,6 +19,15 @@ android {
         minSdkVersion 8
         targetSdkVersion 23
     }
+
+/*
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+        }
+    }
+*/
 }
 
 

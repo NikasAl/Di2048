@@ -21,6 +21,13 @@ public class Di2048Game extends ApplicationAdapter {
 
 	public static Di2048Game game;
 
+	public DiGameModel diGameModel;
+
+	public void createFromM(DiGameModel gameModel) {
+		this.diGameModel = gameModel;
+		create();
+	}
+
 	@Override
 	public void create () {
 		game = this;
@@ -32,7 +39,8 @@ public class Di2048Game extends ApplicationAdapter {
 		stage = new Stage(viewport, spriteBatch);
 
 		int fieldType = Storage.getCurrentFieldType();
-		DiGameModel diGameModel = Storage.getGameFromFileByFieldSize(fieldType);
+		if(diGameModel == null)
+			diGameModel = Storage.getGameFromFileByFieldSize(fieldType);
 		LevelField levelField = new LevelField(diGameModel, stage);
 		DiGestureListener gestureListener = new DiGestureListener(levelField);
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));

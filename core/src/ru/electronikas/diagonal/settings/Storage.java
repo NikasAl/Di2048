@@ -3,6 +3,7 @@ package ru.electronikas.diagonal.settings;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Json;
+import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.model.ActiveRes;
 import ru.electronikas.diagonal.model.DiGameModel;
 
@@ -14,7 +15,8 @@ public class Storage {
 
     private static final String PREFS_NAME = "prefs_di2048";
     private static final String SOUND_VOLUME = "soundVolume";
-    private static final String GAME_MODEL_STRING = "game_";
+    private static final String GAME_MODEL_JSON = "game_";
+    private static final String SAVE_GAME_MODEL_JSON = "memgame_";
 //    public static final String MUSIC_VOLUME = "musicVolume";
     private static Preferences prefs;
 
@@ -84,12 +86,22 @@ public class Storage {
 
     private static Json json = new Json();
     public static DiGameModel getGameFromFileByFieldSize(Integer fieldSize) {
-        String gameStringJSON = getPrefs().getString(GAME_MODEL_STRING + fieldSize, "");
+        String gameStringJSON = getPrefs().getString(GAME_MODEL_JSON + fieldSize, "");
         if(!"".equals(gameStringJSON)) {
             DiGameModel diGameModel = json.fromJson(DiGameModel.class, gameStringJSON);
             return diGameModel;
         } else {
             return new DiGameModel(fieldSize);
+        }
+    }
+
+    public static DiGameModel getMSavedGame() {
+        String gameStringJSON = getPrefs().getString(SAVE_GAME_MODEL_JSON + getCurrentFieldType(), "");
+        if(!"".equals(gameStringJSON)) {
+            DiGameModel diGameModel = json.fromJson(DiGameModel.class, gameStringJSON);
+            return diGameModel;
+        } else {
+            return new DiGameModel(getCurrentFieldType());
         }
     }
 
@@ -99,12 +111,19 @@ public class Storage {
 
     public static void saveGameState(DiGameModel diGameModel) {
         String gameJSON = json.prettyPrint(diGameModel);
-        getPrefs().putString(GAME_MODEL_STRING + getCurrentFieldType(), gameJSON);
+        getPrefs().putString(GAME_MODEL_JSON + getCurrentFieldType(), gameJSON);
+        getPrefs().flush();
+    }
+
+    public static void saveGameStateM() {
+        DiGameModel currentGame = Di2048Game.game.diGameModel;
+        String gameJSON = json.prettyPrint(currentGame);
+        getPrefs().putString(SAVE_GAME_MODEL_JSON + getCurrentFieldType(), gameJSON);
         getPrefs().flush();
     }
 
     public static void resetCurrentGame() {
-        getPrefs().putString(GAME_MODEL_STRING + getCurrentFieldType(), "");
+        getPrefs().putString(GAME_MODEL_JSON + getCurrentFieldType(), "");
         getPrefs().flush();
     }
 

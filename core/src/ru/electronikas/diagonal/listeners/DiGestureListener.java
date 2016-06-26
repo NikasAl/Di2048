@@ -65,7 +65,7 @@ public class DiGestureListener implements GestureDetector.GestureListener {
         return false;
     }
 
-    @Override
+//    @Override
     public void pinchStop() {
 
     }

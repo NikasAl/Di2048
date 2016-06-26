@@ -13,7 +13,6 @@ com.badlogic.gdx.graphics.Color: {
 	black: { a: 1, b: 0, g: 0, r: 0 }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
-	blue-round-but-t: { name: blue-round-but, color: white-t }
 	bluepane-t: { name: bluepane, color: reddy-t }
 	redpane-t: { name: bluepane, color: red-t }
 	inyan-t: { name: inyan, color: white-t }
@@ -23,7 +22,6 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: { down: bluepane-t, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
-	default-round-but: { down: blue-round-but-t, up: blue-round-but, font: default-font, fontColor: red, downFontColor: red-t},
 	green-but: { down: greenpane-t, up: greenpane, font: default-font, fontColor: white, downFontColor: white-t},
 	red-but: { down: redpane-t, up: redpane, font: default-font, fontColor: white, downFontColor: white-t},
 
@@ -50,12 +48,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	go-advice-but: { down: inyan-t, up: inyan},
 	settings-but: { down: settings-t, up: settings},
 	close-but: { down: close-t, up: Button_Close },
-	sound-but: { down: music-off, up: music-on, checked: music-off },
 },
 
 
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: { font: default-font, fontColor: white }
+	score-lbl: { font: default-font, fontColor: white, background: greenpane }
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {

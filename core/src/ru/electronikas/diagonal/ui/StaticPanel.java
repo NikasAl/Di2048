@@ -2,9 +2,13 @@ package ru.electronikas.diagonal.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Align;
 import ru.electronikas.diagonal.materials.Assets;
 import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
@@ -30,17 +34,33 @@ public class StaticPanel {
         h = Gdx.graphics.getHeight();
         w = Gdx.graphics.getWidth();
 
-        scoreLabel = createScoreLabel(w/3, h/10);
-        stage.addActor(scoreLabel);
+        Table table = new Table(Textures.getUiSkin());
+        table.align(Align.center);
+        table.setPosition(0, h - h/5);
+        table.setWidth(w - w/20);
+        table.setHeight(h/8);
+        table.setBackground("bluepane");
+        table.defaults().height(h/8);
+        table.row();
+        scoreLabel = createScoreLabel(w/3);
+        table.add(scoreLabel).width(w/3).pad(w/80);
+        table.add(createRecordLabel(w/3)).width(w/3).pad(w/80);
+        table.add(createSettingsBut()).width(h/8).pad(w/80);
 
-        Label recordLabel = createRecordLabel();
-        stage.addActor(recordLabel);
+        table.pack();
+        table.setDebug(true);
+        stage.addActor(table);
     }
 
-    private Label createRecordLabel() {
-        Label label = new Label(getRecordText(), Textures.getUiSkin());
-        label.setPosition(w/3, 8.8f*h/10);
-        label.setFontScale(0.6f);
+    private Actor createSettingsBut() {
+        ImageButton imgBut = new ImageButton(
+                Textures.getUiSkin().get("settings-but", ImageButton.ImageButtonStyle.class));
+        return imgBut;
+    }
+
+    private Label createRecordLabel(float width) {
+        Label label = new Label(getRecordText(), Textures.getUiSkin().get("score-lbl", Label.LabelStyle.class));
+        Utils.textSizeTuning(label, width, 80);
         label.pack();
         return label;
     }
@@ -49,9 +69,10 @@ public class StaticPanel {
         return Assets.bdl().get("record") + "\n" + Storage.getRecord();
     }
 
-    private Label createScoreLabel(float width, float height) {
-        Label label = new Label(getScoreText(), Textures.getUiSkin());
-        label.setPosition(w/20, 8.8f*h/10);
+    private Label createScoreLabel(float width) {
+        Label label = new Label(getScoreText(), Textures.getUiSkin()
+                .get("score-lbl", Label.LabelStyle.class));
+        Utils.textSizeTuning(label, width, 80);
         label.setFontScale(0.6f);
         label.pack();
         return label;

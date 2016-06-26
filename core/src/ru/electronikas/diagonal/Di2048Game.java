@@ -23,8 +23,9 @@ public class Di2048Game extends ApplicationAdapter {
 
 	public DiGameModel diGameModel;
 
-	public void createFromM(DiGameModel gameModel) {
-		this.diGameModel = gameModel;
+	private boolean isLoadGameFromM;
+	public void createFromM() {
+		isLoadGameFromM = true;
 		create();
 	}
 
@@ -39,7 +40,10 @@ public class Di2048Game extends ApplicationAdapter {
 		stage = new Stage(viewport, spriteBatch);
 
 		int fieldType = Storage.getCurrentFieldType();
-		if(diGameModel == null)
+		if(isLoadGameFromM) {
+			diGameModel = Storage.getMSavedGame();
+			isLoadGameFromM = false;
+		} else
 			diGameModel = Storage.getGameFromFileByFieldSize(fieldType);
 		LevelField levelField = new LevelField(diGameModel, stage);
 		DiGestureListener gestureListener = new DiGestureListener(levelField);

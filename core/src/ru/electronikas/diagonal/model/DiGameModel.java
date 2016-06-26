@@ -319,8 +319,6 @@ public class DiGameModel implements Json.Serializable {
     public void read(Json json, JsonValue jsonData) {
         FIELD_SIZE = json.readValue("fieldType", Integer.class, jsonData);
 
-//        cells = new int[FIELD_SIZE][FIELD_SIZE];
-
         cells = json.readValue("cells", int[][].class, jsonData);
         score = json.readValue("score", Integer.class, jsonData);
 

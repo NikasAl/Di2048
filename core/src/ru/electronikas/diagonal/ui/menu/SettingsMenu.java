@@ -1,20 +1,18 @@
 package ru.electronikas.diagonal.ui.menu;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.materials.Assets;
-import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.Textures;
 
@@ -51,10 +49,65 @@ public class SettingsMenu {
         rateMenu.row().height(h / 10);
         rateMenu.add(restoreCurrentGameButton()).pad(10).width(w*0.8f);
 
-        rateMenu.setDebug(true);
+        rateMenu.row().height(h / 10);
+        rateMenu.add(selectGameTypeButton()).width(w*0.8f);
+
+        rateMenu.row().height(h / 10);
+        rateMenu.add(closeSettingsButton()).width(w*0.8f);
+
+        rateMenu.row().height(h / 10);
+        rateMenu.add(quitGameButton()).width(w*0.8f);
+
+//        rateMenu.setDebug(true);
 
         stage.addActor(rateMenu);
 
+    }
+
+    private Actor quitGameButton() {
+        TextButton closeSettingsBut = new TextButton(Assets.bdl().get("quitGame"),
+                uiSkin.get("red-but", TextButton.TextButtonStyle.class));
+        closeSettingsBut.getLabel().setFontScale(scaleForButtons);
+        closeSettingsBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.exit();
+            }
+        });
+        return closeSettingsBut;
+    }
+
+    private Actor closeSettingsButton() {
+        TextButton closeSettingsBut = new TextButton(Assets.bdl().get("closeSettings"),
+                uiSkin.get("green-but", TextButton.TextButtonStyle.class));
+        closeSettingsBut.getLabel().setFontScale(scaleForButtons);
+        closeSettingsBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                animateHide();
+            }
+        });
+        return closeSettingsBut;
+    }
+
+    private Actor createLabel(String text, float width) {
+        Label headLabel = new Label(text, uiSkin);
+        headLabel.setAlignment(Align.center);
+        textSizeTuning(headLabel, width);
+        return headLabel;
+    }
+
+    private Actor selectGameTypeButton() {
+        final SelectBox<String> selectBox = new SelectBox<String>(uiSkin);
+        selectBox.setItems("3x3","4x4", "5x5", "6x6", "7x7", "8x8", "9x9", "10x10", "11x11", "12x12");
+        int fieldTypeIndex = Storage.getCurrentFieldType() - 3;
+        selectBox.setSelectedIndex(fieldTypeIndex);
+        selectBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Storage.setFieldType(selectBox.getSelectedIndex()+3);
+                Di2048Game.game.create();
+            }
+        });
+        return selectBox;
     }
 
     private Actor saveCurrentGameButton(float width) {
@@ -76,15 +129,15 @@ public class SettingsMenu {
         restoreCurrentGameBut.getLabel().setFontScale(scaleForButtons);
         restoreCurrentGameBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                DiGameModel gameModel = Storage.getMSavedGame();
-                Di2048Game.game.createFromM(gameModel);
+                Di2048Game.game.createFromM();
             }
         });
         return restoreCurrentGameBut;
     }
 
     private Actor createHeader(float width) {
-        Label headLabel =  new Label(Assets.bdl().get("settings"), uiSkin);
+        Label headLabel = new Label(Assets.bdl().get("settings"), uiSkin);
+        headLabel.setColor(Color.GREEN);
         headLabel.setAlignment(Align.center);
         textSizeTuning(headLabel, width);
         return headLabel;

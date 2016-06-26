@@ -136,4 +136,7 @@ public class Storage {
         getPrefs().flush();
     }
 
+    public static void setFieldType(int fieldType) {
+        saveParam(ActiveRes.gameFieldType, fieldType);
+    }
 }

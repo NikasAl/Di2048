@@ -61,13 +61,6 @@ public class DiGameModel implements Json.Serializable {
         return c;
     }
 
-
-    private void runCheckGameOver() {
-        if(isGameOverState()) {
-
-        }
-    }
-
     private boolean isGameOverState() {
         boolean noEmptyFields = true;
         for (int i=0;i<FIELD_SIZE; i++) {

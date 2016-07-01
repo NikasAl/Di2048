@@ -2,6 +2,7 @@ package ru.electronikas.diagonal.ui.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,6 +16,7 @@ import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.materials.Assets;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.Textures;
+import ru.electronikas.diagonal.ui.Utils;
 
 import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
 
@@ -79,7 +81,7 @@ public class SettingsMenu {
         rateBut.getLabel().setFontScale(scaleForButtons);
         rateBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                Di2048Game.game.platformListener.share();
+                animateHideAndShare();
             }
         });
         return rateBut;
@@ -193,6 +195,19 @@ public class SettingsMenu {
         MoveToAction action = Actions.moveTo(0, h);
         action.setDuration(0.5f);
         rateMenu.addAction(action);
+    }
+
+    public void animateHideAndShare() {
+        MoveToAction action = Actions.moveTo(0, h);
+        action.setDuration(0.5f);
+        rateMenu.addAction(Actions.sequence(action, new Action() {
+            @Override
+            public boolean act(float delta) {
+                Utils.saveScreenshot();
+                Di2048Game.game.platformListener.share();
+                return true;
+            }
+        }));
     }
 
     public void animateOpen() {

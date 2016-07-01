@@ -2,9 +2,13 @@ package ru.electronikas.diagonal.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.BufferUtils;
+import com.badlogic.gdx.utils.ScreenUtils;
 
 /**
  * Created by nikas on 6/22/16.
@@ -79,5 +83,17 @@ public class Utils {
             case 10: return Color.ORANGE;
         }
         return Color.TEAL;
+    }
+
+    public static void saveScreenshot() {
+        byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), true);
+        Pixmap pixmap = new Pixmap(Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), Pixmap.Format.RGBA8888);
+        BufferUtils.copy(pixels, 0, pixmap.getPixels(), pixels.length);
+
+//        Pixmap temp = new Pixmap(pixmap.getWidth() / 3, pixmap.getHeight() / 3, pixmap.getFormat());
+//        temp.drawPixmap(pixmap, 0, 0, pixmap.getWidth(), pixmap.getHeight(), 0, 0, temp.getWidth() - 1, temp.getHeight() - 1);
+
+        PixmapIO.writePNG(Gdx.files.external("mypixmap.png"), pixmap);
+        pixmap.dispose();
     }
 }

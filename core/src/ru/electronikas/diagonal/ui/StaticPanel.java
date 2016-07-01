@@ -49,7 +49,7 @@ public class StaticPanel {
         table.row();
         scoreLabel = createScoreLabel(w/3);
         table.add(scoreLabel).width(w/3).pad(w/80);
-        table.add(createRecordLabel(w/3)).width(w/3).pad(w/80);
+        table.add(createRecordLabel()).width(w/3).pad(w/80);
         table.add(createSettingsBut()).width(h/8).pad(w/80);
 
         table.pack();
@@ -69,9 +69,9 @@ public class StaticPanel {
         return settingsBut;
     }
 
-    private Label createRecordLabel(float width) {
+    private Label createRecordLabel() {
         Label label = new Label(getRecordText(), Textures.getUiSkin().get("score-lbl", Label.LabelStyle.class));
-        Utils.textSizeTuning(label, width, 80);
+        label.setFontScale(scale);
         label.pack();
         return label;
     }
@@ -80,11 +80,11 @@ public class StaticPanel {
         return Assets.bdl().get("record") + "\n" + Storage.getRecord();
     }
 
+    float scale;
     private Label createScoreLabel(float width) {
         Label label = new Label(getScoreText(), Textures.getUiSkin()
                 .get("score-lbl", Label.LabelStyle.class));
-        Utils.textSizeTuning(label, width, 80);
-        label.setFontScale(0.6f);
+        scale = Utils.textSizeTuning(label, width, 70);
         label.pack();
         return label;
     }

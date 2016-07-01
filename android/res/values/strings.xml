@@ -3,4 +3,8 @@
 
     <string name="app_name">2048 + Numbers</string>
 
+    <string name="referer_share" translatable="false">
+        <![CDATA[https://play.google.com/store/apps/details?id=ru.electronikas.diagonal&referrer=utm_source%3Dgoogle%2520play%2520share%26utm_medium%3Dbanner%26anid%3Dadmob]]></string>
+    <string name="share_text">"I got a record in 2048! \n Try reach it. Get it from Google Play: \n"</string>
+
 </resources>

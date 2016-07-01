@@ -3,4 +3,6 @@
 
     <string name="app_name">2048 + Цифры</string>
 
+    <string name="share_text">Новый рекорд в игре 2048! \n Попробуй побить его! Скачай игру из Google Play: \n</string>
+
 </resources>

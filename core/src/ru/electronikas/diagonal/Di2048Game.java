@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import ru.electronikas.diagonal.listeners.DiGestureListener;
+import ru.electronikas.diagonal.listeners.PlatformListener;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.settings.GameSounds;
 import ru.electronikas.diagonal.settings.Storage;
@@ -22,6 +23,11 @@ public class Di2048Game extends ApplicationAdapter {
 	public static Di2048Game game;
 
 	public DiGameModel diGameModel;
+	public PlatformListener platformListener;
+
+	public Di2048Game(PlatformListener platformListener) {
+		this.platformListener = platformListener;
+	}
 
 	private boolean isLoadGameFromM;
 	public void createFromM() {

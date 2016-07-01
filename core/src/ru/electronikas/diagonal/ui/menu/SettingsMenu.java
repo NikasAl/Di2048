@@ -40,28 +40,74 @@ public class SettingsMenu {
         rateMenu.setHeight(h);
         rateMenu.background("bluepane-t");
 
-        rateMenu.row().height(h / 10).width(w);
-        rateMenu.add(createHeader(w)).pad(10);
+        float realW = w - w / 10;
+        float padg = w/90;
+        rateMenu.row().height(h / 10).width(realW);
+        rateMenu.add(createHeader(realW)).colspan(2).pad(padg);
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(saveCurrentGameButton(w*0.8f)).pad(10).width(w*0.8f);
+        rateMenu.add(saveCurrentGameButton(realW)).colspan(2).pad(padg).width(realW);
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(restoreCurrentGameButton()).pad(10).width(w*0.8f);
+        rateMenu.add(restoreCurrentGameButton()).colspan(2).pad(padg).width(realW);
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(selectGameTypeButton()).width(w*0.8f);
+        rateMenu.add(rateButton()).colspan(2).pad(padg).width(realW);
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(closeSettingsButton()).width(w*0.8f);
+        rateMenu.add(shareButton()).colspan(2).pad(padg).width(realW);
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(quitGameButton()).width(w*0.8f);
+        rateMenu.add(closeSettingsButton()).colspan(2).pad(padg).width(realW);
+
+        rateMenu.row().height(h / 10);
+        rateMenu.add(selectGameTypeButton()).colspan(2).pad(padg).width(realW);
+
+        rateMenu.row().height(h / 10);
+        rateMenu.add(newGameButton()).pad(padg).width(realW/2);
+        rateMenu.add(quitGameButton()).pad(padg).width(realW/2);
 
 //        rateMenu.setDebug(true);
 
         stage.addActor(rateMenu);
 
+    }
+
+    private Actor shareButton() {
+        TextButton rateBut = new TextButton(Assets.bdl().get("share"),
+                uiSkin.get("green-but", TextButton.TextButtonStyle.class));
+        rateBut.getLabel().setFontScale(scaleForButtons);
+        rateBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Di2048Game.game.platformListener.share();
+            }
+        });
+        return rateBut;
+    }
+
+    private Actor rateButton() {
+        TextButton rateBut = new TextButton(Assets.bdl().get("rate"),
+                uiSkin.get("green-but", TextButton.TextButtonStyle.class));
+        rateBut.getLabel().setFontScale(scaleForButtons);
+        rateBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Di2048Game.game.platformListener.rate();
+            }
+        });
+        return rateBut;
+    }
+
+    private Actor newGameButton() {
+        TextButton newGameBut = new TextButton(Assets.bdl().get("newGame"),
+                uiSkin.get("red-but", TextButton.TextButtonStyle.class));
+        newGameBut.getLabel().setFontScale(scaleForButtons);
+        newGameBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Storage.resetCurrentGame();
+                Di2048Game.game.create();
+            }
+        });
+        return newGameBut;
     }
 
     private Actor quitGameButton() {
@@ -77,7 +123,7 @@ public class SettingsMenu {
     }
 
     private Actor closeSettingsButton() {
-        TextButton closeSettingsBut = new TextButton(Assets.bdl().get("closeSettings"),
+        TextButton closeSettingsBut = new TextButton(Assets.bdl().get("resume"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
         closeSettingsBut.getLabel().setFontScale(scaleForButtons);
         closeSettingsBut.addListener(new ClickListener() {

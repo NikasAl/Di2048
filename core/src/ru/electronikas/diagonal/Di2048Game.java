@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import ru.electronikas.diagonal.listeners.DiGestureListener;
 import ru.electronikas.diagonal.listeners.PlatformListener;
 import ru.electronikas.diagonal.model.DiGameModel;
+import ru.electronikas.diagonal.settings.AdBannerController;
 import ru.electronikas.diagonal.settings.GameSounds;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.LevelField;
@@ -56,6 +57,9 @@ public class Di2048Game extends ApplicationAdapter {
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
 
 		GameSounds.soundsInit();
+
+		AdBannerController adBannerController = new AdBannerController();
+		adBannerController.start();
 	}
 
 	@Override

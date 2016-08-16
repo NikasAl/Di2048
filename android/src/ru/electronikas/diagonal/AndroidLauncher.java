@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Toast;
+import com.appodeal.ads.Appodeal;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import ru.electronikas.diagonal.listeners.PlatformListener;
@@ -18,6 +19,11 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new Di2048Game(this), config);
+
+		String appKey = "a8c712e51e743592ccd80d4cea397a6b4bbe8e1958dd30ac";
+		Appodeal.initialize(this, appKey, Appodeal.BANNER | Appodeal.INTERSTITIAL | Appodeal.NON_SKIPPABLE_VIDEO);
+//		Appodeal.setTesting(true);
+//		Appodeal.setLogging(true);
 	}
 
 	@Override
@@ -46,6 +52,21 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		launchMarket();
 	}
 
+	@Override
+	public void showBanner() {
+		Appodeal.show(this, Appodeal.BANNER_BOTTOM);
+	}
+
+	@Override
+	public void hideBanner() {
+		Appodeal.hide(this, Appodeal.BANNER_BOTTOM);
+	}
+
+	@Override
+	public void showFullScr() {
+		Appodeal.show(this, Appodeal.INTERSTITIAL | Appodeal.NON_SKIPPABLE_VIDEO);
+	}
+
 	private void launchMarket() {
 		Uri uri = Uri.parse("market://details?id=" + getPackageName());
 		Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
@@ -55,4 +76,6 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 			Toast.makeText(this, " unable to find market app", Toast.LENGTH_LONG).show();
 		}
 	}
+
+
 }

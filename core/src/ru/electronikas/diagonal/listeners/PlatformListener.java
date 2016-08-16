@@ -7,4 +7,9 @@ public interface PlatformListener {
 
     void share();
     void rate();
+
+    void showBanner();
+    void hideBanner();
+    void showFullScr();
+
 }

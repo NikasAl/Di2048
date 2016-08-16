@@ -27,9 +27,20 @@ android {
 
     defaultConfig {
         applicationId "ru.electronikas.diagonal"
-        minSdkVersion 8
+        minSdkVersion 14
         targetSdkVersion 23
+        multiDexEnabled true
         signingConfig signingConfigs.mySignature
+    }
+
+        lintOptions {
+//            abortOnError false
+            disable 'InvalidPackage'
+
+        }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
     }
 
     buildTypes {

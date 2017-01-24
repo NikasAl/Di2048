@@ -28,4 +28,19 @@ public class DesktopLauncher implements PlatformListener {
 	public void rate() {
 		Gdx.app.log("INFO", "rate open");
 	}
+
+	@Override
+	public void showBanner() {
+
+	}
+
+	@Override
+	public void hideBanner() {
+
+	}
+
+	@Override
+	public void showFullScr() {
+
+	}
 }

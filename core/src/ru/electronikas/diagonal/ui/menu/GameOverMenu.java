@@ -17,6 +17,7 @@ import ru.electronikas.diagonal.materials.Assets;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.Textures;
 
+import static ru.electronikas.diagonal.ui.Utils.currentScale;
 import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
 
 /**
@@ -38,14 +39,17 @@ public class GameOverMenu {
         rateMenu.align(Align.topLeft);
         rateMenu.setPosition(butW / 2, h);
         rateMenu.setWidth(w - butW);
-        rateMenu.setHeight(h / 3);
+        rateMenu.setHeight(h / 2.3f);
         rateMenu.background("bluepane-t");
 
-        rateMenu.row().height(h / 10).width(w - butW);
+        rateMenu.row().height(h / 10).width(w - butW - butW/2);
         rateMenu.add(createHeader(w - butW));
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(tryAgaingButton(butW * 4f)).pad(10).width(butW * 4f);
+        rateMenu.add(procceedButton(butW * 4f)).pad(10).width(butW * 4f);
+
+        rateMenu.row().height(h / 10);
+        rateMenu.add(tryAgaingButton()).pad(10).width(butW * 4f);
 
 //        rateMenu.setDebug(true);
 
@@ -53,15 +57,30 @@ public class GameOverMenu {
 
     }
 
-    private Actor tryAgaingButton(float width) {
+    private Actor tryAgaingButton() {
         TextButton openTipsBut = new TextButton(Assets.bdl().get("tryAgain"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
-        textSizeTuning(openTipsBut.getLabel(), width);
+        openTipsBut.getLabel().setFontScale(currentScale);
         openTipsBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Storage.resetCurrentGame();
                 Di2048Game.game.create();
                 animateHide();
+            }
+        });
+        return openTipsBut;
+    }
+
+    private Actor procceedButton(float width) {
+        TextButton openTipsBut = new TextButton(Assets.bdl().get("removeAndGo"),
+                uiSkin.get("magenta-but", TextButton.TextButtonStyle.class));
+        textSizeTuning(openTipsBut.getLabel(), width, 80);
+        openTipsBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+//                Storage.resetCurrentGame();
+                animateHide();
+                Di2048Game.game.del2s();
+                Di2048Game.game.platformListener.showFullScr();
             }
         });
         return openTipsBut;
@@ -81,7 +100,7 @@ public class GameOverMenu {
     }
 
     public void animateOpen() {
-        MoveToAction action = Actions.moveTo(butW / 2, h/3);
+        MoveToAction action = Actions.moveTo(butW / 2, h/4);
         action.setDuration(0.5f);
         rateMenu.addAction(action);
 

@@ -81,7 +81,7 @@ public class DiGameModel implements Json.Serializable {
              yRnd = (byte)MathUtils.random(0, FIELD_SIZE-1);
             tryNum++;
             if(tryNum > 12000) {
-                throw new RuntimeException("no stes");
+                throw new RuntimeException("no steps");
             }
         } while (cells[xRnd][yRnd] != 0);
 
@@ -322,6 +322,18 @@ public class DiGameModel implements Json.Serializable {
                 }
             }
         }
+    }
+
+    public List<DiAction> del2s() {
+        stepActions.clear();
+        stepActions.add(new GameContinueAction());
+        for(CellModel cellModel : LevelField.cells) {
+            if(cellModel.value == 2) {
+                cells[cellModel.pos.x][cellModel.pos.y] = 0;
+                stepActions.add(new DeleteCellAction(cellModel));
+            }
+        }
+        return stepActions;
     }
 
 /*    @Override

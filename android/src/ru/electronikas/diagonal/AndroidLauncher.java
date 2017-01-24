@@ -34,9 +34,9 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		layout.addView(gameView);
 
 		String appKey = "a8c712e51e743592ccd80d4cea397a6b4bbe8e1958dd30ac";
-		Appodeal.initialize(this, appKey,  Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.BANNER | Appodeal.INTERSTITIAL);
 		Appodeal.disableNetwork(this, "cheetah");
-		Appodeal.setTesting(true);
+		Appodeal.initialize(this, appKey,  Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.BANNER | Appodeal.INTERSTITIAL);
+//		Appodeal.setTesting(true);
 //		layout.addView(Appodeal.getMrecView(this));
 
 		setContentView(layout);

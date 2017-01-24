@@ -52,9 +52,11 @@ public class Utils {
             nameLabel.setFontScale(maxScale);
             nameLabel.layout();
         }
-
+        currentScale = maxScale;
         return maxScale;
     }
+
+    public static float currentScale;
 
     private static ShaderProgram fontShader;
     public static ShaderProgram getFontShader() {

@@ -7,5 +7,7 @@ public enum ActType {
     newCell,
     move,
     delCell,
-    gameOver, scoreAnimation,
+    gameOver,
+    gameContinue,
+    scoreAnimation,
 }

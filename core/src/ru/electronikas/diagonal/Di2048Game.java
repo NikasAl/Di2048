@@ -24,6 +24,7 @@ public class Di2048Game extends ApplicationAdapter {
 	public static Di2048Game game;
 
 	public DiGameModel diGameModel;
+	private LevelField levelField;
 	public PlatformListener platformListener;
 
 	public Di2048Game(PlatformListener platformListener) {
@@ -52,7 +53,7 @@ public class Di2048Game extends ApplicationAdapter {
 			isLoadGameFromM = false;
 		} else
 			diGameModel = Storage.getGameFromFileByFieldSize(fieldType);
-		LevelField levelField = new LevelField(diGameModel, stage);
+		levelField = new LevelField(diGameModel, stage);
 		DiGestureListener gestureListener = new DiGestureListener(levelField);
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
 
@@ -69,5 +70,9 @@ public class Di2048Game extends ApplicationAdapter {
 
 		stage.draw();
 		stage.act();
+	}
+
+	public void del2s() {
+		levelField.applyActions(diGameModel.del2s());
 	}
 }

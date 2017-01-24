@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Dir;
+import ru.electronikas.diagonal.model.action.ActType;
 import ru.electronikas.diagonal.model.action.DiAction;
 import ru.electronikas.diagonal.ui.menu.GameOverMenu;
 
@@ -47,8 +48,8 @@ public class LevelField {
         }
     }
 
-    private void applyActions(List<DiAction> stepActions) {
-        if(isPause) return;
+    public void applyActions(List<DiAction> stepActions) {
+        if(isPause & !stepActions.get(0).type().equals(ActType.gameContinue)) return;
 
         for(DiAction diAction : stepActions) {
 
@@ -69,6 +70,10 @@ public class LevelField {
                     CellModel cellModel1 = diAction.cellModel();
                     cellModel1.remove();
                     cells.remove(cellModel1);
+                    break;
+
+                case gameContinue:
+                    isPause = false;
                     break;
 
                 case gameOver:

@@ -15,6 +15,7 @@ com.badlogic.gdx.graphics.Color: {
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	bluepane-t: { name: bluepane, color: reddy-t }
 	redpane-t: { name: bluepane, color: red-t }
+	magentapane-t: { name: magentapane, color: white-t }
 	inyan-t: { name: inyan, color: white-t }
 	greenpane-t: { name: greenpane, color: white-t }
 	settings-t: { name: settings, color: white-t }
@@ -24,6 +25,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: { down: bluepane-t, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
 	green-but: { down: greenpane-t, up: greenpane, font: default-font, fontColor: white, downFontColor: white-t},
 	red-but: { down: redpane-t, up: redpane, font: default-font, fontColor: white, downFontColor: white-t},
+	magenta-but: { down: magentapane-t, up: magentapane, font: default-font, fontColor: white, downFontColor: white-t},
 
 },
 

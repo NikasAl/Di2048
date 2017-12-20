@@ -73,15 +73,24 @@ public class DiGameModel implements Json.Serializable {
         return noEmptyFields;
     }
     private void runCreateNewCell() {
-        byte xRnd;
-        byte yRnd;
+        Byte xRnd;
+        Byte yRnd;
         int tryNum = 0;
         do {
              xRnd = (byte)MathUtils.random(0, FIELD_SIZE-1);
              yRnd = (byte)MathUtils.random(0, FIELD_SIZE-1);
             tryNum++;
-            if(tryNum > 12000) {
-                throw new RuntimeException("no steps");
+            if(tryNum > 1200) {
+//                throw new RuntimeException("no steps");
+                for (byte x=0; x<FIELD_SIZE ; x++){
+                    for (byte y=0; y<FIELD_SIZE ; y++) {
+                        if(cells[x][y]==0) {
+                            xRnd = x; yRnd = y;
+                        }
+                    }
+                }
+//                System.out.print("throw choose mode: "+ xRnd + " " + yRnd);
+                break;
             }
         } while (cells[xRnd][yRnd] != 0);
 

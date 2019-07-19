@@ -1,8 +1,6 @@
 package ru.electronikas.diagonal;
 
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,13 +10,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
 import com.appodeal.ads.Appodeal;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import ru.electronikas.diagonal.listeners.PlatformListener;
-import ru.electronikas.diagonal.materials.Assets;
 
 import java.io.File;
+
+import ru.electronikas.diagonal.listeners.PlatformListener;
 
 public class AndroidLauncher extends AndroidApplication implements PlatformListener{
 	@Override
@@ -35,7 +34,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 		String appKey = "a8c712e51e743592ccd80d4cea397a6b4bbe8e1958dd30ac";
 //		Appodeal.disableNetwork(this, "cheetah");
-		Appodeal.initialize(this, appKey,  Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.BANNER | Appodeal.INTERSTITIAL);
+		Appodeal.initialize(this, appKey,  Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.BANNER | Appodeal.INTERSTITIAL, true);
 //		Appodeal.setTesting(true);
 //		layout.addView(Appodeal.getMrecView(this));
 
@@ -99,7 +98,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 	}
 
 
-	@Override
+/*	@Override
 	public void onBackPressed() {
 		new AlertDialog.Builder(this)
 				.setIcon(android.R.drawable.ic_dialog_alert)
@@ -115,6 +114,6 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 				})
 				.setNegativeButton(Assets.bdl().get("no"), null)
 				.show();
-	}
+	}*/
 
 }

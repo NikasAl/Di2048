@@ -4,10 +4,11 @@ buildscript {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:1.5.0'
+//        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
+        classpath 'com.android.tools.build:gradle:3.1.4'
     }
 }
 
@@ -26,8 +27,14 @@ allprojects {
     }
 
     repositories {
+        maven { url "https://artifactory.appodeal.com/appodeal" }
+
         mavenLocal()
         mavenCentral()
+        maven { url "https://dl.bintray.com/cachapa/maven/" }
+        maven { url "https://maven.google.com" }
+        jcenter()
+        google()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
 
@@ -63,27 +70,12 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
 
-        compile 'com.google.android.gms:play-services-ads:8.4.0'
-        compile 'com.google.android.gms:play-services-location:8.4.0'
+        compile 'com.google.android.gms:play-services-ads:15.0.1'
+        compile 'com.google.android.gms:play-services-location:15.0.1'
+
+        compile 'com.appodeal.ads:nodex:2.5.6'
 
         compile fileTree(dir: 'libs', include: '*.jar')
-        compile 'com.squareup.picasso:picasso:2.5.2' //for Inmobi
-        compile name: 'adcolony-sdk-3.2.1', ext: 'aar'
-        compile name: 'mmedia-6.4.0', ext: 'aar'
-        compile name: 'mobvista-8.3.7-alphab', ext: 'aar'
-        compile name: 'mobvista-8.3.7-appwall', ext: 'aar'
-        compile name: 'mobvista-8.3.7-appwallext', ext: 'aar'
-        compile name: 'mobvista-8.3.7-common', ext: 'aar'
-        compile name: 'mobvista-8.3.7-interstitial', ext: 'aar'
-        compile name: 'mobvista-8.3.7-mvdownloads', ext: 'aar'
-        compile name: 'mobvista-8.3.7-mvjscommon', ext: 'aar'
-        compile name: 'mobvista-8.3.7-mvnative', ext: 'aar'
-        compile name: 'mobvista-8.3.7-nativeex', ext: 'aar'
-        compile name: 'mobvista-8.3.7-offerwall', ext: 'aar'
-        compile name: 'mobvista-8.3.7-playercommon', ext: 'aar'
-        compile name: 'mobvista-8.3.7-reward', ext: 'aar'
-        compile name: 'mobvista-8.3.7-videocommon', ext: 'aar'
-        compile name: 'mobvista-8.3.7-videofeeds', ext: 'aar'
     }
 }
 

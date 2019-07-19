@@ -1,6 +1,6 @@
 android {
-    buildToolsVersion "23.0.2"
-    compileSdkVersion 23
+    buildToolsVersion "28.0.3"
+    compileSdkVersion 28
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -12,7 +12,7 @@ android {
             jniLibs.srcDirs = ['libs']
         }
 
-        instrumentTest.setRoot('tests')
+//        instrumentTest.setRoot('tests')
     }
 
 
@@ -28,7 +28,7 @@ android {
     defaultConfig {
         applicationId "ru.electronikas.diagonal"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 28
         multiDexEnabled true
         signingConfig signingConfigs.mySignature
     }
@@ -45,8 +45,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
             proguardFile 'proguard-project.txt'
         }

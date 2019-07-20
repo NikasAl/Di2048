@@ -1,6 +1,6 @@
 package ru.electronikas.diagonal.settings;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 
 /**
@@ -11,9 +11,15 @@ public class GameSounds {
     //TODO move to music and sound class
 //    private static Music music;
     private static Sound flipSound;
+    public static AssetManager assets;
 
     public static void soundsInit() {
-        flipSound = Gdx.audio.newSound(Gdx.files.internal("data/sound/flip.mp3"));
+        assets = new AssetManager();
+        assets.clear();
+        assets.load("data/sound/flip.ogg", Sound.class);
+        assets.finishLoading();
+        flipSound = assets.get("data/sound/flip.ogg");
+//        flipSound = Gdx.audio.newSound(Gdx.files.internal("data/sound/flip.ogg"));
     }
 
 /*

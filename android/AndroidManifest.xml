@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.electronikas.diagonal"
-    android:versionCode="20"
+    android:versionCode="24"
     android:versionName="1.6" >
 
     <uses-feature android:name="android.hardware.location" android:required="false" />
@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!--optional-->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/> <!--optional-->
     <!--Appodeal End-->
 
     <application
@@ -22,6 +23,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/GdxTheme"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:name="android.support.multidex.MultiDexApplication"
         >
 

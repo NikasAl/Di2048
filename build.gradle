@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
 //        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.4.2'
     }
 }
 
@@ -19,7 +19,7 @@ allprojects {
     version = '1.0'
     ext {
         appName = "Di2048"
-        gdxVersion = '1.9.3'
+        gdxVersion = '1.9.10'
         roboVMVersion = '2.1.0'
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
@@ -74,6 +74,13 @@ project(":android") {
         compile 'com.google.android.gms:play-services-location:15.0.1'
 
         compile 'com.appodeal.ads:nodex:2.5.6'
+
+        implementation 'com.appodeal.optional:flurry-ads:11.6.0'
+        implementation 'com.appodeal.optional:flurry-analytics:11.6.0'
+        implementation 'com.google.android.exoplayer:exoplayer-core:2.8.4'
+        implementation 'com.google.android.exoplayer:exoplayer-hls:2.8.4'
+        implementation 'com.android.support:support-v4:26.1.0'
+        implementation 'com.android.support:recyclerview-v7:26.1.0'
 
         compile fileTree(dir: 'libs', include: '*.jar')
     }

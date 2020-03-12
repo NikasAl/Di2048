@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.electronikas.diagonal"
-    android:versionCode="24"
-    android:versionName="1.6" >
+    android:versionCode="25"
+    android:versionName="1.6.1" >
 
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.network" android:required="false" />
@@ -12,10 +12,10 @@
 
     <!--Appodeal-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!--optional-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!--optional-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!--optional-->
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/> <!--optional-->
+    <uses-permission android:name="android.permission.VIBRATE" /><!--optional-->
     <!--Appodeal End-->
 
     <application
@@ -26,7 +26,9 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:name="android.support.multidex.MultiDexApplication"
         >
-
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6482272553178584~4984188550"/>
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />

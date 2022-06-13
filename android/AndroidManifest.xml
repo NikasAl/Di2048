@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.electronikas.diagonal"
-    android:versionCode="28"
-    android:versionName="1.6.4" >
+    android:versionCode="29"
+    android:versionName="1.6.5" >
 
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.network" android:required="false" />
@@ -13,10 +13,10 @@
     <!--Appodeal-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!--optional-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!--optional-->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!--optional-->
-    <uses-permission android:name="android.permission.VIBRATE" /><!--optional-->
+<!--    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> &lt;!&ndash;optional&ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> &lt;!&ndash;optional&ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> &lt;!&ndash;optional&ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.VIBRATE" />&lt;!&ndash;optional&ndash;&gt;-->
     <!--Appodeal End-->
 
     <application

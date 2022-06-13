@@ -69,7 +69,10 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
 
-        implementation 'com.appodeal.ads:sdk:2.8.1.1'
+        implementation ('com.appodeal.ads:sdk:2.11.0.3')  {
+            exclude group: 'com.appodeal.ads.sdk.networks', module: 'ogury'
+        }
+
 
 //        compile fileTree(dir: 'libs', include: '*.jar')
     }

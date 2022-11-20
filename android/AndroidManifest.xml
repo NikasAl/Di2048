@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="ru.electronikas.diagonal"
-    android:versionCode="30"
-    android:versionName="1.6.6">
+    android:versionCode="31"
+    android:versionName="1.6.7">
 
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.network" android:required="false" />

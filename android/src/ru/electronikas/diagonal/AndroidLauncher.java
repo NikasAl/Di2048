@@ -12,10 +12,13 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.initializing.ApdInitializationCallback;
+import com.appodeal.ads.initializing.ApdInitializationError;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
 import java.io.File;
+import java.util.List;
 
 import ru.electronikas.diagonal.listeners.PlatformListener;
 
@@ -34,9 +37,14 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 		String appKey = "a8c712e51e743592ccd80d4cea397a6b4bbe8e1958dd30ac";
 //		Appodeal.disableNetwork(this, "cheetah");
-		Appodeal.initialize(this, appKey,  Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.BANNER | Appodeal.INTERSTITIAL, true);
 //		Appodeal.setTesting(true);
 //		layout.addView(Appodeal.getMrecView(this));
+		Appodeal.initialize(this, appKey, Appodeal.REWARDED_VIDEO | Appodeal.BANNER | Appodeal.INTERSTITIAL, new ApdInitializationCallback() {
+			@Override
+			public void onInitializationFinished(List<ApdInitializationError> list) {
+
+			}
+		});
 
 		setContentView(layout);
 	}
@@ -79,8 +87,8 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 	@Override
 	public void showFullScr() {
-		if(Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)) {
-			Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO);
+		if(Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
+			Appodeal.show(this, Appodeal.REWARDED_VIDEO);
 		} else if(Appodeal.isLoaded(Appodeal.INTERSTITIAL)) {
 			Appodeal.show(this, Appodeal.INTERSTITIAL);
 		}

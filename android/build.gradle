@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId "ru.electronikas.diagonal"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 31
         multiDexEnabled true
         signingConfig signingConfigs.mySignature

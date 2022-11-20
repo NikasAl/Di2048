@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
 //        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.2.2'
     }
 }
 
@@ -75,9 +75,12 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
 
-        implementation ('com.appodeal.ads:sdk:2.11.1.+')  {
+        implementation 'com.my.tracker:mytracker-sdk:3.0.10'
+        implementation ('com.appodeal.ads:sdk:3.0.1.0') {
             exclude group: 'com.appodeal.ads.sdk.networks', module: 'ogury'
+            exclude group: 'com.appodeal.ads.sdk.networks', module: 'my_target'
         }
+
 
 
 //        compile fileTree(dir: 'libs', include: '*.jar')

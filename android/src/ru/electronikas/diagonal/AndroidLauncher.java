@@ -6,7 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
@@ -37,16 +39,17 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 		View gameView = initializeForView(new Di2048Game(this), config);
+		layout.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
 		layout.addView(gameView);
 
 		RelativeLayout.LayoutParams layoutParams =
 				new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT); // or wrap_content
 		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-
+		layoutParams.alignWithParent = true;
 
 		BannerAdView adView = new BannerAdView(this);
 		adView.setAdUnitId("R-M-2252991-1");
-		adView.setAdSize(AdSize.BANNER_320x50);
+		adView.setAdSize(AdSize.flexibleSize(1000,100));
 
 		layout.addView(adView, layoutParams);
 

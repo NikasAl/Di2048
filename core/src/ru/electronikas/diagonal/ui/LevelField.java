@@ -37,7 +37,7 @@ public class LevelField {
 
     private void createFields() {
         float size = Gdx.graphics.getWidth() / DiGameModel.FIELD_SIZE;
-        DY = Gdx.graphics.getHeight() / 10;
+        DY = Gdx.graphics.getHeight() / 5.5f;
         for(int x=0; x < DiGameModel.FIELD_SIZE; x++) {
             for(int y=0; y < DiGameModel.FIELD_SIZE; y++) {
                 Image img = new Image(Textures.getUiSkin().getPatch("graypane"));

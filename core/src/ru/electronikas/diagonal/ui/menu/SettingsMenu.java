@@ -56,8 +56,8 @@ public class SettingsMenu {
         rateMenu.row().height(h / 10);
         rateMenu.add(rateButton()).colspan(2).pad(padg).width(realW);
 
-        rateMenu.row().height(h / 10);
-        rateMenu.add(shareButton()).colspan(2).pad(padg).width(realW);
+//        rateMenu.row().height(h / 10);
+//        rateMenu.add(shareButton()).colspan(2).pad(padg).width(realW);
 
         rateMenu.row().height(h / 10);
         rateMenu.add(closeSettingsButton()).colspan(2).pad(padg).width(realW);

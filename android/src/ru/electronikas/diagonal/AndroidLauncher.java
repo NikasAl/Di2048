@@ -5,20 +5,24 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.appodeal.ads.Appodeal;
-import com.appodeal.ads.initializing.ApdInitializationCallback;
-import com.appodeal.ads.initializing.ApdInitializationError;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.yandex.mobile.ads.banner.AdSize;
+import com.yandex.mobile.ads.banner.BannerAdView;
+import com.yandex.mobile.ads.common.AdRequest;
+import com.yandex.mobile.ads.common.InitializationListener;
+import com.yandex.mobile.ads.common.MobileAds;
 
 import java.io.File;
-import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ru.electronikas.diagonal.listeners.PlatformListener;
 
@@ -35,16 +39,39 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		View gameView = initializeForView(new Di2048Game(this), config);
 		layout.addView(gameView);
 
-		String appKey = "a8c712e51e743592ccd80d4cea397a6b4bbe8e1958dd30ac";
-//		Appodeal.disableNetwork(this, "cheetah");
-//		Appodeal.setTesting(true);
-//		layout.addView(Appodeal.getMrecView(this));
-		Appodeal.initialize(this, appKey, Appodeal.REWARDED_VIDEO | Appodeal.BANNER | Appodeal.INTERSTITIAL, new ApdInitializationCallback() {
-			@Override
-			public void onInitializationFinished(List<ApdInitializationError> list) {
+		RelativeLayout.LayoutParams layoutParams =
+				new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT); // or wrap_content
+		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
+
+		BannerAdView adView = new BannerAdView(this);
+		adView.setAdUnitId("R-M-2252991-1");
+		adView.setAdSize(AdSize.BANNER_320x50);
+
+		layout.addView(adView, layoutParams);
+
+		MobileAds.initialize(this, new InitializationListener() {
+			@Override
+			public void onInitializationCompleted() {
+				Log.d("YA_ADS", "SDK initialized");
 			}
 		});
+
+		TimerTask timerTask = new TimerTask() {
+			@Override
+			public void run() {
+				AdRequest adRequest = new AdRequest.Builder().build();
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						adView.loadAd(adRequest);
+					}
+				});
+			}
+		};
+
+		Timer timer = new Timer();
+		timer.schedule(timerTask, 500, 30000);
 
 		setContentView(layout);
 	}
@@ -77,22 +104,21 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 	@Override
 	public void showBanner() {
-		Appodeal.show(this, Appodeal.BANNER_BOTTOM);
+//		Appodeal.show(this, Appodeal.BANNER_BOTTOM);
 	}
 
 	@Override
 	public void hideBanner() {
-		Appodeal.hide(this, Appodeal.BANNER_BOTTOM);
+//		Appodeal.hide(this, Appodeal.BANNER_BOTTOM);
 	}
 
 	@Override
 	public void showFullScr() {
-		if(Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
-			Appodeal.show(this, Appodeal.REWARDED_VIDEO);
-		} else if(Appodeal.isLoaded(Appodeal.INTERSTITIAL)) {
-			Appodeal.show(this, Appodeal.INTERSTITIAL);
-		}
-//		Appodeal.show(this, Appodeal.MREC);
+//		if(Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
+//			Appodeal.show(this, Appodeal.REWARDED_VIDEO);
+//		} else if(Appodeal.isLoaded(Appodeal.INTERSTITIAL)) {
+//			Appodeal.show(this, Appodeal.INTERSTITIAL);
+//		}
 	}
 
 	private void launchMarket() {

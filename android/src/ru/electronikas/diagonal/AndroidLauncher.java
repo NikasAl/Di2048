@@ -21,6 +21,7 @@ import com.yandex.mobile.ads.banner.BannerAdView;
 import com.yandex.mobile.ads.common.AdRequest;
 import com.yandex.mobile.ads.common.InitializationListener;
 import com.yandex.mobile.ads.common.MobileAds;
+import com.yandex.mobile.ads.rewarded.RewardedAd;
 
 import java.io.File;
 import java.util.Timer;
@@ -76,9 +77,16 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		Timer timer = new Timer();
 		timer.schedule(timerTask, 500, 30000);
 
+		rewardedAd = new RewardedAd(this);
+		rewardedAd.setAdUnitId("R-M-2252991-2");
+		// Создание объекта таргетирования рекламы.
+		final AdRequest adRequest = new AdRequest.Builder().build();
+		rewardedAd.loadAd(adRequest);
+
 		setContentView(layout);
 	}
 
+	RewardedAd rewardedAd;
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -117,11 +125,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 	@Override
 	public void showFullScr() {
-//		if(Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
-//			Appodeal.show(this, Appodeal.REWARDED_VIDEO);
-//		} else if(Appodeal.isLoaded(Appodeal.INTERSTITIAL)) {
-//			Appodeal.show(this, Appodeal.INTERSTITIAL);
-//		}
+
 	}
 
 	private void launchMarket() {

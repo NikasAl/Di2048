@@ -1,6 +1,6 @@
 android {
-    buildToolsVersion "31.0.0"
-    compileSdkVersion 31
+    buildToolsVersion "33.0.1"
+    compileSdkVersion 33
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -28,7 +28,7 @@ android {
     defaultConfig {
         applicationId "ru.electronikas.diagonal"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
         multiDexEnabled true
         signingConfig signingConfigs.mySignature
     }

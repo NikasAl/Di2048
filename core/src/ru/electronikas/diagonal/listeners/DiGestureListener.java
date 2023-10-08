@@ -42,7 +42,7 @@ public class DiGestureListener implements GestureDetector.GestureListener {
         }
 
         levelField.onMove(dir);
-        return false;
+        return true;
     }
 
     @Override

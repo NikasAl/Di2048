@@ -77,18 +77,16 @@ public class CellModel {
 
     public static final float dt = 0.3f;
     public void fadeInCell() {
-        cell.setSize(size, size);
         cell.setColor(1,1,1,0);
         cell.addAction(Actions.fadeIn(dt*2));
-        float d = size/11;
-        cell.addAction(
-                Actions.sequence(Actions.sizeTo(size+d,size+d, dt), Actions.sizeTo(size,size, dt))
-        );
+        float d = (size/2);
+        cell.setSize(size-d, size-d);
+        cell.addAction(Actions.sizeTo(size,size, dt));
         float xx = cell.getX();
         float yy = cell.getY();
-        cell.addAction(
-                Actions.sequence(Actions.moveTo(xx - d/2, yy - d/2, dt), Actions.moveTo(xx, yy, dt))
-        );
+        cell.setX(xx+d/2);
+        cell.setY(yy+d/2);
+        cell.addAction(Actions.moveTo(xx, yy, dt));
     }
 
     public void remove() {

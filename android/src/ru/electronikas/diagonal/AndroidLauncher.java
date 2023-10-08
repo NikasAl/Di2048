@@ -6,9 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
@@ -16,7 +14,7 @@ import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.yandex.mobile.ads.banner.AdSize;
+import com.yandex.mobile.ads.banner.BannerAdSize;
 import com.yandex.mobile.ads.banner.BannerAdView;
 import com.yandex.mobile.ads.common.AdRequest;
 import com.yandex.mobile.ads.common.InitializationListener;
@@ -34,6 +32,9 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 		RelativeLayout layout = new RelativeLayout(this);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -43,23 +44,26 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		layout.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
 		layout.addView(gameView);
 
-		RelativeLayout.LayoutParams layoutParams =
-				new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT); // or wrap_content
-		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		layoutParams.alignWithParent = true;
-
-		BannerAdView adView = new BannerAdView(this);
-		adView.setAdUnitId("R-M-2252991-1");
-		adView.setAdSize(AdSize.flexibleSize(1000,100));
-
-		layout.addView(adView, layoutParams);
-
 		MobileAds.initialize(this, new InitializationListener() {
 			@Override
 			public void onInitializationCompleted() {
 				Log.d("YA_ADS", "SDK initialized");
 			}
 		});
+
+		BannerAdView adView = new BannerAdView(this);
+		adView.setAdUnitId("R-M-2252991-1");
+		adView.setAdSize(BannerAdSize.fixedSize(this,1000,100));
+
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+				RelativeLayout.LayoutParams.WRAP_CONTENT,
+				RelativeLayout.LayoutParams.WRAP_CONTENT
+		);
+		layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		adView.setLayoutParams(layoutParams);
+
+		layout.addView(adView);
 
 		TimerTask timerTask = new TimerTask() {
 			@Override
@@ -77,16 +81,18 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		Timer timer = new Timer();
 		timer.schedule(timerTask, 500, 30000);
 
+/*
 		rewardedAd = new RewardedAd(this);
 		rewardedAd.setAdUnitId("R-M-2252991-2");
 		// Создание объекта таргетирования рекламы.
 		final AdRequest adRequest = new AdRequest.Builder().build();
 		rewardedAd.loadAd(adRequest);
+*/
 
 		setContentView(layout);
 	}
 
-	RewardedAd rewardedAd;
+//	RewardedAd rewardedAd;
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

@@ -73,30 +73,32 @@ public class DiGameModel implements Json.Serializable {
         return noEmptyFields;
     }
     private void runCreateNewCell() {
-        Byte xRnd;
-        Byte yRnd;
+        Pos pos = new Pos(0,0);
         int tryNum = 0;
         do {
-             xRnd = (byte)MathUtils.random(0, FIELD_SIZE-1);
-             yRnd = (byte)MathUtils.random(0, FIELD_SIZE-1);
+            pos.x = MathUtils.random(0, FIELD_SIZE-1);
+            pos.y = MathUtils.random(0, FIELD_SIZE-1);
             tryNum++;
-            if(tryNum > 1200) {
-//                throw new RuntimeException("no steps");
-                for (byte x=0; x<FIELD_SIZE ; x++){
-                    for (byte y=0; y<FIELD_SIZE ; y++) {
-                        if(cells[x][y]==0) {
-                            xRnd = x; yRnd = y;
-                        }
-                    }
-                }
-//                System.out.print("throw choose mode: "+ xRnd + " " + yRnd);
+            if(tryNum > 100) {
+                pos = getEmptyCell();
                 break;
             }
-        } while (cells[xRnd][yRnd] != 0);
+        } while (cells[pos.x][pos.y] != 0);
 
-        cells[xRnd][yRnd] = 2;
+        cells[pos.x][pos.y] = 2;
 
-        stepActions.add(new NewCellAction(new Pos(xRnd, yRnd), 2));
+        stepActions.add(new NewCellAction(pos, 2));
+    }
+
+    private Pos getEmptyCell() {
+        for (byte x=0; x<FIELD_SIZE ; x++){
+            for (byte y=0; y<FIELD_SIZE ; y++) {
+                if(cells[x][y]==0) {
+                    return new Pos(x,y);
+                }
+            }
+        }
+        return null;
     }
 
     private void runReplaceSameCells() {

@@ -25,16 +25,18 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ru.electronikas.ads.AdController;
 import ru.electronikas.diagonal.listeners.PlatformListener;
 
 public class AndroidLauncher extends AndroidApplication implements PlatformListener{
+	AdController adController;
+
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
 		RelativeLayout layout = new RelativeLayout(this);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -44,35 +46,15 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		layout.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
 		layout.addView(gameView);
 
-		MobileAds.initialize(this, new InitializationListener() {
-			@Override
-			public void onInitializationCompleted() {
-				Log.d("YA_ADS", "SDK initialized");
-			}
-		});
-
-		BannerAdView adView = new BannerAdView(this);
-		adView.setAdUnitId("R-M-2252991-1");
-		adView.setAdSize(BannerAdSize.fixedSize(this,1000,100));
-
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-				RelativeLayout.LayoutParams.WRAP_CONTENT,
-				RelativeLayout.LayoutParams.WRAP_CONTENT
-		);
-		layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		adView.setLayoutParams(layoutParams);
-
-		layout.addView(adView);
+		adController = new AdController(this, layout);
 
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
-				AdRequest adRequest = new AdRequest.Builder().build();
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						adView.loadAd(adRequest);
+						adController.showAdsBanner();
 					}
 				});
 			}

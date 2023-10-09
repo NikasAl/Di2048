@@ -11,7 +11,7 @@ import ru.electronikas.diagonal.model.DiGameModel;
  * Created by navdonin on 09/01/15.
  */
 public class Storage {
-    public static final float DEFAULT_VAL = 0.5f;
+    public static final float DEFAULT_VAL = 0.3f;
 
     private static final String PREFS_NAME = "prefs_di2048";
     private static final String SOUND_VOLUME = "soundVolume";

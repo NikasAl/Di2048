@@ -59,8 +59,8 @@ public class Di2048Game extends ApplicationAdapter {
 
 		GameSounds.soundsInit();
 
-		AdBannerController adBannerController = new AdBannerController();
-		adBannerController.start();
+//		AdBannerController adBannerController = new AdBannerController();
+//		adBannerController.start();
 	}
 
 	@Override
@@ -74,5 +74,6 @@ public class Di2048Game extends ApplicationAdapter {
 
 	public void del2s() {
 		levelField.applyActions(diGameModel.del2s());
+		levelField.hideGameOverMenu();
 	}
 }

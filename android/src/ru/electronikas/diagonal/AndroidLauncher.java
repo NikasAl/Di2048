@@ -63,14 +63,6 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		Timer timer = new Timer();
 		timer.schedule(timerTask, 500, 30000);
 
-/*
-		rewardedAd = new RewardedAd(this);
-		rewardedAd.setAdUnitId("R-M-2252991-2");
-		// Создание объекта таргетирования рекламы.
-		final AdRequest adRequest = new AdRequest.Builder().build();
-		rewardedAd.loadAd(adRequest);
-*/
-
 		setContentView(layout);
 	}
 
@@ -113,7 +105,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 	@Override
 	public void showFullScr() {
-
+		adController.showRewardVideo();
 	}
 
 	private void launchMarket() {

@@ -4,5 +4,6 @@ public interface UniAd {
     void initAd();
     void showAdsBanner();
     void hideAdsBanner();
-    void showVideo();
+    void showInterstitialVideo();
+    void showRewardVideo();
 }

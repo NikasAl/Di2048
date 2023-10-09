@@ -195,7 +195,6 @@ public class SettingsMenu {
         MoveToAction action = Actions.moveTo(0, h);
         action.setDuration(0.5f);
         rateMenu.addAction(action);
-        Di2048Game.game.platformListener.showFullScr();
     }
 
     public void animateHideAndShare() {

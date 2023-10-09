@@ -5,18 +5,27 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.yandex.mobile.ads.banner.BannerAdSize;
 import com.yandex.mobile.ads.banner.BannerAdView;
+import com.yandex.mobile.ads.common.AdError;
 import com.yandex.mobile.ads.common.AdRequest;
 import com.yandex.mobile.ads.common.AdRequestConfiguration;
 import com.yandex.mobile.ads.common.AdRequestError;
+import com.yandex.mobile.ads.common.ImpressionData;
 import com.yandex.mobile.ads.common.MobileAds;
 import com.yandex.mobile.ads.interstitial.InterstitialAd;
 import com.yandex.mobile.ads.interstitial.InterstitialAdLoadListener;
 import com.yandex.mobile.ads.interstitial.InterstitialAdLoader;
+import com.yandex.mobile.ads.rewarded.Reward;
 import com.yandex.mobile.ads.rewarded.RewardedAd;
+import com.yandex.mobile.ads.rewarded.RewardedAdEventListener;
 import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener;
 import com.yandex.mobile.ads.rewarded.RewardedAdLoader;
+
+import ru.electronikas.diagonal.Di2048Game;
 
 public class AdYandex implements UniAd {
     private final String adInterstitialYaId = "R-M-2252991-3";
@@ -56,7 +65,7 @@ public class AdYandex implements UniAd {
         layout.addView(adView);
 
         interstitialAdInit();
-//        rewardedAdInit();
+        rewardedAdInit();
     }
 
     private void interstitialAdInit() {
@@ -82,7 +91,39 @@ public class AdYandex implements UniAd {
         rewardedLoader.setAdLoadListener(new RewardedAdLoadListener() {
             @Override
             public void onAdLoaded(RewardedAd rewardedAd) {
+                rewardedAd.setAdEventListener(new RewardedAdEventListener() {
+                    @Override
+                    public void onAdShown() {
+
+                    }
+
+                    @Override
+                    public void onAdFailedToShow(@NonNull AdError adError) {
+
+                    }
+
+                    @Override
+                    public void onAdDismissed() {
+
+                    }
+
+                    @Override
+                    public void onAdClicked() {
+
+                    }
+
+                    @Override
+                    public void onAdImpression(@Nullable ImpressionData impressionData) {
+
+                    }
+
+                    @Override
+                    public void onRewarded(@NonNull Reward reward) {
+                        Di2048Game.game.del2s();
+                    }
+                });
                 AdYandex.this.rewardedAd = rewardedAd;
+
             }
 
             @Override
@@ -114,15 +155,20 @@ public class AdYandex implements UniAd {
     }
 
     @Override
-    public void showVideo() {
-        if(rewardedAd!=null) {
-            rewardedAd.show(context);
-            rewardedLoader.loadAd(new AdRequestConfiguration.Builder(adRewardYaId).build());
-        }
+    public void showInterstitialVideo() {
         if(interstitialAd!=null) {
             interstitialAd.show(context);
             interstitialLoader.loadAd(new AdRequestConfiguration.Builder(adInterstitialYaId).build());
         }
+    }
+
+    @Override
+    public void showRewardVideo() {
+        if(rewardedAd!=null) {
+            rewardedAd.show(context);
+            rewardedLoader.loadAd(new AdRequestConfiguration.Builder(adRewardYaId).build());
+        }
+
     }
 
 }

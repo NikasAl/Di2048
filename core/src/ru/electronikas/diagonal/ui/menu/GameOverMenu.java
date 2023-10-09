@@ -77,9 +77,6 @@ public class GameOverMenu {
         textSizeTuning(openTipsBut.getLabel(), width, 80);
         openTipsBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-//                Storage.resetCurrentGame();
-                animateHide();
-                Di2048Game.game.del2s();
                 Di2048Game.game.platformListener.showFullScr();
             }
         });

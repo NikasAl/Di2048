@@ -5,7 +5,7 @@ import android.widget.RelativeLayout;
 
 import java.util.Locale;
 
-public class AdController {
+public class AdController implements UniAd {
 
     private UniAd uniAd;
 
@@ -18,16 +18,27 @@ public class AdController {
         uniAd.initAd();
     }
 
+    @Override
+    public void initAd() {}
+
+    @Override
     public void showAdsBanner() {
         uniAd.showAdsBanner();
     }
 
+    @Override
     public void hideAdsBanner() {
         uniAd.hideAdsBanner();
     }
 
-    public void showVideo() {
-        uniAd.showVideo();
+    @Override
+    public void showInterstitialVideo() {
+        uniAd.showInterstitialVideo();
+    }
+
+    @Override
+    public void showRewardVideo() {
+        uniAd.showRewardVideo();
     }
 
 }

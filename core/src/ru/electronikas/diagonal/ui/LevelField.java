@@ -23,6 +23,13 @@ public class LevelField {
     private Stage stage;
     private StaticPanel staticPanel;
     private boolean isPause = false;
+    private GameOverMenu gameOverMenu;
+
+    public void hideGameOverMenu() {
+        if(gameOverMenu!=null) {
+            gameOverMenu.animateHide();
+        }
+    }
 
     public LevelField(DiGameModel diGameModel, Stage stage) {
         this.diGameModel = diGameModel;
@@ -77,7 +84,7 @@ public class LevelField {
                     break;
 
                 case gameOver:
-                    GameOverMenu gameOverMenu = new GameOverMenu(stage);
+                    gameOverMenu = new GameOverMenu(stage);
                     gameOverMenu.animateOpen();
                     isPause = true;
                     break;

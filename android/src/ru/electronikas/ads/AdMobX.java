@@ -48,7 +48,7 @@ public class AdMobX implements UniAd {
 
         adView = new AdView(context);
         adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); //Test
-//        adView.setAdUnitId("ca-app-pub-6482272553178584/8049769070");
+//        adView.setAdUnitId("ca-app-pub-6482272553178584/6600239425");
         adView.setAdSize(AdSize.LARGE_BANNER);
 
         // Set layout parameters for the AdView
@@ -67,7 +67,7 @@ public class AdMobX implements UniAd {
 
     private void rewardedAdInitAndLoad() {
         AdRequest adRequest = new AdRequest.Builder().build();
-//        String rewardedId = "ca-app-pub-6482272553178584/7296720916";
+//        String rewardedId = "ca-app-pub-6482272553178584/7732539452";
         String rewardedTestid = "ca-app-pub-3940256099942544/5224354917";
         RewardedAd.load(context, rewardedTestid, adRequest,
                 new RewardedAdLoadCallback() {
@@ -81,7 +81,7 @@ public class AdMobX implements UniAd {
 
     private void interstitialAdInitAndLoad() {
         AdRequest adRequest = new AdRequest.Builder().build();
-        String interstitialId = "ca-app-pub-6482272553178584/7296720916";
+        String interstitialId = "ca-app-pub-6482272553178584/3974076087";
         String interstTestid = "ca-app-pub-3940256099942544/1033173712";
         InterstitialAd.load(context, interstTestid, adRequest,
                 new InterstitialAdLoadCallback() {

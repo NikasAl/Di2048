@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">2048 + Numbers</string>
+    <string name="onExitToast">After ad. press again to exit</string>
 
     <string name="referer_share" translatable="false">
         <![CDATA[https://play.google.com/store/apps/details?id=ru.electronikas.diagonal&referrer=utm_source%3Dgoogle%2520play%2520share%26utm_medium%3Dbanner%26anid%3Dadmob]]></string>

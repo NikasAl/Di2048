@@ -119,6 +119,21 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 	}
 
 
+	private boolean isExitReady = false;
+	@Override
+	public void onBackPressed() {
+		if(isExitReady) {onExit(); return;}
+		adController.showInterstitialVideo();
+		Toast.makeText(AndroidLauncher.this, getString(R.string.onExitToast), Toast.LENGTH_SHORT).show();
+		isExitReady = true;
+	}
+
+	public void onExit() {
+		super.onBackPressed();
+		finish();
+	}
+
+
 /*	@Override
 	public void onBackPressed() {
 		new AlertDialog.Builder(this)

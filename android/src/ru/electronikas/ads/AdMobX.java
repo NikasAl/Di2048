@@ -47,8 +47,8 @@ public class AdMobX implements UniAd {
         });
 
         adView = new AdView(context);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); //Test
-//        adView.setAdUnitId("ca-app-pub-6482272553178584/6600239425");
+//        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); //Test
+        adView.setAdUnitId("ca-app-pub-6482272553178584/6600239425");
         adView.setAdSize(AdSize.LARGE_BANNER);
 
         // Set layout parameters for the AdView
@@ -67,9 +67,9 @@ public class AdMobX implements UniAd {
 
     private void rewardedAdInitAndLoad() {
         AdRequest adRequest = new AdRequest.Builder().build();
-//        String rewardedId = "ca-app-pub-6482272553178584/7732539452";
-        String rewardedTestid = "ca-app-pub-3940256099942544/5224354917";
-        RewardedAd.load(context, rewardedTestid, adRequest,
+        String rewardedId = "ca-app-pub-6482272553178584/7732539452";
+//        String rewardedTestid = "ca-app-pub-3940256099942544/5224354917";
+        RewardedAd.load(context, rewardedId, adRequest,
                 new RewardedAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
@@ -82,8 +82,8 @@ public class AdMobX implements UniAd {
     private void interstitialAdInitAndLoad() {
         AdRequest adRequest = new AdRequest.Builder().build();
         String interstitialId = "ca-app-pub-6482272553178584/3974076087";
-        String interstTestid = "ca-app-pub-3940256099942544/1033173712";
-        InterstitialAd.load(context, interstTestid, adRequest,
+//        String interstTestid = "ca-app-pub-3940256099942544/1033173712";
+        InterstitialAd.load(context, interstitialId, adRequest,
                 new InterstitialAdLoadCallback() {
                     @Override
                     public void onAdLoaded(InterstitialAd interstitialAd) {
@@ -93,7 +93,7 @@ public class AdMobX implements UniAd {
                     @Override
                     public void onAdFailedToLoad(LoadAdError loadAdError) {
                         // Handle the error
-                        Log.d("!!!", loadAdError.toString());
+//                        Log.d("!!!", loadAdError.toString());
                         AdMobX.this.interstitialAd = null;
                     }
 

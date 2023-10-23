@@ -12,4 +12,5 @@ public interface PlatformListener {
     void hideBanner();
     void showFullScr();
 
+    void removeAds();
 }

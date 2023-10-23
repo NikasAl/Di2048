@@ -43,4 +43,9 @@ public class DesktopLauncher implements PlatformListener {
 	public void showFullScr() {
 
 	}
+
+	@Override
+	public void removeAds() {
+
+	}
 }

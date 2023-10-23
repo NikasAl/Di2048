@@ -27,9 +27,11 @@ import java.util.TimerTask;
 
 import ru.electronikas.ads.AdController;
 import ru.electronikas.diagonal.listeners.PlatformListener;
+import ru.electronikas.pay.Payer;
 
 public class AndroidLauncher extends AndroidApplication implements PlatformListener{
-	AdController adController;
+	private AdController adController;
+	private Payer payer = null;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -48,25 +50,22 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 		adController = new AdController(this, layout);
 
-		TimerTask timerTask = new TimerTask() {
-			@Override
-			public void run() {
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						adController.showAdsBanner();
-					}
-				});
-			}
-		};
+		payer = new Payer(getContext(), adController);
+		if (savedInstanceState == null) {
+			payer.billingClient.onNewIntent(getIntent());
+		}
 
-		Timer timer = new Timer();
-		timer.schedule(timerTask, 500, 30000);
+		adController.initAd();
 
 		setContentView(layout);
 	}
 
-//	RewardedAd rewardedAd;
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		payer.billingClient.onNewIntent(intent);
+	}
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -106,6 +105,16 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 	@Override
 	public void showFullScr() {
 		adController.showRewardVideo();
+	}
+
+	@Override
+	public void removeAds() {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				payer.purchaseProduct("ads_remove_day");
+			}
+		});
 	}
 
 	private void launchMarket() {

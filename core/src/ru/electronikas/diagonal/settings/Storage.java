@@ -22,13 +22,6 @@ public class Storage {
 
     public static boolean isPurchaseActivated = false;
 
-    public static boolean isAdWareShowing() {
-//        boolean isAppFree = Mahjong3DBoxGame.requestHandler.isFreeApp();
-//        boolean isAdWareShowing = isAppFree && !Storage.getBoolParam(ActiveRes.isAdwareRemoved);
-        return true;
-    }
-
-
     private static Preferences getPrefs() {
         if (prefs == null)
             prefs = Gdx.app.getPreferences(PREFS_NAME);
@@ -70,8 +63,8 @@ public class Storage {
         getPrefs().flush();
     }
 
-    public static Boolean getBoolParam(ActiveRes activeResource) {
-        return getPrefs().getBoolean(activeResource.name(), false);
+    public static Boolean getBoolParam(ActiveRes activeResource, boolean b) {
+        return getPrefs().getBoolean(activeResource.name(), b);
     }
 
     public static Integer getIntParam(ActiveRes activeResource) {
@@ -139,4 +132,14 @@ public class Storage {
     public static void setFieldType(int fieldType) {
         saveParam(ActiveRes.gameFieldType, fieldType);
     }
+
+    public static void setShowAds(boolean isAdware) {
+        saveParam(ActiveRes.isAdware, isAdware);
+    }
+
+    public static boolean isAdWareShowing() {
+        return getBoolParam(ActiveRes.isAdware, true);
+    }
+
+
 }

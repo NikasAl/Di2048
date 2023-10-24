@@ -78,7 +78,7 @@ public class SettingsMenu {
     }
 
     private Actor payButton() {
-        TextButton payBut = new TextButton("Pay",
+        TextButton payBut = new TextButton(Assets.bdl().get("payDay"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
         payBut.getLabel().setFontScale(scaleForButtons);
         payBut.addListener(new ClickListener() {

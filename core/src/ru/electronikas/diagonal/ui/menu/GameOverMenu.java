@@ -32,14 +32,17 @@ public class GameOverMenu {
     public GameOverMenu(Stage stage) {
         float w = Gdx.graphics.getWidth();
         h = Gdx.graphics.getHeight();
-        butW = w / 8f;
+        butW = w / 6f;
 
         uiSkin = Textures.getUiSkin();
         rateMenu = new Table(uiSkin);
         rateMenu.align(Align.topLeft);
         rateMenu.setPosition(butW / 2, h);
         rateMenu.setWidth(w - butW);
-        rateMenu.setHeight(h / 2.3f);
+        if(Storage.isAdWareShowing())
+            rateMenu.setHeight(h / 1.8f);
+        else
+            rateMenu.setHeight(h / 2.3f);
         rateMenu.background("bluepane-t");
 
         rateMenu.row().height(h / 10).width(w - butW - butW/2);
@@ -47,6 +50,11 @@ public class GameOverMenu {
 
         rateMenu.row().height(h / 10);
         rateMenu.add(procceedButton(butW * 4f)).pad(10).width(butW * 4f);
+
+        if(Storage.isAdWareShowing()) {
+            rateMenu.row().height(h / 10);
+            rateMenu.add(removeAdsButton(butW * 4f)).pad(10).width(butW * 4f);
+        }
 
         rateMenu.row().height(h / 10);
         rateMenu.add(tryAgaingButton()).pad(10).width(butW * 4f);
@@ -71,10 +79,22 @@ public class GameOverMenu {
         return openTipsBut;
     }
 
+    private Actor removeAdsButton(float width) {
+        TextButton removeAdButt = new TextButton(Assets.bdl().get("removeAd"),
+                uiSkin.get("magenta-but", TextButton.TextButtonStyle.class));
+        textSizeTuning(removeAdButt.getLabel(), width, 90);
+        removeAdButt.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Di2048Game.game.platformListener.removeAds();
+            }
+        });
+        return removeAdButt;
+    }
+
     private Actor procceedButton(float width) {
         TextButton openTipsBut = new TextButton(Assets.bdl().get("removeAndGo"),
                 uiSkin.get("magenta-but", TextButton.TextButtonStyle.class));
-        textSizeTuning(openTipsBut.getLabel(), width, 80);
+        textSizeTuning(openTipsBut.getLabel(), width, 60);
         openTipsBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 if(!Storage.isAdWareShowing()) {

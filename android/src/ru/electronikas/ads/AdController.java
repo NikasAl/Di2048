@@ -73,6 +73,8 @@ public class AdController implements UniAd {
     }
 
     public void stopAds() {
+        if(uniAd != null)
+            uniAd.hideAdsBanner();
         uniAd = null;
     }
 }

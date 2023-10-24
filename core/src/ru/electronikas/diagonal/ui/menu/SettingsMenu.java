@@ -47,14 +47,16 @@ public class SettingsMenu {
         rateMenu.row().height(h / 10).width(realW);
         rateMenu.add(createHeader(realW)).colspan(2).pad(padg);
 
+/*
         rateMenu.row().height(h / 10);
         rateMenu.add(saveCurrentGameButton(realW)).colspan(2).pad(padg).width(realW);
 
         rateMenu.row().height(h / 10);
         rateMenu.add(restoreCurrentGameButton()).colspan(2).pad(padg).width(realW);
+*/
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(rateButton()).colspan(2).pad(padg).width(realW);
+        rateMenu.add(rateButton(realW)).colspan(2).pad(padg).width(realW);
 
         if(Storage.isAdWareShowing()) {
             rateMenu.row().height(h / 10);
@@ -103,9 +105,10 @@ public class SettingsMenu {
         return rateBut;
     }
 
-    private Actor rateButton() {
+    private Actor rateButton(float width) {
         TextButton rateBut = new TextButton(Assets.bdl().get("rate"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
+        scaleForButtons = textSizeTuning(rateBut.getLabel(), width, 50);
         rateBut.getLabel().setFontScale(scaleForButtons);
         rateBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {

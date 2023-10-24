@@ -62,7 +62,7 @@ public class Payer {
             public void onSuccess(FeatureAvailabilityResult featureAvailabilityResult) {
                 if (featureAvailabilityResult instanceof FeatureAvailabilityResult.Available) {
                     Log.i("RuStoreBillingClient", "FeatureAvailabilityResult.Available");
-                    Toast.makeText(context,"FeatureAvailabilityResult.Available", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(context,"FeatureAvailabilityResult.Available", Toast.LENGTH_LONG).show();
                 } else if (featureAvailabilityResult instanceof FeatureAvailabilityResult.Unavailable) {
                     Log.i("RuStoreBillingClient", "FeatureAvailabilityResult.Unavailable");
                 }
@@ -95,6 +95,10 @@ public class Payer {
 
             @Override
             public void onSuccess(List<Purchase> purchases) {
+                if(purchases.size()==0) {
+                    restoreAds();
+                    return;
+                }
                 for (Purchase purchase: purchases) {
                     Log.i("RuStoreBillingClient", purchase.getPurchaseState().name());
                     if(purchase.getPurchaseState().equals(PurchaseState.CONFIRMED)) {

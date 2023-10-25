@@ -2,25 +2,23 @@ package ru.electronikas.pay;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import kotlin.Unit;
 import ru.electronikas.ads.AdController;
-import ru.electronikas.diagonal.AndroidLauncher;
-import ru.electronikas.diagonal.R;
+import ru.electronikas.diagonal.model.ActiveRes;
+import ru.electronikas.diagonal.model.Product;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.rustore.sdk.billingclient.RuStoreBillingClient;
 import ru.rustore.sdk.billingclient.RuStoreBillingClientFactory;
 import ru.rustore.sdk.billingclient.model.purchase.PaymentResult;
 import ru.rustore.sdk.billingclient.model.purchase.Purchase;
 import ru.rustore.sdk.billingclient.model.purchase.PurchaseState;
-import ru.rustore.sdk.billingclient.model.purchase.response.PurchasesResponse;
-import ru.rustore.sdk.billingclient.provider.BillingClientThemeProvider;
-import ru.rustore.sdk.billingclient.provider.logger.ExternalPaymentLoggerFactory;
 import ru.rustore.sdk.billingclient.usecase.PurchasesUseCase;
 import ru.rustore.sdk.core.feature.model.FeatureAvailabilityResult;
 import ru.rustore.sdk.core.tasks.OnCompleteListener;
@@ -73,58 +71,45 @@ public class Payer {
     }
 
     private void restorePurchases() {
+        if(Storage.isNoAdTimeOver()) {
+            Log.i("RuStoreBillingClient", "NoAdTime is over. Restore Ads.");
+            restoreAds();
+        }
+
         PurchasesUseCase purchasesUseCase = billingClient.getPurchases();
         purchasesUseCase.getPurchases().addOnSuccessListener(purchases -> {
             for (Purchase purchase: purchases) {
+                Log.i("RuStoreBillingClient", purchase.toString());
                 if (purchase.getPurchaseId() != null) {
                     if (purchase.getPurchaseState() == PurchaseState.CREATED || purchase.getPurchaseState() == PurchaseState.INVOICE_CREATED) {
                         purchasesUseCase.deletePurchase(purchase.getPurchaseId());
                     } else if (purchase.getPurchaseState() == PurchaseState.PAID) {
-                        purchasesUseCase.confirmPurchase(purchase.getPurchaseId());
-
+                        purchasesUseCase.confirmPurchase(purchase.getPurchaseId()).addOnCompleteListener(confirmListener);
                     }
+//                    else if (purchase.getPurchaseState() == PurchaseState.CONFIRMED) {
+                        //removeAds();
+//                    }
                 }
             }
         });
-
-        purchasesUseCase.getPurchases().addOnCompleteListener(new OnCompleteListener<List<Purchase>>() {
-            @Override
-            public void onFailure(@NonNull Throwable throwable) {
-
-            }
-
-            @Override
-            public void onSuccess(List<Purchase> purchases) {
-                if(purchases.size()==0) {
-                    restoreAds();
-                    return;
-                }
-                for (Purchase purchase: purchases) {
-                    Log.i("RuStoreBillingClient", purchase.getPurchaseState().name());
-                    if(purchase.getPurchaseState().equals(PurchaseState.CONFIRMED)) {
-                        removeAds();
-                    } else {
-                        restoreAds();
-                    }
-                }
-            }
-        });
-
     }
 
+
     private void removeAds() {
+        Storage.setNoAdTime();
         Storage.setShowAds(false);
         adController.stopAds();
     }
 
     private void restoreAds() {
         Storage.setShowAds(true);
+        adController.initAd();
     }
 
-    public void purchaseProduct(String productId) {
+    public void purchaseProduct(Product productId) {
         PurchasesUseCase purchasesUseCase = billingClient.getPurchases();
 
-        purchasesUseCase.purchaseProduct(productId)
+        purchasesUseCase.purchaseProduct(productId.name())
                 .addOnCompleteListener(new OnCompleteListener<PaymentResult>() {
                     @Override
                     public void onFailure(@NonNull Throwable throwable) {
@@ -148,18 +133,19 @@ public class Payer {
 
     public void confirmPurchase(String purchaseId){
         PurchasesUseCase purchasesUseCase = billingClient.getPurchases();
-        purchasesUseCase.confirmPurchase(purchaseId)
-                .addOnCompleteListener(new OnCompleteListener<Unit>() {
-                    @Override
-                    public void onFailure(@NonNull Throwable throwable){
-                    }
-                    @Override
-                    public void onSuccess(Unit unit){
-                        Log.i("RuStoreBillingClient", "!!!Confirm");
-                        removeAds();
-                    }
-                });
+        purchasesUseCase.confirmPurchase(purchaseId).addOnCompleteListener(confirmListener);
     }
+
+    private final OnCompleteListener<Unit> confirmListener = new OnCompleteListener<Unit>() {
+        @Override
+        public void onFailure(@NonNull Throwable throwable){
+        }
+        @Override
+        public void onSuccess(Unit unit){
+            Log.i("RuStoreBillingClient", "!!!Confirm");
+            removeAds();
+        }
+    };
 
     public void deletePurchase(String purchaseId){
         PurchasesUseCase purchasesUseCase = billingClient.getPurchases();

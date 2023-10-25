@@ -13,9 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import ru.electronikas.diagonal.Di2048Game;
-import ru.electronikas.diagonal.materials.Assets;
+import ru.electronikas.diagonal.model.Product;
 import ru.electronikas.diagonal.settings.Storage;
-import ru.electronikas.diagonal.ui.Textures;
 
 import static ru.electronikas.diagonal.ui.Utils.currentScale;
 import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
@@ -34,7 +33,7 @@ public class GameOverMenu {
         h = Gdx.graphics.getHeight();
         butW = w / 6f;
 
-        uiSkin = Textures.getUiSkin();
+        uiSkin = Di2048Game.game.getUiSkin();
         rateMenu = new Table(uiSkin);
         rateMenu.align(Align.topLeft);
         rateMenu.setPosition(butW / 2, h);
@@ -66,7 +65,7 @@ public class GameOverMenu {
     }
 
     private Actor tryAgaingButton() {
-        TextButton openTipsBut = new TextButton(Assets.bdl().get("tryAgain"),
+        TextButton openTipsBut = new TextButton(Di2048Game.game.bdl().get("tryAgain"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
         openTipsBut.getLabel().setFontScale(currentScale);
         openTipsBut.addListener(new ClickListener() {
@@ -80,19 +79,19 @@ public class GameOverMenu {
     }
 
     private Actor removeAdsButton(float width) {
-        TextButton removeAdButt = new TextButton(Assets.bdl().get("removeAd"),
+        TextButton removeAdButt = new TextButton(Di2048Game.game.bdl().get("removeAd"),
                 uiSkin.get("magenta-but", TextButton.TextButtonStyle.class));
         textSizeTuning(removeAdButt.getLabel(), width, 90);
         removeAdButt.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                Di2048Game.game.platformListener.removeAds();
+                Di2048Game.game.platformListener.removeAds(Product.ads_remove_one_day);
             }
         });
         return removeAdButt;
     }
 
     private Actor procceedButton(float width) {
-        TextButton openTipsBut = new TextButton(Assets.bdl().get("removeAndGo"),
+        TextButton openTipsBut = new TextButton(Di2048Game.game.bdl().get("removeAndGo"),
                 uiSkin.get("magenta-but", TextButton.TextButtonStyle.class));
         textSizeTuning(openTipsBut.getLabel(), width, 60);
         openTipsBut.addListener(new ClickListener() {
@@ -108,7 +107,7 @@ public class GameOverMenu {
     }
 
     private Actor createHeader(float width) {
-        Label headLabel =  new Label(Assets.bdl().get("gameOver"), uiSkin);
+        Label headLabel =  new Label(Di2048Game.game.bdl().get("gameOver"), uiSkin);
         headLabel.setAlignment(Align.center);
         textSizeTuning(headLabel, width);
         return headLabel;

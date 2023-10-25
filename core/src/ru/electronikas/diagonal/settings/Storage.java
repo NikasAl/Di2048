@@ -3,6 +3,10 @@ package ru.electronikas.diagonal.settings;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Json;
+
+import java.util.Calendar;
+import java.util.Date;
+
 import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.model.ActiveRes;
 import ru.electronikas.diagonal.model.DiGameModel;
@@ -19,8 +23,6 @@ public class Storage {
     private static final String SAVE_GAME_MODEL_JSON = "memgame_";
 //    public static final String MUSIC_VOLUME = "musicVolume";
     private static Preferences prefs;
-
-    public static boolean isPurchaseActivated = false;
 
     private static Preferences getPrefs() {
         if (prefs == null)
@@ -56,6 +58,9 @@ public class Storage {
 
         if (storingParam instanceof Integer)
             getPrefs().putInteger(activeResource.name(), (Integer) storingParam);
+
+        if (storingParam instanceof Long)
+            getPrefs().putLong(activeResource.name(), (Long) storingParam);
 
         if (storingParam instanceof String)
             getPrefs().putString(activeResource.name(), (String) storingParam);
@@ -141,5 +146,15 @@ public class Storage {
         return getBoolParam(ActiveRes.isAdware, true);
     }
 
+    public static void setNoAdTime() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        Date tomorrow = calendar.getTime();
+        saveParam(ActiveRes.noAdsTime, tomorrow.getTime());
+    }
 
+    public static boolean isNoAdTimeOver() {
+        long noAdTime = getPrefs().getLong(ActiveRes.noAdsTime.name(), 0);
+        return noAdTime < Calendar.getInstance().getTimeInMillis();
+    }
 }

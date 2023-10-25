@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,19 +13,12 @@ import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.yandex.mobile.ads.banner.BannerAdSize;
-import com.yandex.mobile.ads.banner.BannerAdView;
-import com.yandex.mobile.ads.common.AdRequest;
-import com.yandex.mobile.ads.common.InitializationListener;
-import com.yandex.mobile.ads.common.MobileAds;
-import com.yandex.mobile.ads.rewarded.RewardedAd;
 
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import ru.electronikas.ads.AdController;
 import ru.electronikas.diagonal.listeners.PlatformListener;
+import ru.electronikas.diagonal.model.Product;
 import ru.electronikas.pay.Payer;
 
 public class AndroidLauncher extends AndroidApplication implements PlatformListener{
@@ -66,11 +58,13 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		payer.billingClient.onNewIntent(intent);
 	}
 
+/*
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		android.os.Process.killProcess(android.os.Process.myPid());
 	}
+*/
 
 	@Override
 	public void share() {
@@ -108,11 +102,11 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 	}
 
 	@Override
-	public void removeAds() {
+	public void removeAds(Product product) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				payer.purchaseProduct("ads_remove_day");
+				payer.purchaseProduct(product);
 			}
 		});
 	}
@@ -139,7 +133,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 	public void onExit() {
 		super.onBackPressed();
-		finish();
+//		finish();
 	}
 
 

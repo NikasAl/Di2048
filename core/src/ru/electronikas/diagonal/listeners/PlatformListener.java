@@ -1,5 +1,7 @@
 package ru.electronikas.diagonal.listeners;
 
+import ru.electronikas.diagonal.model.Product;
+
 /**
  * Created by nikas on 7/1/16.
  */
@@ -12,5 +14,5 @@ public interface PlatformListener {
     void hideBanner();
     void showFullScr();
 
-    void removeAds();
+    void removeAds(Product product);
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.listeners.PlatformListener;
+import ru.electronikas.diagonal.model.Product;
 
 import java.util.Locale;
 
@@ -45,7 +46,7 @@ public class DesktopLauncher implements PlatformListener {
 	}
 
 	@Override
-	public void removeAds() {
+	public void removeAds(Product product) {
 
 	}
 }

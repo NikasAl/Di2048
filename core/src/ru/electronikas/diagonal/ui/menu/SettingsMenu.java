@@ -13,9 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import ru.electronikas.diagonal.Di2048Game;
-import ru.electronikas.diagonal.materials.Assets;
+import ru.electronikas.diagonal.model.Product;
 import ru.electronikas.diagonal.settings.Storage;
-import ru.electronikas.diagonal.ui.Textures;
 import ru.electronikas.diagonal.ui.Utils;
 
 import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
@@ -34,7 +33,7 @@ public class SettingsMenu {
         float w = Gdx.graphics.getWidth();
         h = Gdx.graphics.getHeight();
 
-        uiSkin = Textures.getUiSkin();
+        uiSkin = Di2048Game.game.getUiSkin();
         rateMenu = new Table(uiSkin);
         rateMenu.align(Align.topLeft);
         rateMenu.setPosition(0, h);
@@ -59,8 +58,11 @@ public class SettingsMenu {
         rateMenu.add(rateButton(realW)).colspan(2).pad(padg).width(realW);
 
         if(Storage.isAdWareShowing()) {
+//            rateMenu.row().height(h / 10);
+//            rateMenu.add(payButton()).colspan(2).pad(padg).width(realW);
+
             rateMenu.row().height(h / 10);
-            rateMenu.add(payButton()).colspan(2).pad(padg).width(realW);
+            rateMenu.add(payForOneDayAdsRemovingButton()).colspan(2).pad(padg).width(realW);
         }
 
         rateMenu.row().height(h / 10);
@@ -79,22 +81,36 @@ public class SettingsMenu {
 
     }
 
+/*
     private Actor payButton() {
         TextButton payBut = new TextButton(Assets.bdl().get("payDay"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
         payBut.getLabel().setFontScale(scaleForButtons);
         payBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                Di2048Game.game.platformListener.removeAds();
+                Di2048Game.game.platformListener.removeAds(Product.ads_remove_day);
+                animateHide();
+            }
+        });
+        return payBut;
+    }
+*/
+
+    private Actor payForOneDayAdsRemovingButton() {
+        TextButton payBut = new TextButton(Di2048Game.game.bdl().get("payDay"),
+                uiSkin.get("green-but", TextButton.TextButtonStyle.class));
+        payBut.getLabel().setFontScale(scaleForButtons);
+        payBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Di2048Game.game.platformListener.removeAds(Product.ads_remove_one_day);
                 animateHide();
             }
         });
         return payBut;
     }
 
-
     private Actor shareButton() {
-        TextButton rateBut = new TextButton(Assets.bdl().get("share"),
+        TextButton rateBut = new TextButton(Di2048Game.game.bdl().get("share"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
         rateBut.getLabel().setFontScale(scaleForButtons);
         rateBut.addListener(new ClickListener() {
@@ -106,7 +122,7 @@ public class SettingsMenu {
     }
 
     private Actor rateButton(float width) {
-        TextButton rateBut = new TextButton(Assets.bdl().get("rate"),
+        TextButton rateBut = new TextButton(Di2048Game.game.bdl().get("rate"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
         scaleForButtons = textSizeTuning(rateBut.getLabel(), width, 50);
         rateBut.getLabel().setFontScale(scaleForButtons);
@@ -119,7 +135,7 @@ public class SettingsMenu {
     }
 
     private Actor newGameButton() {
-        TextButton newGameBut = new TextButton(Assets.bdl().get("newGame"),
+        TextButton newGameBut = new TextButton(Di2048Game.game.bdl().get("newGame"),
                 uiSkin.get("red-but", TextButton.TextButtonStyle.class));
         newGameBut.getLabel().setFontScale(scaleForButtons);
         newGameBut.addListener(new ClickListener() {
@@ -132,7 +148,7 @@ public class SettingsMenu {
     }
 
     private Actor quitGameButton() {
-        TextButton closeSettingsBut = new TextButton(Assets.bdl().get("quitGame"),
+        TextButton closeSettingsBut = new TextButton(Di2048Game.game.bdl().get("quitGame"),
                 uiSkin.get("red-but", TextButton.TextButtonStyle.class));
         closeSettingsBut.getLabel().setFontScale(scaleForButtons);
         closeSettingsBut.addListener(new ClickListener() {
@@ -144,7 +160,7 @@ public class SettingsMenu {
     }
 
     private Actor closeSettingsButton() {
-        TextButton closeSettingsBut = new TextButton(Assets.bdl().get("resume"),
+        TextButton closeSettingsBut = new TextButton(Di2048Game.game.bdl().get("resume"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
         closeSettingsBut.getLabel().setFontScale(scaleForButtons);
         closeSettingsBut.addListener(new ClickListener() {
@@ -178,7 +194,7 @@ public class SettingsMenu {
     }
 
     private Actor saveCurrentGameButton(float width) {
-        TextButton saveCurrentGameBut = new TextButton(Assets.bdl().get("saveCurrentGame"),
+        TextButton saveCurrentGameBut = new TextButton(Di2048Game.game.bdl().get("saveCurrentGame"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
         scaleForButtons = textSizeTuning(saveCurrentGameBut.getLabel(), width, 70);
         saveCurrentGameBut.addListener(new ClickListener() {
@@ -191,7 +207,7 @@ public class SettingsMenu {
     }
 
     private Actor restoreCurrentGameButton() {
-        TextButton restoreCurrentGameBut = new TextButton(Assets.bdl().get("restoreCurrentGame"),
+        TextButton restoreCurrentGameBut = new TextButton(Di2048Game.game.bdl().get("restoreCurrentGame"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
         restoreCurrentGameBut.getLabel().setFontScale(scaleForButtons);
         restoreCurrentGameBut.addListener(new ClickListener() {
@@ -203,7 +219,7 @@ public class SettingsMenu {
     }
 
     private Actor createHeader(float width) {
-        Label headLabel = new Label(Assets.bdl().get("settings"), uiSkin);
+        Label headLabel = new Label(Di2048Game.game.bdl().get("settings"), uiSkin);
         headLabel.setColor(Color.GREEN);
         headLabel.setAlignment(Align.center);
         textSizeTuning(headLabel, width);

@@ -4,8 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+
+import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.ui.LevelField;
-import ru.electronikas.diagonal.ui.Textures;
 import ru.electronikas.diagonal.ui.actors.CustomTextButton;
 
 import static ru.electronikas.diagonal.ui.Utils.cellTextSizeTuning;
@@ -48,7 +49,7 @@ public class CellModel {
             cellColor = CellColors.values()[MathUtils.random(0, CellColors.values().length-1)];
 
         cell = new CustomTextButton("" + value,
-                Textures.getUiSkin().get(cellColor.name(), CustomTextButton.TextButtonStyle.class));
+                Di2048Game.game.getUiSkin().get(cellColor.name(), CustomTextButton.TextButtonStyle.class));
 
         cell.setDisabled(true);
         cell.clearListeners();

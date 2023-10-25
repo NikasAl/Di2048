@@ -3,6 +3,8 @@ package ru.electronikas.diagonal.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+
+import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Dir;
@@ -47,7 +49,7 @@ public class LevelField {
         DY = Gdx.graphics.getHeight() / 5.5f;
         for(int x=0; x < DiGameModel.FIELD_SIZE; x++) {
             for(int y=0; y < DiGameModel.FIELD_SIZE; y++) {
-                Image img = new Image(Textures.getUiSkin().getPatch("graypane"));
+                Image img = new Image(Di2048Game.game.getUiSkin().getPatch("graypane"));
                 img.setPosition(x * size, y * size + DY);
                 img.setSize(size,size);
                 stage.addActor(img);

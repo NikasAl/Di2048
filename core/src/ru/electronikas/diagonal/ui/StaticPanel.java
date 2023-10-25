@@ -11,7 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import ru.electronikas.diagonal.materials.Assets;
+
+import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Pos;
@@ -39,7 +40,7 @@ public class StaticPanel {
         h = Gdx.graphics.getHeight();
         w = Gdx.graphics.getWidth();
 
-        Table table = new Table(Textures.getUiSkin());
+        Table table = new Table(Di2048Game.game.getUiSkin());
         table.align(Align.center);
         table.setPosition(0, h - h/5);
         table.setWidth(w - w/20);
@@ -59,7 +60,7 @@ public class StaticPanel {
 
     private Actor createSettingsBut() {
         final ImageButton settingsBut = new ImageButton(
-                Textures.getUiSkin().get("settings-but", ImageButton.ImageButtonStyle.class));
+                Di2048Game.game.getUiSkin().get("settings-but", ImageButton.ImageButtonStyle.class));
         settingsBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 settingsMenu = new SettingsMenu(stage);
@@ -70,19 +71,19 @@ public class StaticPanel {
     }
 
     private Label createRecordLabel() {
-        Label label = new Label(getRecordText(), Textures.getUiSkin().get("score-lbl", Label.LabelStyle.class));
+        Label label = new Label(getRecordText(), Di2048Game.game.getUiSkin().get("score-lbl", Label.LabelStyle.class));
         label.setFontScale(scale);
         label.pack();
         return label;
     }
 
     private String getRecordText() {
-        return Assets.bdl().get("record") + "\n" + Storage.getRecord();
+        return Di2048Game.game.bdl().get("record") + "\n" + Storage.getRecord();
     }
 
     float scale;
     private Label createScoreLabel(float width) {
-        Label label = new Label(getScoreText(), Textures.getUiSkin()
+        Label label = new Label(getScoreText(), Di2048Game.game.getUiSkin()
                 .get("score-lbl", Label.LabelStyle.class));
         scale = Utils.textSizeTuning(label, width, 70);
         label.pack();
@@ -90,7 +91,7 @@ public class StaticPanel {
     }
 
     private String getScoreText() {
-        return Assets.bdl().get("count") + "\n" + diGameModel.score;
+        return Di2048Game.game.bdl().get("count") + "\n" + diGameModel.score;
     }
 
     public void refresh() {
@@ -98,7 +99,7 @@ public class StaticPanel {
     }
 
     public void animatePlusScore(int value, Pos pos) {
-        final Label scoreAnimLabel = new Label("+" + value, Textures.getUiSkin());
+        final Label scoreAnimLabel = new Label("+" + value, Di2048Game.game.getUiSkin());
         scoreAnimLabel.setColor(Utils.getRandomColor());
         scoreAnimLabel.setPosition(pos.x * CellModel.size + CellModel.size / 4, pos.y * CellModel.size + CellModel.size);
         scoreAnimLabel.pack();

@@ -3,16 +3,21 @@ package ru.electronikas.diagonal;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.util.Locale;
+
 import ru.electronikas.diagonal.listeners.DiGestureListener;
 import ru.electronikas.diagonal.listeners.PlatformListener;
 import ru.electronikas.diagonal.model.DiGameModel;
-import ru.electronikas.diagonal.settings.AdBannerController;
 import ru.electronikas.diagonal.settings.GameSounds;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.LevelField;
@@ -26,6 +31,24 @@ public class Di2048Game extends ApplicationAdapter {
 	public DiGameModel diGameModel;
 	private LevelField levelField;
 	public PlatformListener platformListener;
+
+	private I18NBundle myBundle;
+	public I18NBundle bdl() {
+		if(myBundle==null) {
+			FileHandle baseFileHandle = Gdx.files.internal("i18n/gameBundle");
+			Locale locale = Locale.getDefault();
+			myBundle = I18NBundle.createBundle(baseFileHandle, locale);
+		}
+		return myBundle;
+	}
+
+	private Skin uiSkin;
+	public Skin getUiSkin() {
+		if(uiSkin == null) {
+			uiSkin = new Skin(Gdx.files.internal("data/skins/mainatlas.json"));
+		}
+		return uiSkin;
+	}
 
 	public Di2048Game(PlatformListener platformListener) {
 		this.platformListener = platformListener;

@@ -13,6 +13,9 @@ import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.my.tracker.MyTracker;
+import com.my.tracker.MyTrackerConfig;
+import com.my.tracker.MyTrackerParams;
 
 import java.io.File;
 
@@ -28,8 +31,16 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 
+		MyTrackerParams trackerParams = MyTracker.getTrackerParams();
+		MyTrackerConfig trackerConfig = MyTracker.getTrackerConfig();
+		// …
+		// Настройте параметры трекера
+		// …
+		// Инициализируйте трекер
+		MyTracker.initTracker("95574106897946621826", getApplication());
+
+		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		RelativeLayout layout = new RelativeLayout(this);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -82,7 +93,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 	@Override
 	public void rate() {
-//		trackEvent(TrCategory.target.name(), "userRateAppRun", "");
+		MyTracker.trackEvent("userRateAppOnClBut");
 		launchMarket();
 	}
 
@@ -103,6 +114,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 	@Override
 	public void removeAds(Product product) {
+		MyTracker.trackEvent("removeAdsPurchaseOnClBut");
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -133,7 +145,6 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 
 	public void onExit() {
 		super.onBackPressed();
-//		finish();
 	}
 
 

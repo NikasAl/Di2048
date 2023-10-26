@@ -49,4 +49,9 @@ public class DesktopLauncher implements PlatformListener {
 	public void removeAds(Product product) {
 
 	}
+
+	@Override
+	public void trackEvent(String eventId) {
+
+	}
 }

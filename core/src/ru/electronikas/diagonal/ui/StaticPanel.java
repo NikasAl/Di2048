@@ -1,6 +1,7 @@
 package ru.electronikas.diagonal.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -65,8 +66,20 @@ public class StaticPanel {
             public void clicked(InputEvent event, float x, float y) {
                 settingsMenu = new SettingsMenu(stage);
                 settingsMenu.animateOpen();
+                Di2048Game.game.platformListener.trackEvent("SettingsOnClBut");
             }
         });
+        final Color baseColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        final Color alphaColor = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+        // Создаем последовательность действий для анимации
+        settingsBut.addAction(
+                Actions.forever(
+                        Actions.sequence(
+                                Actions.color(baseColor, 1.8f),
+                                Actions.color(alphaColor, 1.8f)
+                        )
+                )
+        );
         return settingsBut;
     }
 

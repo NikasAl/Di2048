@@ -15,4 +15,6 @@ public interface PlatformListener {
     void showFullScr();
 
     void removeAds(Product product);
+
+    void trackEvent(String eventId);
 }

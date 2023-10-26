@@ -69,13 +69,6 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		payer.billingClient.onNewIntent(intent);
 	}
 
-/*
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		android.os.Process.killProcess(android.os.Process.myPid());
-	}
-*/
 
 	@Override
 	public void share() {
@@ -123,6 +116,11 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		});
 	}
 
+	@Override
+	public void trackEvent(String eventId) {
+		MyTracker.trackEvent(eventId);
+	}
+
 	private void launchMarket() {
 		Uri uri = Uri.parse("market://details?id=" + getPackageName());
 		Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
@@ -165,5 +163,6 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 				.setNegativeButton(Assets.bdl().get("no"), null)
 				.show();
 	}*/
+
 
 }

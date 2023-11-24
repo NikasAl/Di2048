@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.model.Product;
+import ru.electronikas.diagonal.settings.GameSounds;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.Utils;
 
@@ -217,9 +218,10 @@ public class SettingsMenu {
             soundBut.setChecked(true);
         soundBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                if(Storage.getSoundVolume() < Storage.DEFAULT_VAL)
+                if(Storage.getSoundVolume() < Storage.DEFAULT_VAL) {
                     Storage.setSoundVolume(Storage.DEFAULT_VAL);
-                else
+                    GameSounds.flipSoundPlay();
+                } else
                     Storage.setSoundVolume(0);
             }
         });

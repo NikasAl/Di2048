@@ -2,6 +2,7 @@ package ru.electronikas.diagonal.ui.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.model.Product;
@@ -43,8 +45,9 @@ public class SettingsMenu {
 
         float realW = w - w / 10;
         float padg = w/90;
-        rateMenu.row().height(h / 10).width(realW);
-        rateMenu.add(createHeader(realW)).colspan(2).pad(padg);
+        rateMenu.row().height(h / 10);
+        rateMenu.add(createHeader((realW))).width(realW*0.75f).colspan(3);
+        rateMenu.add(soundButton()).width(realW*0.25f);
 
 /*
         rateMenu.row().height(h / 10);
@@ -55,25 +58,25 @@ public class SettingsMenu {
 */
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(rateButton(realW)).colspan(2).pad(padg).width(realW);
+        rateMenu.add(rateButton(realW)).colspan(4).pad(padg).width(realW);
 
         if(Storage.isAdWareShowing()) {
 //            rateMenu.row().height(h / 10);
 //            rateMenu.add(payButton()).colspan(2).pad(padg).width(realW);
 
             rateMenu.row().height(h / 10);
-            rateMenu.add(payForOneDayAdsRemovingButton()).colspan(2).pad(padg).width(realW);
+            rateMenu.add(payForOneDayAdsRemovingButton()).colspan(4).pad(padg).width(realW);
         }
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(closeSettingsButton()).colspan(2).pad(padg).width(realW);
+        rateMenu.add(closeSettingsButton()).colspan(4).pad(padg).width(realW);
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(selectGameTypeButton()).colspan(2).pad(padg).width(realW);
-
+        rateMenu.add(selectGameTypeButton()).colspan(4).pad(padg).width(realW);
+        rateMenu.clip();
         rateMenu.row().height(h / 10);
-        rateMenu.add(newGameButton()).pad(padg).width(realW/2);
-        rateMenu.add(quitGameButton()).pad(padg).width(realW/2);
+        rateMenu.add(newGameButton()).pad(padg).width(realW/2).colspan(2);
+        rateMenu.add(quitGameButton()).pad(padg).width(realW/2).colspan(2);
 
 //        rateMenu.setDebug(true);
 
@@ -204,6 +207,23 @@ public class SettingsMenu {
             }
         });
         return saveCurrentGameBut;
+    }
+
+    private Actor soundButton() {
+        Drawable on = new Image(new Texture("data/skins/ns128.png")).getDrawable();
+        Drawable off = new Image(new Texture("data/skins/nsoff128.png")).getDrawable();
+        ImageButton soundBut = new ImageButton(on, off, off);
+        if(Storage.getSoundVolume() < Storage.DEFAULT_VAL)
+            soundBut.setChecked(true);
+        soundBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                if(Storage.getSoundVolume() < Storage.DEFAULT_VAL)
+                    Storage.setSoundVolume(Storage.DEFAULT_VAL);
+                else
+                    Storage.setSoundVolume(0);
+            }
+        });
+        return soundBut;
     }
 
     private Actor restoreCurrentGameButton() {

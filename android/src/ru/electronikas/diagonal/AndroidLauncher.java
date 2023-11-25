@@ -127,7 +127,12 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
 		try {
 			startActivity(myAppLinkToMarket);
 		} catch (ActivityNotFoundException e) {
-			Toast.makeText(this, " unable to find market app", Toast.LENGTH_LONG).show();
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(AndroidLauncher.this, " unable to find market app", Toast.LENGTH_LONG).show();
+				}
+			});
 		}
 	}
 

@@ -221,8 +221,11 @@ public class SettingsMenu {
                 if(Storage.getSoundVolume() < Storage.DEFAULT_VAL) {
                     Storage.setSoundVolume(Storage.DEFAULT_VAL);
                     GameSounds.flipSoundPlay();
-                } else
+                    Di2048Game.game.platformListener.trackEvent("Sound_On");
+                } else {
                     Storage.setSoundVolume(0);
+                    Di2048Game.game.platformListener.trackEvent("Sound_Off");
+                }
             }
         });
         return soundBut;

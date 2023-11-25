@@ -98,5 +98,6 @@ public class Di2048Game extends ApplicationAdapter {
 	public void del2s() {
 		levelField.applyActions(diGameModel.del2s());
 		levelField.hideGameOverMenu();
+		platformListener.trackEvent("Delete 2s");
 	}
 }

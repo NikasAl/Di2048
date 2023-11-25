@@ -73,7 +73,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
 
-        implementation 'com.yandex.android:mobileads:6.1.0'
+        implementation 'com.yandex.android:mobileads:6.2.0'
         implementation 'com.google.android.gms:play-services-ads:22.5.0'
 
         implementation 'ru.rustore.sdk:billingclient:3.0.0'

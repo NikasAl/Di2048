@@ -1,6 +1,7 @@
 android {
-    buildToolsVersion "33.0.1"
-    compileSdkVersion 33
+    buildToolsVersion "34.0.0"
+    compileSdkVersion 34
+    namespace 'ru.electronikas.diagonal'
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -17,7 +18,18 @@ android {
 
 
     signingConfigs {
-        mySignature {
+        release {
+            def keystorePropertiesFile = project.file("keystore.properties")
+            if (keystorePropertiesFile.exists()) {
+                def keystoreProperties = new Properties()
+                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+        debug {
             storeFile file('/home/nikas/.android/debug.keystore')
             storePassword 'android'
             keyAlias 'androiddebugkey'
@@ -28,9 +40,8 @@ android {
     defaultConfig {
         applicationId "ru.electronikas.diagonal"
         minSdkVersion 23
-        targetSdkVersion 33
+        targetSdkVersion 34
         multiDexEnabled true
-        signingConfig signingConfigs.mySignature
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -52,10 +63,15 @@ android {
 
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             shrinkResources false
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
             proguardFile 'proguard-project.txt'
+        }
+
+        debug {
+            signingConfig signingConfigs.debug
         }
 /*
         debug {

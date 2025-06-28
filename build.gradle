@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
 //        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.2.2'
     }
 }
 
@@ -61,7 +61,7 @@ project(":desktop") {
 }
 
 project(":android") {
-    apply plugin: "android"
+    apply plugin: "com.android.application"
 
     configurations { natives }
 
@@ -73,7 +73,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
 
-        implementation 'com.yandex.android:mobileads:6.2.0'
+        implementation 'com.yandex.android:mobileads:7.14.1'
         implementation 'com.google.android.gms:play-services-ads:22.5.0'
 
         implementation 'ru.rustore.sdk:billingclient:3.0.0'

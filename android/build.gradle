@@ -29,12 +29,6 @@ android {
                 keyPassword keystoreProperties['keyPassword']
             }
         }
-        debug {
-            storeFile file('/home/nikas/.android/debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-        }
     }
 
     defaultConfig {

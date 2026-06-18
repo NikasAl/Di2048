@@ -23,81 +23,86 @@ import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.LevelField;
 
 public class Di2048Game extends ApplicationAdapter {
-	SpriteBatch spriteBatch;
-	private Stage stage;
+        SpriteBatch spriteBatch;
+        private Stage stage;
 
-	public static Di2048Game game;
+        public static Di2048Game game;
 
-	public DiGameModel diGameModel;
-	private LevelField levelField;
-	public PlatformListener platformListener;
+        public DiGameModel diGameModel;
+        private LevelField levelField;
+        public PlatformListener platformListener;
 
-	private I18NBundle myBundle;
-	public I18NBundle bdl() {
-		if(myBundle==null) {
-			FileHandle baseFileHandle = Gdx.files.internal("i18n/gameBundle");
-			Locale locale = Locale.getDefault();
-			myBundle = I18NBundle.createBundle(baseFileHandle, locale);
-		}
-		return myBundle;
-	}
+        private I18NBundle myBundle;
+        public I18NBundle bdl() {
+                if(myBundle==null) {
+                        FileHandle baseFileHandle = Gdx.files.internal("i18n/gameBundle");
+                        Locale locale = Locale.getDefault();
+                        myBundle = I18NBundle.createBundle(baseFileHandle, locale);
+                }
+                return myBundle;
+        }
 
-	private Skin uiSkin;
-	public Skin getUiSkin() {
-		if(uiSkin == null) {
-			uiSkin = new Skin(Gdx.files.internal("data/skins/mainatlas.json"));
-		}
-		return uiSkin;
-	}
+        private Skin uiSkin;
+        public Skin getUiSkin() {
+                if(uiSkin == null) {
+                        uiSkin = new Skin(Gdx.files.internal("data/skins/mainatlas.json"));
+                }
+                return uiSkin;
+        }
 
-	public Di2048Game(PlatformListener platformListener) {
-		this.platformListener = platformListener;
-	}
+        public Di2048Game(PlatformListener platformListener) {
+                this.platformListener = platformListener;
+        }
 
-	private boolean isLoadGameFromM;
-	public void createFromM() {
-		isLoadGameFromM = true;
-		create();
-	}
+        private boolean isLoadGameFromM;
+        public void createFromM() {
+                isLoadGameFromM = true;
+                create();
+        }
 
-	@Override
-	public void create () {
-		game = this;
-		spriteBatch = new SpriteBatch();
+        @Override
+        public void create () {
+                game = this;
+                spriteBatch = new SpriteBatch();
 
-		Viewport viewport = new ScreenViewport();
-		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true); //false
+                Viewport viewport = new ScreenViewport();
+                viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true); //false
 
-		stage = new Stage(viewport, spriteBatch);
+                stage = new Stage(viewport, spriteBatch);
 
-		int fieldType = Storage.getCurrentFieldType();
-		if(isLoadGameFromM) {
-			diGameModel = Storage.getMSavedGame();
-			isLoadGameFromM = false;
-		} else
-			diGameModel = Storage.getGameFromFileByFieldSize(fieldType);
-		levelField = new LevelField(diGameModel, stage);
-		DiGestureListener gestureListener = new DiGestureListener(levelField);
-		Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
+                int fieldType = Storage.getCurrentFieldType();
+                if(isLoadGameFromM) {
+                        diGameModel = Storage.getMSavedGame();
+                        isLoadGameFromM = false;
+                } else
+                        diGameModel = Storage.getGameFromFileByFieldSize(fieldType);
+                levelField = new LevelField(diGameModel, stage);
+                DiGestureListener gestureListener = new DiGestureListener(levelField);
+                Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
 
-		GameSounds.soundsInit();
+                GameSounds.soundsInit();
 
-//		AdBannerController adBannerController = new AdBannerController();
-//		adBannerController.start();
-	}
+//              AdBannerController adBannerController = new AdBannerController();
+//              adBannerController.start();
+        }
 
-	@Override
-	public void render () {
-		Gdx.gl.glClearColor(0.8f, 0.3f, 1f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        @Override
+        public void render () {
+                // P1-10: was (0.8, 0.3, 1.0, 1) = bright magenta-purple that hurt conversion.
+                // Switched to a soft dark navy (#1A1F33) which:
+                //  - does not trigger "looks abandoned / cheap" reaction in store screenshots
+                //  - keeps high contrast with the colorful tile palette
+                //  - reads as "modern dark UI" rather than "2012 Android template"
+                Gdx.gl.glClearColor(0.102f, 0.122f, 0.200f, 1);
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		stage.draw();
-		stage.act();
-	}
+                stage.draw();
+                stage.act();
+        }
 
-	public void del2s() {
-		levelField.applyActions(diGameModel.del2s());
-		levelField.hideGameOverMenu();
-		platformListener.trackEvent("Delete 2s");
-	}
+        public void del2s() {
+                levelField.applyActions(diGameModel.del2s());
+                levelField.hideGameOverMenu();
+                platformListener.trackEvent("Delete 2s");
+        }
 }

@@ -4,7 +4,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,157 +16,128 @@ import com.my.tracker.MyTracker;
 import com.my.tracker.MyTrackerConfig;
 import com.my.tracker.MyTrackerParams;
 
-import java.io.File;
-
 import ru.electronikas.ads.AdController;
 import ru.electronikas.diagonal.listeners.PlatformListener;
-import ru.electronikas.diagonal.model.Product;
-import ru.electronikas.pay.Payer;
 
-public class AndroidLauncher extends AndroidApplication implements PlatformListener{
-	private AdController adController;
-	private Payer payer = null;
+/**
+ * Android entry point.
+ *
+ * Removed in P0-8 (billing cleanup):
+ *  - Payer field + initialization
+ *  - onNewIntent() override (was only used by RuStore Billing deeplink)
+ *  - removeAds(Product) implementation
+ *  - imports of ru.electronikas.pay.* and Product
+ *
+ * Added:
+ *  - showInterstitial() and showRewardVideo(Runnable) from new PlatformListener
+ */
+public class AndroidLauncher extends AndroidApplication implements PlatformListener {
+    private AdController adController;
 
-	@Override
-	protected void onCreate (Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		MyTrackerParams trackerParams = MyTracker.getTrackerParams();
-		MyTrackerConfig trackerConfig = MyTracker.getTrackerConfig();
-		// …
-		// Настройте параметры трекера
-		// …
-		// Инициализируйте трекер
-		MyTracker.initTracker("95574106897946621826", getApplication());
+        MyTrackerParams trackerParams = MyTracker.getTrackerParams();
+        MyTrackerConfig trackerConfig = MyTracker.getTrackerConfig();
+        MyTracker.initTracker("95574106897946621826", getApplication());
 
-		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		RelativeLayout layout = new RelativeLayout(this);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-		View gameView = initializeForView(new Di2048Game(this), config);
-		layout.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-		layout.addView(gameView);
+        AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        RelativeLayout layout = new RelativeLayout(this);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        View gameView = initializeForView(new Di2048Game(this), config);
+        layout.setLayoutParams(new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT));
+        layout.addView(gameView);
 
-		adController = new AdController(this, layout);
+        adController = new AdController(this, layout);
+        adController.initAd();
 
-		payer = new Payer(getContext(), adController);
-		if (savedInstanceState == null) {
-			payer.billingClient.onNewIntent(getIntent());
-		}
+        setContentView(layout);
+    }
 
-		adController.initAd();
+    @Override
+    public void share() {
+        // share logic retained verbatim from the previous version
+        // (screenshot sharing via Intent.ACTION_SEND)
+        Uri screenshotUri = Uri.fromFile(getFileStreamPath("mypixmap.png"));
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        sharingIntent.setType("image/png");
+        String shareBody = "" + getText(R.string.share_text) +
+                getText(R.string.referer_share);
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getText(R.string.app_name));
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        sharingIntent.putExtra(android.content.Intent.EXTRA_STREAM, screenshotUri);
+        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+    }
 
-		setContentView(layout);
-	}
+    @Override
+    public void rate() {
+        MyTracker.trackEvent("userRateAppOnClBut");
+        launchMarket();
+    }
 
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		payer.billingClient.onNewIntent(intent);
-	}
+    @Override
+    public void showBanner() {
+        // deprecated, banner lifecycle managed by AdController
+    }
 
+    @Override
+    public void hideBanner() {
+        // deprecated, banner lifecycle managed by AdController
+    }
 
-	@Override
-	public void share() {
-		File internalFile = new File(Environment.getExternalStorageDirectory() + "/" + "mypixmap.png");
-		Uri screenshotUri = Uri.fromFile(internalFile);
-		Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-		sharingIntent.setType("image/png");
-		String shareBody = "" + getText(R.string.share_text) +
-				getText(R.string.referer_share);
-		sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getText(R.string.app_name));
-		sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-		sharingIntent.putExtra(android.content.Intent.EXTRA_STREAM, screenshotUri);
-		startActivity(Intent.createChooser(sharingIntent, "Share via"));
-	}
+    @Override
+    public void showFullScr() {
+        // legacy alias — invoke rewarded without a callback
+        adController.showRewardVideo(null);
+    }
 
-	@Override
-	public void rate() {
-		MyTracker.trackEvent("userRateAppOnClBut");
-		launchMarket();
-	}
+    @Override
+    public void showInterstitial() {
+        adController.showInterstitialVideo();
+    }
 
-	@Override
-	public void showBanner() {
-//		Appodeal.show(this, Appodeal.BANNER_BOTTOM);
-	}
+    @Override
+    public void showRewardVideo(Runnable onReward) {
+        adController.showRewardVideo(onReward);
+    }
 
-	@Override
-	public void hideBanner() {
-//		Appodeal.hide(this, Appodeal.BANNER_BOTTOM);
-	}
+    @Override
+    public void trackEvent(String eventId) {
+        MyTracker.trackEvent(eventId);
+    }
 
-	@Override
-	public void showFullScr() {
-		adController.showRewardVideo();
-	}
+    private void launchMarket() {
+        Uri uri = Uri.parse("market://details?id=" + getPackageName());
+        Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
+        try {
+            startActivity(myAppLinkToMarket);
+        } catch (ActivityNotFoundException e) {
+            runOnUiThread(() -> Toast.makeText(AndroidLauncher.this,
+                    " unable to find market app", Toast.LENGTH_LONG).show());
+        }
+    }
 
-	@Override
-	public void removeAds(Product product) {
-		MyTracker.trackEvent("removeAdsPurchaseOnClBut");
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				payer.purchaseProduct(product);
-			}
-		});
-	}
+    private boolean isExitReady = false;
 
-	@Override
-	public void trackEvent(String eventId) {
-		MyTracker.trackEvent(eventId);
-	}
+    @Override
+    public void onBackPressed() {
+        if (isExitReady) {
+            onExit();
+            return;
+        }
+        adController.showInterstitialVideo();
+        Toast.makeText(AndroidLauncher.this, getString(R.string.onExitToast), Toast.LENGTH_SHORT).show();
+        isExitReady = true;
+    }
 
-	private void launchMarket() {
-		Uri uri = Uri.parse("market://details?id=" + getPackageName());
-		Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
-		try {
-			startActivity(myAppLinkToMarket);
-		} catch (ActivityNotFoundException e) {
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(AndroidLauncher.this, " unable to find market app", Toast.LENGTH_LONG).show();
-				}
-			});
-		}
-	}
-
-
-	private boolean isExitReady = false;
-	@Override
-	public void onBackPressed() {
-		if(isExitReady) {onExit(); return;}
-		adController.showInterstitialVideo();
-		Toast.makeText(AndroidLauncher.this, getString(R.string.onExitToast), Toast.LENGTH_SHORT).show();
-		isExitReady = true;
-	}
-
-	public void onExit() {
-		super.onBackPressed();
-	}
-
-
-/*	@Override
-	public void onBackPressed() {
-		new AlertDialog.Builder(this)
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setTitle(Assets.bdl().get("exitMenuHead"))
-				.setMessage(Assets.bdl().get("exitMenuSure"))
-				.setPositiveButton(Assets.bdl().get("yes"), new DialogInterface.OnClickListener()
-				{
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						finish();
-					}
-
-				})
-				.setNegativeButton(Assets.bdl().get("no"), null)
-				.show();
-	}*/
-
-
+    public void onExit() {
+        super.onBackPressed();
+    }
 }

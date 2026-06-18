@@ -1,14 +1,11 @@
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         gradlePluginPortal()
         google()
     }
     dependencies {
-//        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath 'com.android.tools.build:gradle:8.7.3'
     }
 }
 
@@ -16,29 +13,22 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '1.0'
+    version = '1.7.0'
     ext {
         appName = "Di2048"
-        gdxVersion = '1.11.0'
-        roboVMVersion = '2.1.0'
-        box2DLightsVersion = '1.4'
-        ashleyVersion = '1.7.0'
-        aiVersion = '1.8.0'
+        gdxVersion = '1.12.1'
+        roboVMVersion = '2.3.21'
+        box2DLightsVersion = '1.5'
+        ashleyVersion = '1.7.4'
+        aiVersion = '1.8.2'
     }
 
     repositories {
-        mavenLocal()
         mavenCentral()
-        maven { url "https://dl.bintray.com/cachapa/maven/" }
-        maven { url "https://maven.google.com" }
-        gradlePluginPortal()
         google()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://artifactory-external.vkpartner.ru/artifactory/maven" }
-//        flatDir {
-//            dirs project(':android').file('aar')
-//        }
     }
 }
 
@@ -73,12 +63,13 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
 
-        implementation 'com.yandex.android:mobileads:7.14.1'
-        implementation 'com.google.android.gms:play-services-ads:22.5.0'
+        // Yandex Mobile Ads — оставляем, обновляем до последней стабильной
+        implementation 'com.yandex.android:mobileads:7.21.0'
 
-        implementation 'ru.rustore.sdk:billingclient:3.0.0'
+        // MyTracker — обновляем
+        implementation 'com.my.tracker:mytracker-sdk:3.4.0'
 
-        implementation 'com.my.tracker:mytracker-sdk:3.2.0'
+        // AdMob и RuStore Billing — полностью удалены (P0-7, P0-8)
     }
 }
 

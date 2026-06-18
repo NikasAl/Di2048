@@ -2,6 +2,8 @@ package ru.electronikas.diagonal.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import ru.electronikas.diagonal.Di2048Game;
@@ -98,14 +101,57 @@ public class StaticPanel {
         stage.addActor(table);
     }
 
+    /** Cached undo icon drawable (loaded once, reused across recreations). */
+    private static TextureRegionDrawable undoDrawable = null;
+
+    /**
+     * Lazy-load the undo icon as a TextureRegionDrawable. Loaded once and cached
+     * statically so we don't leak GPU memory across game recreations.
+     *
+     * We intentionally do NOT register this via the skin JSON because libGDX
+     * Skin JSON has unreliable support for standalone Textures (the standard
+     * way is to pack icons into an atlas, but we want a non-invasive change).
+     * Building the drawable in code is the safest path.
+     */
+    private static TextureRegionDrawable getUndoDrawable() {
+        if (undoDrawable == null) {
+            try {
+                Texture tex = new Texture(Gdx.files.internal("data/skins/undo128.png"));
+                tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                undoDrawable = new TextureRegionDrawable(new TextureRegion(tex));
+            } catch (Throwable e) {
+                Gdx.app.error("StaticPanel", "Failed to load undo128.png", e);
+                // Fall back to a fresh TextureRegionDrawable built from the existing
+                // 'settings' region in the skin (use new TextureRegionDrawable(region)
+                // rather than a cast — getDrawable() may return a different Drawable subtype).
+                try {
+                    undoDrawable = new TextureRegionDrawable(
+                            Di2048Game.game.getUiSkin().getRegion("settings"));
+                } catch (Throwable e2) {
+                    Gdx.app.error("StaticPanel", "Fallback also failed", e2);
+                    // Last-resort: 1x1 white texture so the button still renders something.
+                    undoDrawable = new TextureRegionDrawable(
+                            new TextureRegion(new Texture(
+                                    com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888, 1, 1)));
+                }
+            }
+        }
+        return undoDrawable;
+    }
+
     /**
      * P1-2 + v2: 'Undo last move' as an ImageButton with a dedicated undo icon.
      * Watches a rewarded video, then reverts the most recent move. Silently
      * no-ops if no undo snapshot is available.
      */
     private Actor createUndoBut() {
-        final ImageButton undoBut = new ImageButton(
-                Di2048Game.game.getUiSkin().get("undo-but", ImageButton.ImageButtonStyle.class));
+        // Build the ImageButton style in code — safer than declaring a skin style
+        // for a standalone-texture icon.
+        ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+        style.imageUp = getUndoDrawable();
+        style.imageDown = getUndoDrawable().tint(new Color(1f, 1f, 1f, 0.6f));
+
+        final ImageButton undoBut = new ImageButton(style);
         // Subtle pulsing animation so the button reads as 'available' even without text.
         final Color baseColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         final Color dimColor  = new Color(1.0f, 1.0f, 1.0f, 0.7f);

@@ -1,6 +1,8 @@
 package ru.electronikas.diagonal.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -10,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import ru.electronikas.diagonal.Di2048Game;
@@ -101,6 +104,37 @@ public class BottomActionBar {
         stage.addActor(table);
     }
 
+    /** Cached restart icon drawable (loaded once, reused across recreations). */
+    private static TextureRegionDrawable restartDrawable = null;
+
+    /**
+     * Lazy-load the restart icon as a TextureRegionDrawable. Loaded once and
+     * cached statically. We do NOT register this via the skin JSON because
+     * standalone-Texture entries in libGDX skin JSON have unreliable behavior
+     * (Texture is not a Drawable — ImageButtonStyle expects a Drawable).
+     */
+    private static TextureRegionDrawable getRestartDrawable() {
+        if (restartDrawable == null) {
+            try {
+                Texture tex = new Texture(Gdx.files.internal("data/skins/restart128.png"));
+                tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                restartDrawable = new TextureRegionDrawable(new TextureRegion(tex));
+            } catch (Throwable e) {
+                Gdx.app.error("BottomActionBar", "Failed to load restart128.png", e);
+                try {
+                    restartDrawable = new TextureRegionDrawable(
+                            Di2048Game.game.getUiSkin().getRegion("settings"));
+                } catch (Throwable e2) {
+                    Gdx.app.error("BottomActionBar", "Fallback also failed", e2);
+                    restartDrawable = new TextureRegionDrawable(
+                            new TextureRegion(new Texture(
+                                    com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888, 1, 1)));
+                }
+            }
+        }
+        return restartDrawable;
+    }
+
     /**
      * 'New Game' button: a Table with a restart icon on the left and the
      * 'NEW GAME' text on the right, wrapped in a green TextButton-style background.
@@ -115,8 +149,8 @@ public class BottomActionBar {
         inner.setBackground("greenpane");
         inner.defaults().pad(Gdx.graphics.getWidth() * 0.015f);
 
-        // Restart icon — pull the texture directly from the skin.
-        Image icon = new Image(Di2048Game.game.getUiSkin().getDrawable("restart128"));
+        // Restart icon — load as a standalone texture (NOT via skin, see getRestartDrawable javadoc).
+        Image icon = new Image(getRestartDrawable());
         float iconSize = Gdx.graphics.getHeight() * BOTTOM_BAR_HEIGHT_FRACTION * 0.6f;
         inner.add(icon).size(iconSize).padLeft(Gdx.graphics.getWidth() * 0.02f);
 
@@ -149,7 +183,9 @@ public class BottomActionBar {
 
     private String getFieldSizeText() {
         int fs = Storage.getCurrentFieldType();
-        return Di2048Game.game.bdl().get("fieldSize") + "\n" + fs + "×" + fs;
+        // Note: use plain 'x' instead of '×' (U+00D7) because the bundled
+        // test.fnt bitmap font (DejaVu Sans subset) does not include U+00D7.
+        return Di2048Game.game.bdl().get("fieldSize") + "\n" + fs + "x" + fs;
     }
 
     /**

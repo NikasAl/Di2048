@@ -56,20 +56,41 @@ public class LevelField {
         this.diGameModel = diGameModel;
         this.stage = stage;
 
+        Gdx.app.log("LevelField", "ctor start, FIELD_SIZE=" + DiGameModel.FIELD_SIZE);
         // Recompute CellModel.size + DY FIRST, so both createFields() and the
         // StaticPanel constructor see consistent values.
         recomputeMetrics();
+        Gdx.app.log("LevelField", "metrics ready: CellModel.size=" + CellModel.size + " DY=" + DY);
 
         createFields();
+        Gdx.app.log("LevelField", "createFields done");
 
-        staticPanel = new StaticPanel(stage, diGameModel);
-        // P1-fix: add a BottomActionBar between the board and the ad banner
-        // so the empty gap at the bottom is filled with useful controls
-        // (New Game + field-size switcher).
-        bottomActionBar = new BottomActionBar(stage);
+        try {
+            staticPanel = new StaticPanel(stage, diGameModel);
+            Gdx.app.log("LevelField", "StaticPanel ready");
+        } catch (Throwable t) {
+            Gdx.app.error("LevelField", "StaticPanel FAILED", t);
+            // Don't crash the whole game — let the board be playable even without
+            // the top HUD. The user will see a board but no score/record/undo UI.
+            // This is a defensive measure to prevent the 'black screen + immediate
+            // close' reported on some devices.
+        }
+
+        try {
+            // P1-fix: add a BottomActionBar between the board and the ad banner
+            // so the empty gap at the bottom is filled with useful controls
+            // (New Game + field-size switcher).
+            bottomActionBar = new BottomActionBar(stage);
+            Gdx.app.log("LevelField", "BottomActionBar ready");
+        } catch (Throwable t) {
+            Gdx.app.error("LevelField", "BottomActionBar FAILED", t);
+            // Don't crash the whole game if the bottom bar fails — just log and continue.
+            // The board + top panel are still usable.
+        }
 
         cells = new ArrayList<CellModel>();
         applyActions(diGameModel.onMove(Dir.none, true));
+        Gdx.app.log("LevelField", "ctor done");
     }
 
     /**
@@ -166,7 +187,9 @@ public class LevelField {
                     break;
 
                 case scoreAnimation:
-                    staticPanel.animatePlusScore(diAction.getValue(), diAction.newPos());
+                    if (staticPanel != null) {
+                        staticPanel.animatePlusScore(diAction.getValue(), diAction.newPos());
+                    }
                     break;
             }
 
@@ -202,7 +225,9 @@ public class LevelField {
         applyActions(stepActions);
 
         // 3. Refresh the score panel
-        staticPanel.refresh();
+        if (staticPanel != null) {
+            staticPanel.refresh();
+        }
     }
 
     public void onMove(Dir dir) {

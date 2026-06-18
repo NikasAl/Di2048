@@ -63,12 +63,14 @@ public class Di2048Game extends ApplicationAdapter {
         @Override
         public void create () {
                 game = this;
+                Gdx.app.log("Di2048", "create() start");
                 spriteBatch = new SpriteBatch();
 
                 Viewport viewport = new ScreenViewport();
                 viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true); //false
 
                 stage = new Stage(viewport, spriteBatch);
+                Gdx.app.log("Di2048", "stage ready");
 
                 int fieldType = Storage.getCurrentFieldType();
                 if(isLoadGameFromM) {
@@ -76,11 +78,21 @@ public class Di2048Game extends ApplicationAdapter {
                         isLoadGameFromM = false;
                 } else
                         diGameModel = Storage.getGameFromFileByFieldSize(fieldType);
-                levelField = new LevelField(diGameModel, stage);
+                Gdx.app.log("Di2048", "game model ready, fieldType=" + fieldType);
+
+                try {
+                        levelField = new LevelField(diGameModel, stage);
+                        Gdx.app.log("Di2048", "levelField ready");
+                } catch (Throwable t) {
+                        Gdx.app.error("Di2048", "levelField init FAILED", t);
+                        throw t;
+                }
+
                 DiGestureListener gestureListener = new DiGestureListener(levelField);
                 Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
 
                 GameSounds.soundsInit();
+                Gdx.app.log("Di2048", "create() done");
 
 //              AdBannerController adBannerController = new AdBannerController();
 //              adBannerController.start();

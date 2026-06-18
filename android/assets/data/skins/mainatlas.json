@@ -1,14 +1,5 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: test.fnt } },
-//com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: hoefler.fnt } },
-
-// P1-fix: standalone textures for new UI icons (undo, restart). These are
-// loaded as separate Texture regions (NOT part of mainatlas.atlas) so we can
-// add new icons without re-packing the main atlas.
-com.badlogic.gdx.graphics.Texture: {
-        undo128: { file: undo128.png },
-        restart128: { file: restart128.png }
-},
 
 com.badlogic.gdx.graphics.Color: {
         green: { a: 1, b: 0, g: 1, r: 0 },
@@ -29,9 +20,6 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
         greenpane-t: { name: greenpane, color: white-t }
         settings-t: { name: settings, color: white-t }
         close-t: { name: Button_Close, color: white-t }
-        // P1-fix: tinted variants of the new icons (white-on-transparent -> tintable)
-        undo-t: { name: undo128, color: white }
-        restart-t: { name: restart128, color: white }
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
         default: { down: bluepane-t, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
@@ -62,9 +50,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
         go-advice-but: { down: inyan-t, up: inyan},
         settings-but: { down: settings-t, up: settings},
         close-but: { down: close-t, up: Button_Close },
-        // P1-fix: new icon-button styles for the redesigned top panel + bottom action bar
-        undo-but: { down: undo-t, up: undo128 },
-        restart-but: { down: restart-t, up: restart128 },
 },
 
 

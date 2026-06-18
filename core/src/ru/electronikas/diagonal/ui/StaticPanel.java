@@ -22,9 +22,38 @@ import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.menu.SettingsMenu;
 
 /**
- * Created by nikas on 6/23/16.
+ * StaticPanel — fixed top-of-screen HUD showing score, record, undo and settings.
+ *
+ * REDESIGN (panel-redesign commit): the previous single-row layout
+ *   score(30%) | record(30%) | undo(18%) | settings(h/8 px)
+ * overflowed on most phone widths because settings used an absolute pixel width
+ * and the undo TextButton was wider than its 18% allocation. The settings icon
+ * was being pushed off-screen.
+ *
+ * New layout (2 rows, fits comfortably on any phone width):
+ *
+ *   +--------------------------------------------------+
+ *   |  SCORE        |  RECORD                          |  row 1: ~6% screen height
+ *   +--------------------------------------------------+
+ *   |  UNDO         |  SETTINGS (icon)                |  row 2: ~6% screen height
+ *   +--------------------------------------------------+
+ *
+ * - Panel total height = h/7 (~14.3% screen height, was h/8 = 12.5%)
+ * - Panel is positioned via a single source of truth: PANEL_TOP_FRACTION
+ *   (matches the value LevelField.DY derives from)
+ * - Undo button is given equal weight to Settings so neither starves
+ * - Score/Record label widths are computed from screen width, no hardcoded pixels
+ *
+ * The score row uses a smaller font scale (0.85 of the calibrated scale) so the
+ * 'Count' / 'Счет' header and the numeric value both fit on two lines inside
+ * half the screen width.
  */
 public class StaticPanel {
+
+    /** Public constants so LevelField can position the board relative to the panel. */
+    public static final float PANEL_TOP_FRACTION = 1f / 5f;     // panel y = h - h/5  (top edge)
+    public static final float PANEL_HEIGHT_FRACTION = 1f / 7f;  // panel height = h/7
+    public static final float FIELD_TOP_GAP_FRACTION = 0.02f;   // gap between panel bottom and board top
 
     private Stage stage;
     private DiGameModel diGameModel;
@@ -43,23 +72,35 @@ public class StaticPanel {
         w = Gdx.graphics.getWidth();
 
         Table table = new Table(Di2048Game.game.getUiSkin());
-        table.align(Align.center);
-        table.setPosition(0, h - h/5);
-        table.setWidth(w - w/20);
-        table.setHeight(h/8);
+        table.align(Align.top);
+        table.setWidth(w);
+        table.setHeight(h * PANEL_HEIGHT_FRACTION);
+        table.setPosition(0, h - h * PANEL_TOP_FRACTION);
         table.setBackground("bluepane");
-        table.defaults().height(h/8);
+        table.defaults().height(h * PANEL_HEIGHT_FRACTION / 2f);
+
+        // ----- Row 1: Score | Record -----
         table.row();
-        // P1-2: layout is now score | record | undo | settings
-        // score+record share ~60% of width; undo+settings take ~40%
-        scoreLabel = createScoreLabel(w * 0.30f);
-        table.add(scoreLabel).width(w * 0.30f).pad(w/80);
-        table.add(createRecordLabel()).width(w * 0.30f).pad(w/80);
-        // P1-2: undo button (rewarded)
-        table.add(createUndoBut()).width(w * 0.18f).pad(w/80);
-        table.add(createSettingsBut()).width(h/8).pad(w/80);
+        float colWidth = w / 2f;
+        scoreLabel = createScoreLabel(colWidth);
+        table.add(scoreLabel).width(colWidth).pad(w/80).top();
+        table.add(createRecordLabel()).width(colWidth).pad(w/80).top();
+
+        // ----- Row 2: Undo | Settings -----
+        table.defaults().height(h * PANEL_HEIGHT_FRACTION / 2f);
+        table.row();
+        // Undo takes ~45% of width, Settings takes ~25% (icon is square).
+        // Remaining ~30% is split into symmetric padding via pad().
+        float undoW = w * 0.42f;
+        float settingsW = h * PANEL_HEIGHT_FRACTION / 2f * 0.9f; // ~square, slightly smaller than row height
+        table.add(createUndoBut()).width(undoW).pad(w/80).top();
+        table.add(createSettingsBut()).width(settingsW).pad(w/80).top();
 
         table.pack();
+        // Re-apply the explicit width/height — pack() can shrink them otherwise
+        table.setWidth(w);
+        table.setHeight(h * PANEL_HEIGHT_FRACTION);
+        table.setPosition(0, h - h * PANEL_TOP_FRACTION);
 //        table.setDebug(true);
         stage.addActor(table);
     }
@@ -69,13 +110,13 @@ public class StaticPanel {
      * most recent move. Silently no-ops if no undo snapshot is available
      * (Di2048Game.undoLastMove guards on canUndo()).
      *
-     * Visual: re-uses the 'green-but' style with an i18n label ('UNDO' / 'ОТМЕНА')
-     * so we don't need to modify the existing mainatlas.png asset.
+     * REDESIGN: smaller font scale (0.7) and explicit width allocation so the
+     * label never pushes the settings button off-screen.
      */
     private Actor createUndoBut() {
         TextButton undoBut = new TextButton(Di2048Game.game.bdl().get("undo"),
                 Di2048Game.game.getUiSkin().get("green-but", TextButton.TextButtonStyle.class));
-        undoBut.getLabel().setFontScale(0.9f);
+        undoBut.getLabel().setFontScale(0.7f);
         undoBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 if (!diGameModel.canUndo()) {
@@ -115,7 +156,8 @@ public class StaticPanel {
 
     private Label createRecordLabel() {
         Label label = new Label(getRecordText(), Di2048Game.game.getUiSkin().get("score-lbl", Label.LabelStyle.class));
-        label.setFontScale(scale);
+        label.setAlignment(Align.center);
+        label.setFontScale(scale * 0.85f);
         label.pack();
         return label;
     }
@@ -128,7 +170,9 @@ public class StaticPanel {
     private Label createScoreLabel(float width) {
         Label label = new Label(getScoreText(), Di2048Game.game.getUiSkin()
                 .get("score-lbl", Label.LabelStyle.class));
+        label.setAlignment(Align.center);
         scale = Utils.textSizeTuning(label, width, 70);
+        label.setFontScale(scale * 0.85f);
         label.pack();
         return label;
     }

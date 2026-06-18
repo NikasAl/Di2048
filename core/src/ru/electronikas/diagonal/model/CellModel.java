@@ -1,6 +1,5 @@
 package ru.electronikas.diagonal.model;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -18,6 +17,12 @@ public class CellModel {
 
     public int value;
     protected Pos pos;
+    /**
+     * Side length of a single cell, in screen pixels.
+     * Set centrally by {@link LevelField#recomputeMetrics()} before any batch
+     * of CellModel constructors runs. The constructor no longer rewrites it
+     * (that was the source of the field-position drift bug).
+     */
     public static float size;
 
     public CustomTextButton cell;
@@ -38,7 +43,9 @@ public class CellModel {
     }
 
     public CellModel(Pos pos, int value) {
-        size = Gdx.graphics.getWidth() / DiGameModel.FIELD_SIZE;
+        // BUGFIX (panel-redesign): do NOT recompute `size` here.
+        // It is now owned by LevelField.recomputeMetrics() and must be set
+        // before constructing any CellModel.
         this.pos = pos;
         this.value = value;
 

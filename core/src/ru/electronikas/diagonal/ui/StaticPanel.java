@@ -132,7 +132,7 @@ public class StaticPanel {
                     // Last-resort: 1x1 white texture so the button still renders something.
                     undoDrawable = new TextureRegionDrawable(
                             new TextureRegion(new Texture(
-                                    com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888, 1, 1)));
+                                    1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888)));
                 }
             }
         }

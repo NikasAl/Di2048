@@ -12,15 +12,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+
 import ru.electronikas.diagonal.Di2048Game;
-import ru.electronikas.diagonal.model.Product;
 import ru.electronikas.diagonal.settings.Storage;
 
 import static ru.electronikas.diagonal.ui.Utils.currentScale;
 import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
 
 /**
- * Created by navdonin on 03/01/15.
+ * Game Over overlay.
+ *
+ * Removed in P0-9:
+ *  - removeAdsButton (was triggering RuStore Billing purchase)
+ *  - Conditional layout based on Storage.isAdWareShowing() (always show full menu now)
+ *
+ * Changed:
+ *  - procceedButton now uses PlatformListener.showRewardVideo(Runnable)
+ *    with del2s() as the reward callback (no longer hard-coupled inside AdYandex)
  */
 public class GameOverMenu {
     Table rateMenu;
@@ -38,30 +46,20 @@ public class GameOverMenu {
         rateMenu.align(Align.topLeft);
         rateMenu.setPosition(butW / 2, h);
         rateMenu.setWidth(w - butW);
-        if(Storage.isAdWareShowing())
-            rateMenu.setHeight(h / 1.8f);
-        else
-            rateMenu.setHeight(h / 2.3f);
+        // Banner is always shown now (no paid removal), so use the taller layout.
+        rateMenu.setHeight(h / 1.8f);
         rateMenu.background("bluepane-t");
 
-        rateMenu.row().height(h / 10).width(w - butW - butW/2);
+        rateMenu.row().height(h / 10).width(w - butW - butW / 2);
         rateMenu.add(createHeader(w - butW));
 
         rateMenu.row().height(h / 10);
         rateMenu.add(procceedButton(butW * 4f)).pad(10).width(butW * 4f);
 
-        if(Storage.isAdWareShowing()) {
-            rateMenu.row().height(h / 10);
-            rateMenu.add(removeAdsButton(butW * 4f)).pad(10).width(butW * 4f);
-        }
-
         rateMenu.row().height(h / 10);
         rateMenu.add(tryAgaingButton()).pad(10).width(butW * 4f);
 
-//        rateMenu.setDebug(true);
-
         stage.addActor(rateMenu);
-
     }
 
     private Actor tryAgaingButton() {
@@ -78,36 +76,21 @@ public class GameOverMenu {
         return openTipsBut;
     }
 
-    private Actor removeAdsButton(float width) {
-        TextButton removeAdButt = new TextButton(Di2048Game.game.bdl().get("removeAd"),
-                uiSkin.get("magenta-but", TextButton.TextButtonStyle.class));
-        textSizeTuning(removeAdButt.getLabel(), width, 90);
-        removeAdButt.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                Di2048Game.game.platformListener.removeAds(Product.ads_remove_one_day);
-            }
-        });
-        return removeAdButt;
-    }
-
     private Actor procceedButton(float width) {
         TextButton openTipsBut = new TextButton(Di2048Game.game.bdl().get("removeAndGo"),
                 uiSkin.get("magenta-but", TextButton.TextButtonStyle.class));
         textSizeTuning(openTipsBut.getLabel(), width, 60);
         openTipsBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                if(!Storage.isAdWareShowing()) {
-                    Di2048Game.game.del2s();
-                    return;
-                }
-                Di2048Game.game.platformListener.showFullScr();
+                // Watch rewarded -> delete all 2s on the board -> continue playing
+                Di2048Game.game.platformListener.showRewardVideo(() -> Di2048Game.game.del2s());
             }
         });
         return openTipsBut;
     }
 
     private Actor createHeader(float width) {
-        Label headLabel =  new Label(Di2048Game.game.bdl().get("gameOver"), uiSkin);
+        Label headLabel = new Label(Di2048Game.game.bdl().get("gameOver"), uiSkin);
         headLabel.setAlignment(Align.center);
         textSizeTuning(headLabel, width);
         return headLabel;
@@ -120,9 +103,8 @@ public class GameOverMenu {
     }
 
     public void animateOpen() {
-        MoveToAction action = Actions.moveTo(butW / 2, h/4);
+        MoveToAction action = Actions.moveTo(butW / 2, h / 4);
         action.setDuration(0.5f);
         rateMenu.addAction(action);
-
     }
 }

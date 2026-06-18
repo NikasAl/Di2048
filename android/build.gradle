@@ -1,6 +1,6 @@
 android {
-    buildToolsVersion "34.0.0"
-    compileSdkVersion 34
+    buildToolsVersion "35.0.0"
+    compileSdkVersion 35
     namespace 'ru.electronikas.diagonal'
     sourceSets {
         main {
@@ -12,10 +12,7 @@ android {
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
         }
-
-//        instrumentTest.setRoot('tests')
     }
-
 
     signingConfigs {
         release {
@@ -33,33 +30,36 @@ android {
 
     defaultConfig {
         applicationId "ru.electronikas.diagonal"
-        minSdkVersion 23
-        targetSdkVersion 34
+        minSdkVersion 24
+        targetSdkVersion 35
         multiDexEnabled true
+        versionCode 41
+        versionName "1.7.0"
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
+
+    buildFeatures {
+        buildConfig true
+    }
+
     lintOptions {
         abortOnError false
         disable 'InvalidPackage'
-
     }
 
     aaptOptions {
         noCompress ".ogg"
     }
 
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
-
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
             proguardFile 'proguard-project.txt'
         }
@@ -67,14 +67,6 @@ android {
         debug {
             signingConfig signingConfigs.debug
         }
-/*
-        debug {
-            minifyEnabled true
-            shrinkResources true
-            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
-            proguardFile 'proguard-project.txt'
-        }
-*/
     }
 }
 

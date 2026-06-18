@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import ru.electronikas.diagonal.Di2048Game;
-import ru.electronikas.diagonal.model.Product;
 import ru.electronikas.diagonal.settings.GameSounds;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.Utils;
@@ -61,13 +60,7 @@ public class SettingsMenu {
         rateMenu.row().height(h / 10);
         rateMenu.add(rateButton(realW)).colspan(4).pad(padg).width(realW);
 
-        if(Storage.isAdWareShowing()) {
-//            rateMenu.row().height(h / 10);
-//            rateMenu.add(payButton()).colspan(2).pad(padg).width(realW);
-
-            rateMenu.row().height(h / 10);
-            rateMenu.add(payForOneDayAdsRemovingButton()).colspan(4).pad(padg).width(realW);
-        }
+        // P0-9: removed payForOneDayAdsRemovingButton (RuStore Billing removed)
 
         rateMenu.row().height(h / 10);
         rateMenu.add(closeSettingsButton()).colspan(4).pad(padg).width(realW);
@@ -83,34 +76,6 @@ public class SettingsMenu {
 
         stage.addActor(rateMenu);
 
-    }
-
-/*
-    private Actor payButton() {
-        TextButton payBut = new TextButton(Assets.bdl().get("payDay"),
-                uiSkin.get("green-but", TextButton.TextButtonStyle.class));
-        payBut.getLabel().setFontScale(scaleForButtons);
-        payBut.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                Di2048Game.game.platformListener.removeAds(Product.ads_remove_day);
-                animateHide();
-            }
-        });
-        return payBut;
-    }
-*/
-
-    private Actor payForOneDayAdsRemovingButton() {
-        TextButton payBut = new TextButton(Di2048Game.game.bdl().get("payDay"),
-                uiSkin.get("green-but", TextButton.TextButtonStyle.class));
-        payBut.getLabel().setFontScale(scaleForButtons);
-        payBut.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                Di2048Game.game.platformListener.removeAds(Product.ads_remove_one_day);
-                animateHide();
-            }
-        });
-        return payBut;
     }
 
     private Actor shareButton() {

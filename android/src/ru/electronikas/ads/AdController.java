@@ -3,17 +3,26 @@ package ru.electronikas.ads;
 import android.app.Activity;
 import android.widget.RelativeLayout;
 
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ru.electronikas.diagonal.settings.Storage;
-
+/**
+ * AdController — thin wrapper over AdYandex.
+ *
+ * Responsibilities:
+ *  - hold a single AdYandex instance
+ *  - schedule the first banner show after a short delay
+ *  - guard all calls against null (in case ads were stopped)
+ *
+ * Removed in P0-7:
+ *  - locale-based switching to AdMobX (AdMob fully deleted)
+ *  - Storage.isAdWareShowing() check (billing removed, ads always on)
+ */
 public class AdController implements UniAd {
 
-    private UniAd uniAd = null;
-    private Activity context;
-    private RelativeLayout layout;
+    private AdYandex adYandex = null;
+    private final Activity context;
+    private final RelativeLayout layout;
 
     public AdController(Activity context, RelativeLayout layout) {
         this.context = context;
@@ -22,59 +31,47 @@ public class AdController implements UniAd {
 
     @Override
     public void initAd() {
-        if (!Storage.isAdWareShowing()) return;
+        adYandex = new AdYandex(context, layout);
+        adYandex.initAd();
 
-        if (Locale.getDefault().getLanguage().equals("ru")) {
-            uniAd = new AdYandex(context, layout);
-        } else {
-            uniAd = new AdMobX(context, layout);
-        }
-        uniAd.initAd();
-
-        TimerTask timerTask = new TimerTask() {
+        // Show banner shortly after init; Yandex SDK handles its own refresh afterwards.
+        TimerTask showBannerTask = new TimerTask() {
             @Override
             public void run() {
-                context.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showAdsBanner();
-                    }
-                });
+                context.runOnUiThread(() -> showAdsBanner());
             }
         };
-
-        Timer timer = new Timer();
-        timer.schedule(timerTask, 500, 30000);
-
+        new Timer().schedule(showBannerTask, 500);
     }
 
     @Override
     public void showAdsBanner() {
-        if (uniAd == null) return;
-        uniAd.showAdsBanner();
+        if (adYandex == null) return;
+        adYandex.showAdsBanner();
     }
 
     @Override
     public void hideAdsBanner() {
-        if (uniAd == null) return;
-        uniAd.hideAdsBanner();
+        if (adYandex == null) return;
+        adYandex.hideAdsBanner();
     }
 
     @Override
     public void showInterstitialVideo() {
-        if (uniAd == null) return;
-        uniAd.showInterstitialVideo();
+        if (adYandex == null) return;
+        adYandex.showInterstitialVideo();
     }
 
     @Override
-    public void showRewardVideo() {
-        if (uniAd == null) return;
-        uniAd.showRewardVideo();
+    public void showRewardVideo(Runnable onReward) {
+        if (adYandex == null) return;
+        adYandex.showRewardVideo(onReward);
     }
 
     public void stopAds() {
-        if(uniAd != null)
-            uniAd.hideAdsBanner();
-        uniAd = null;
+        if (adYandex != null) {
+            adYandex.hideAdsBanner();
+        }
+        adYandex = null;
     }
 }

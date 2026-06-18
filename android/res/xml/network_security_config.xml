@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <base-config cleartextTrafficPermitted="true">
-        <trust-anchors>
-            <certificates src="system" />
-            <certificates src="user" />
-        </trust-anchors>
-    </base-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">127.0.0.1</domain>
-    </domain-config>
+    <!-- P0-12: hardened config
+         * cleartextTrafficPermitted=false (HTTPS only)
+         * removed <certificates src="user" /> (was a MitM backdoor)
+         * removed 127.0.0.1 cleartext exception (was used by defunct ad SDKs)
+    -->
+    <base-config cleartextTrafficPermitted="false" />
 </network-security-config>

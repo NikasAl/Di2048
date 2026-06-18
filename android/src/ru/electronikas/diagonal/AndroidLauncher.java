@@ -109,6 +109,12 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
     }
 
     @Override
+    public void onGameOver() {
+        // P1-4: AdController applies its own frequency cap (every 3rd game over, 2 min rate limit)
+        adController.maybeShowInterstitialOnGameOver();
+    }
+
+    @Override
     public void trackEvent(String eventId) {
         MyTracker.trackEvent(eventId);
     }

@@ -60,6 +60,11 @@ public class DesktopLauncher implements PlatformListener {
         }
 
         @Override
+        public void onGameOver() {
+                // Desktop dev stub: no interstitial on desktop
+        }
+
+        @Override
         public void trackEvent(String eventId) {
         }
 }

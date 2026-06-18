@@ -100,6 +100,30 @@ public class LevelField {
 
     }
 
+    /**
+     * P1-2: rebuild the visual board from an undo action list.
+     *
+     * DiGameModel.undo() returns:
+     *   1. GameContinueAction (unpause)
+     *   2. NewCellAction for every non-zero cell in the restored snapshot
+     *
+     * Before applying those NewCellActions we must clear the current CellModel
+     * actors on the board, otherwise duplicates will be stacked.
+     */
+    public void applyUndoActions(List<DiAction> stepActions) {
+        // 1. Clear all current cells from stage and list
+        for (CellModel cm : new ArrayList<>(cells)) {
+            cm.cell.remove();
+        }
+        cells.clear();
+
+        // 2. Re-apply actions on the empty board
+        applyActions(stepActions);
+
+        // 3. Refresh the score panel
+        staticPanel.refresh();
+    }
+
     public void onMove(Dir dir) {
         applyActions(diGameModel.onMove(dir, false));
     }

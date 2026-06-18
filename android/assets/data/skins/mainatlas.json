@@ -1,61 +1,76 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: test.fnt } },
 //com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: hoefler.fnt } },
+
+// P1-fix: standalone textures for new UI icons (undo, restart). These are
+// loaded as separate Texture regions (NOT part of mainatlas.atlas) so we can
+// add new icons without re-packing the main atlas.
+com.badlogic.gdx.graphics.Texture: {
+        undo128: { file: undo128.png },
+        restart128: { file: restart128.png }
+},
+
 com.badlogic.gdx.graphics.Color: {
-	green: { a: 1, b: 0, g: 1, r: 0 },
-	yellow: { a: 1, b: 1, g: 1, r: 0 },
-	blue: { a: 1, b: 1, g: 0, r: 0 },
-	white: { a: 1, b: 1, g: 1, r: 1 },
-	white-t: { a: 0.5, b: 1, g: 1, r: 1 },
-	reddy-t: { a: 0.9, b: 0.8, g: 0.8, r: 1 },
-	red: { a: 1, b: 0.5, g: 0.5, r: 1 },
-	red-t: { a: 0.5, b: 0.5, g: 0.5, r: 1 },
-	black: { a: 1, b: 0, g: 0, r: 0 }
+        green: { a: 1, b: 0, g: 1, r: 0 },
+        yellow: { a: 1, b: 1, g: 1, r: 0 },
+        blue: { a: 1, b: 1, g: 0, r: 0 },
+        white: { a: 1, b: 1, g: 1, r: 1 },
+        white-t: { a: 0.5, b: 1, g: 1, r: 1 },
+        reddy-t: { a: 0.9, b: 0.8, g: 0.8, r: 1 },
+        red: { a: 1, b: 0.5, g: 0.5, r: 1 },
+        red-t: { a: 0.5, b: 0.5, g: 0.5, r: 1 },
+        black: { a: 1, b: 0, g: 0, r: 0 }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
-	bluepane-t: { name: bluepane, color: reddy-t }
-	redpane-t: { name: bluepane, color: red-t }
-	magentapane-t: { name: magentapane, color: white-t }
-	inyan-t: { name: inyan, color: white-t }
-	greenpane-t: { name: greenpane, color: white-t }
-	settings-t: { name: settings, color: white-t }
-	close-t: { name: Button_Close, color: white-t }
+        bluepane-t: { name: bluepane, color: reddy-t }
+        redpane-t: { name: bluepane, color: red-t }
+        magentapane-t: { name: magentapane, color: white-t }
+        inyan-t: { name: inyan, color: white-t }
+        greenpane-t: { name: greenpane, color: white-t }
+        settings-t: { name: settings, color: white-t }
+        close-t: { name: Button_Close, color: white-t }
+        // P1-fix: tinted variants of the new icons (white-on-transparent -> tintable)
+        undo-t: { name: undo128, color: white }
+        restart-t: { name: restart128, color: white }
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
-	default: { down: bluepane-t, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
-	green-but: { down: greenpane-t, up: greenpane, font: default-font, fontColor: white, downFontColor: white-t},
-	red-but: { down: redpane-t, up: redpane, font: default-font, fontColor: white, downFontColor: white-t},
-	magenta-but: { down: magentapane-t, up: magentapane, font: default-font, fontColor: white, downFontColor: white-t},
+        default: { down: bluepane-t, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
+        green-but: { down: greenpane-t, up: greenpane, font: default-font, fontColor: white, downFontColor: white-t},
+        red-but: { down: redpane-t, up: redpane, font: default-font, fontColor: white, downFontColor: white-t},
+        magenta-but: { down: magentapane-t, up: magentapane, font: default-font, fontColor: white, downFontColor: white-t},
 
 },
 
 ru.electronikas.diagonal.ui.actors.CustomTextButton$TextButtonStyle: {
-	default: { down: bluepane-t, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
+        default: { down: bluepane-t, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
 
-	yellow: { down: yellowpane, up: yellowpane, font: default-font, fontColor: white, downFontColor: white-t},
-	red: { down: redpane, up: redpane, font: default-font, fontColor: white, downFontColor: white-t},
-	green: { down: greenpane, up: greenpane, font: default-font, fontColor: white, downFontColor: white-t},
-	blue: { down: bluepane, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
-	ledenec: { down: ledenecpane, up: ledenecpane, font: default-font, fontColor: white, downFontColor: white-t},
-	magenta: { down: magentapane, up: magentapane, font: default-font, fontColor: white, downFontColor: white-t},
-	orange: { down: orangepane, up: orangepane, font: default-font, fontColor: white, downFontColor: white-t},
-	violet: { down: violetpane, up: violetpane, font: default-font, fontColor: white, downFontColor: white-t},
-	reddy: { down: reddypane, up: reddypane, font: default-font, fontColor: white, downFontColor: white-t},
-	cyan: { down: cyanpane, up: cyanpane, font: default-font, fontColor: white, downFontColor: white-t},
-	lgreen: { down: lgreenpane, up: lgreenpane, font: default-font, fontColor: white, downFontColor: white-t},
+        yellow: { down: yellowpane, up: yellowpane, font: default-font, fontColor: white, downFontColor: white-t},
+        red: { down: redpane, up: redpane, font: default-font, fontColor: white, downFontColor: white-t},
+        green: { down: greenpane, up: greenpane, font: default-font, fontColor: white, downFontColor: white-t},
+        blue: { down: bluepane, up: bluepane, font: default-font, fontColor: white, downFontColor: white-t},
+        ledenec: { down: ledenecpane, up: ledenecpane, font: default-font, fontColor: white, downFontColor: white-t},
+        magenta: { down: magentapane, up: magentapane, font: default-font, fontColor: white, downFontColor: white-t},
+        orange: { down: orangepane, up: orangepane, font: default-font, fontColor: white, downFontColor: white-t},
+        violet: { down: violetpane, up: violetpane, font: default-font, fontColor: white, downFontColor: white-t},
+        reddy: { down: reddypane, up: reddypane, font: default-font, fontColor: white, downFontColor: white-t},
+        cyan: { down: cyanpane, up: cyanpane, font: default-font, fontColor: white, downFontColor: white-t},
+        lgreen: { down: lgreenpane, up: lgreenpane, font: default-font, fontColor: white, downFontColor: white-t},
 
 }
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
-	default: { down: bluepane-t, up: bluepane},
-	go-advice-but: { down: inyan-t, up: inyan},
-	settings-but: { down: settings-t, up: settings},
-	close-but: { down: close-t, up: Button_Close },
+        default: { down: bluepane-t, up: bluepane},
+        go-advice-but: { down: inyan-t, up: inyan},
+        settings-but: { down: settings-t, up: settings},
+        close-but: { down: close-t, up: Button_Close },
+        // P1-fix: new icon-button styles for the redesigned top panel + bottom action bar
+        undo-but: { down: undo-t, up: undo128 },
+        restart-but: { down: restart-t, up: restart128 },
 },
 
 
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
-	default: { font: default-font, fontColor: white }
-	score-lbl: { font: default-font, fontColor: white, background: greenpane }
+        default: { font: default-font, fontColor: white }
+        score-lbl: { font: default-font, fontColor: white, background: greenpane }
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
@@ -64,7 +79,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 
 com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
   default: { vScroll: slide-line-v, hScrollKnob: scroll-knob, background: bluepane,
-	         hScroll: slide-line-v, vScrollKnob: scroll-knob }
+                 hScroll: slide-line-v, vScrollKnob: scroll-knob }
 },
 com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
   default: {
@@ -75,6 +90,6 @@ com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
-	default: { selection: greenpane, background: bluepane, font: default-font, fontColor: blue, cursor: redpane }
+        default: { selection: greenpane, background: bluepane, font: default-font, fontColor: blue, cursor: redpane }
 },
 }

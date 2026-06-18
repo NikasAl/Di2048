@@ -42,6 +42,7 @@ public class LevelField {
     private DiGameModel diGameModel;
     private Stage stage;
     private StaticPanel staticPanel;
+    private BottomActionBar bottomActionBar;
     private boolean isPause = false;
     private GameOverMenu gameOverMenu;
 
@@ -62,6 +63,10 @@ public class LevelField {
         createFields();
 
         staticPanel = new StaticPanel(stage, diGameModel);
+        // P1-fix: add a BottomActionBar between the board and the ad banner
+        // so the empty gap at the bottom is filled with useful controls
+        // (New Game + field-size switcher).
+        bottomActionBar = new BottomActionBar(stage);
 
         cells = new ArrayList<CellModel>();
         applyActions(diGameModel.onMove(Dir.none, true));
@@ -74,13 +79,12 @@ public class LevelField {
      * against future refactors).
      *
      *   CellModel.size = screen width / FIELD_SIZE
-     *   DY             = (panel bottom) - FIELD_TOP_GAP - board_height
+     *   DY             = board_bottom (anchored above the bottom action bar + ad banner)
      *
-     * Where 'panel bottom' is computed from {@link StaticPanel#PANEL_TOP_FRACTION}
-     * and {@link StaticPanel#PANEL_HEIGHT_FRACTION}. Both StaticPanel and
-     * LevelField read from the same source of truth, so the gap between them
-     * is always {@link StaticPanel#FIELD_TOP_GAP_FRACTION} of the screen height,
-     * regardless of FIELD_SIZE.
+     * The board is CENTERED vertically in the available space between the
+     * StaticPanel (top) and the BottomActionBar + ad banner (bottom), so the
+     * empty gap is split evenly above and below the board instead of all
+     * piling up at the bottom.
      */
     public static void recomputeMetrics() {
         float sw = Gdx.graphics.getWidth();
@@ -88,27 +92,30 @@ public class LevelField {
         // Cell size: width-based, so the board spans the full screen width.
         CellModel.size = sw / DiGameModel.FIELD_SIZE;
 
-        // StaticPanel is positioned at y = h - h*PANEL_TOP_FRACTION with height h*PANEL_HEIGHT_FRACTION,
-        // so its BOTTOM edge is at y = h - h*PANEL_TOP_FRACTION - h*PANEL_HEIGHT_FRACTION... but
-        // careful: libGDX Table.setPosition(x, y) sets the BOTTOM-LEFT corner of the table,
-        // and StaticPanel aligns to top via Align.top. We position the table so that its
-        // top edge is at h - h*PANEL_TOP_FRACTION. With height h*PANEL_HEIGHT_FRACTION,
-        // its bottom edge is at h - h*PANEL_TOP_FRACTION - h*PANEL_HEIGHT_FRACTION.
-        // Wait — actually the previous StaticPanel used setPosition(0, h - h/5) with the
-        // table's bottom-left at that y, meaning the table occupies [h-h/5, h-h/5+h/8]
-        // which goes ABOVE the screen. That worked because Align.top was set and the
-        // visible content was anchored at the table's top. To keep the visual position
-        // identical to the previous version, we use the SAME anchor: panel bottom-left
-        // at y = h - h*PANEL_TOP_FRACTION, panel visually grows UPWARD.
-        // For DY we only care about the visual BOTTOM edge of the panel, which is at
-        // y = h - h*PANEL_TOP_FRACTION (where the table's bottom-left sits).
+        // Top constraint: bottom edge of the StaticPanel.
         float panelBottom = sh - sh * StaticPanel.PANEL_TOP_FRACTION;
-        float boardTop = panelBottom - sh * StaticPanel.FIELD_TOP_GAP_FRACTION;
+        float topGap = sh * StaticPanel.FIELD_TOP_GAP_FRACTION;
+        float availableTop = panelBottom - topGap;
+
+        // Bottom constraint: top edge of the BottomActionBar (which itself sits
+        // on top of the ad banner reserve).
+        float bottomReserve = sh * (BottomActionBar.BOTTOM_BAR_HEIGHT_FRACTION
+                + BottomActionBar.AD_BANNER_RESERVE_FRACTION);
+        float bottomGap = sh * StaticPanel.FIELD_TOP_GAP_FRACTION; // symmetric gap
+        float availableBottom = bottomReserve + bottomGap;
+
+        // Vertical space available for the board itself.
+        float availableHeight = availableTop - availableBottom;
         float boardHeight = CellModel.size * DiGameModel.FIELD_SIZE;
-        DY = boardTop - boardHeight;
-        // Defensive: never let the board fall off the bottom of the screen.
-        if (DY < sh * 0.02f) {
-            DY = sh * 0.02f;
+
+        // Center the board in the available vertical space. If the board is
+        // taller than the available space (very small screens / large FIELD_SIZE),
+        // DY can go negative — clamp it so the board never gets pushed below the
+        // ad banner reserve.
+        DY = availableBottom + Math.max(0f, (availableHeight - boardHeight) / 2f);
+        // Defensive: never let the board overlap the ad banner reserve.
+        if (DY < bottomReserve) {
+            DY = bottomReserve;
         }
     }
 

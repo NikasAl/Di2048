@@ -61,6 +61,27 @@ public class AndroidLauncher extends AndroidApplication implements PlatformListe
         setContentView(layout);
     }
 
+    /**
+     * P1-fix: forward lifecycle events to AdController so the banner refresh
+     * timer stops while paused and immediately reloads on resume (otherwise the
+     * banner stays blank/white after returning from background).
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (adController != null) {
+            adController.onPause();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (adController != null) {
+            adController.onResume();
+        }
+    }
+
     @Override
     public void share() {
         // share logic retained verbatim from the previous version

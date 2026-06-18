@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
@@ -24,36 +23,33 @@ import ru.electronikas.diagonal.ui.menu.SettingsMenu;
 /**
  * StaticPanel — fixed top-of-screen HUD showing score, record, undo and settings.
  *
- * REDESIGN (panel-redesign commit): the previous single-row layout
- *   score(30%) | record(30%) | undo(18%) | settings(h/8 px)
- * overflowed on most phone widths because settings used an absolute pixel width
- * and the undo TextButton was wider than its 18% allocation. The settings icon
- * was being pushed off-screen.
+ * DESIGN v2 (panel-fix commit): the previous 2-row redesign still overflowed:
+ *  - score/record labels used the 'score-lbl' LabelStyle which has its own
+ *    green 'greenpane' background. With pad(w/80) AND width(colWidth=w/2),
+ *    each label's green pane visually extended beyond the table's blue
+ *    'bluepane' background, producing the reported overhang.
+ *  - The undo button was a TextButton with 'UNDO'/'ОТМЕНА' label, which looked
+ *    inconsistent next to the icon-based settings button and crowded the row.
  *
- * New layout (2 rows, fits comfortably on any phone width):
+ * Fix v2:
+ *  - Row 1 (stats): two Labels with the green-pane background, but each gets
+ *    width = (w - 3*pad) / 2  so the two panes plus padding sum to exactly w.
+ *    Font scale reduced to 0.55 to keep "Счет\n123456" inside the pane.
+ *  - Row 2 (actions): undo is now an ImageButton with a dedicated icon
+ *    (undo128.png, registered as 'undo-but' ImageButtonStyle in mainatlas.json).
+ *    Settings stays an ImageButton. Both are square and centered.
  *
- *   +--------------------------------------------------+
- *   |  SCORE        |  RECORD                          |  row 1: ~6% screen height
- *   +--------------------------------------------------+
- *   |  UNDO         |  SETTINGS (icon)                |  row 2: ~6% screen height
- *   +--------------------------------------------------+
- *
- * - Panel total height = h/7 (~14.3% screen height, was h/8 = 12.5%)
- * - Panel is positioned via a single source of truth: PANEL_TOP_FRACTION
- *   (matches the value LevelField.DY derives from)
- * - Undo button is given equal weight to Settings so neither starves
- * - Score/Record label widths are computed from screen width, no hardcoded pixels
- *
- * The score row uses a smaller font scale (0.85 of the calibrated scale) so the
- * 'Count' / 'Счет' header and the numeric value both fit on two lines inside
- * half the screen width.
+ * Geometry constants are public so LevelField positions the board consistently.
  */
 public class StaticPanel {
 
     /** Public constants so LevelField can position the board relative to the panel. */
-    public static final float PANEL_TOP_FRACTION = 1f / 5f;     // panel y = h - h/5  (top edge)
-    public static final float PANEL_HEIGHT_FRACTION = 1f / 7f;  // panel height = h/7
+    public static final float PANEL_TOP_FRACTION = 1f / 5f;     // panel y anchor
+    public static final float PANEL_HEIGHT_FRACTION = 1f / 6f;  // panel height (was 1/7, now 1/6 for more room)
     public static final float FIELD_TOP_GAP_FRACTION = 0.02f;   // gap between panel bottom and board top
+
+    /** Horizontal padding inside the table (between cells + edge). */
+    private static final float CELL_PAD_FRACTION = 0.025f;  // 2.5% of screen width
 
     private Stage stage;
     private DiGameModel diGameModel;
@@ -77,46 +73,50 @@ public class StaticPanel {
         table.setHeight(h * PANEL_HEIGHT_FRACTION);
         table.setPosition(0, h - h * PANEL_TOP_FRACTION);
         table.setBackground("bluepane");
-        table.defaults().height(h * PANEL_HEIGHT_FRACTION / 2f);
+
+        float pad = w * CELL_PAD_FRACTION;
+        float row1Height = h * PANEL_HEIGHT_FRACTION * 0.55f;
+        float row2Height = h * PANEL_HEIGHT_FRACTION * 0.45f;
+        // Each stat pane takes half of (width - 3*pad) so two panes + 3 pads = exactly w.
+        float statWidth = (w - 3 * pad) / 2f;
+        // Each action button is square, sized to row2Height minus a small inner pad.
+        float actionSize = row2Height * 0.85f;
 
         // ----- Row 1: Score | Record -----
-        table.row();
-        float colWidth = w / 2f;
-        scoreLabel = createScoreLabel(colWidth);
-        table.add(scoreLabel).width(colWidth).pad(w/80).top();
-        table.add(createRecordLabel()).width(colWidth).pad(w/80).top();
+        table.row().height(row1Height).padTop(pad);
+        scoreLabel = createScoreLabel(statWidth);
+        table.add(scoreLabel).width(statWidth).padLeft(pad).padRight(pad).top();
+        table.add(createRecordLabel()).width(statWidth).padLeft(pad).padRight(pad).top();
 
-        // ----- Row 2: Undo | Settings -----
-        table.defaults().height(h * PANEL_HEIGHT_FRACTION / 2f);
-        table.row();
-        // Undo takes ~45% of width, Settings takes ~25% (icon is square).
-        // Remaining ~30% is split into symmetric padding via pad().
-        float undoW = w * 0.42f;
-        float settingsW = h * PANEL_HEIGHT_FRACTION / 2f * 0.9f; // ~square, slightly smaller than row height
-        table.add(createUndoBut()).width(undoW).pad(w/80).top();
-        table.add(createSettingsBut()).width(settingsW).pad(w/80).top();
+        // ----- Row 2: Undo (icon) | Settings (icon) -----
+        table.row().height(row2Height).padBottom(pad).padTop(pad / 2f);
+        table.add(createUndoBut()).size(actionSize).top();
+        table.add(createSettingsBut()).size(actionSize).top();
 
-        table.pack();
-        // Re-apply the explicit width/height — pack() can shrink them otherwise
-        table.setWidth(w);
-        table.setHeight(h * PANEL_HEIGHT_FRACTION);
-        table.setPosition(0, h - h * PANEL_TOP_FRACTION);
-//        table.setDebug(true);
+        // Do NOT call table.pack() — it would shrink the table to preferred sizes
+        // and undo the explicit width/height we just set.
         stage.addActor(table);
     }
 
     /**
-     * P1-2: 'Undo last move' button. Watches a rewarded video, then reverts the
-     * most recent move. Silently no-ops if no undo snapshot is available
-     * (Di2048Game.undoLastMove guards on canUndo()).
-     *
-     * REDESIGN: smaller font scale (0.7) and explicit width allocation so the
-     * label never pushes the settings button off-screen.
+     * P1-2 + v2: 'Undo last move' as an ImageButton with a dedicated undo icon.
+     * Watches a rewarded video, then reverts the most recent move. Silently
+     * no-ops if no undo snapshot is available.
      */
     private Actor createUndoBut() {
-        TextButton undoBut = new TextButton(Di2048Game.game.bdl().get("undo"),
-                Di2048Game.game.getUiSkin().get("green-but", TextButton.TextButtonStyle.class));
-        undoBut.getLabel().setFontScale(0.7f);
+        final ImageButton undoBut = new ImageButton(
+                Di2048Game.game.getUiSkin().get("undo-but", ImageButton.ImageButtonStyle.class));
+        // Subtle pulsing animation so the button reads as 'available' even without text.
+        final Color baseColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        final Color dimColor  = new Color(1.0f, 1.0f, 1.0f, 0.7f);
+        undoBut.addAction(
+                Actions.forever(
+                        Actions.sequence(
+                                Actions.color(baseColor, 1.4f),
+                                Actions.color(dimColor, 1.4f)
+                        )
+                )
+        );
         undoBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 if (!diGameModel.canUndo()) {
@@ -142,7 +142,6 @@ public class StaticPanel {
         });
         final Color baseColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         final Color alphaColor = new Color(1.0f, 1.0f, 1.0f, 0.5f);
-        // Создаем последовательность действий для анимации
         settingsBut.addAction(
                 Actions.forever(
                         Actions.sequence(
@@ -157,8 +156,8 @@ public class StaticPanel {
     private Label createRecordLabel() {
         Label label = new Label(getRecordText(), Di2048Game.game.getUiSkin().get("score-lbl", Label.LabelStyle.class));
         label.setAlignment(Align.center);
-        label.setFontScale(scale * 0.85f);
-        label.pack();
+        label.setFontScale(0.55f);
+        // Do NOT call label.pack() — it would override the table-assigned width.
         return label;
     }
 
@@ -166,14 +165,15 @@ public class StaticPanel {
         return Di2048Game.game.bdl().get("record") + "\n" + Storage.getRecord();
     }
 
-    float scale;
     private Label createScoreLabel(float width) {
         Label label = new Label(getScoreText(), Di2048Game.game.getUiSkin()
                 .get("score-lbl", Label.LabelStyle.class));
         label.setAlignment(Align.center);
-        scale = Utils.textSizeTuning(label, width, 70);
-        label.setFontScale(scale * 0.85f);
-        label.pack();
+        // Conservative fixed scale: "Счет\n123456" must fit inside half the screen.
+        // Previous code called Utils.textSizeTuning which over-scaled for the
+        // available width because it didn't account for the green-pane background
+        // padding built into the 'score-lbl' style.
+        label.setFontScale(0.55f);
         return label;
     }
 

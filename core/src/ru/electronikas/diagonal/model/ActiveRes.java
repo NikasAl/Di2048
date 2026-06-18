@@ -1,11 +1,13 @@
 package ru.electronikas.diagonal.model;
 
 /**
- * Created by navdonin on 03/02/15.
+ * Persisted active resources (preferences keys).
+ *
+ * Removed in P0-10 (billing/adware cleanup):
+ *  - noAdsTime  (was: end-of-paid-ad-removal timestamp)
+ *  - isAdware   (was: true while ads are suppressed by paid purchase)
  */
 public enum ActiveRes {
-    noAdsTime,
-    isAdware,
     record,
     gameFieldType
 }

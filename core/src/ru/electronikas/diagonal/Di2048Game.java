@@ -105,4 +105,18 @@ public class Di2048Game extends ApplicationAdapter {
                 levelField.hideGameOverMenu();
                 platformListener.trackEvent("Delete 2s");
         }
+
+        /**
+         * P1-2: undo the last move.
+         * Caller (StaticPanel undo button) is expected to gate this behind a rewarded video.
+         * Returns silently if no undo snapshot is available.
+         */
+        public void undoLastMove() {
+                if (!diGameModel.canUndo()) {
+                        return;
+                }
+                levelField.applyUndoActions(diGameModel.undo());
+                levelField.hideGameOverMenu();
+                platformListener.trackEvent("UndoMove");
+        }
 }

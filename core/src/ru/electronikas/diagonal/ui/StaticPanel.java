@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
@@ -49,14 +50,43 @@ public class StaticPanel {
         table.setBackground("bluepane");
         table.defaults().height(h/8);
         table.row();
-        scoreLabel = createScoreLabel(w/3);
-        table.add(scoreLabel).width(w/3).pad(w/80);
-        table.add(createRecordLabel()).width(w/3).pad(w/80);
+        // P1-2: layout is now score | record | undo | settings
+        // score+record share ~60% of width; undo+settings take ~40%
+        scoreLabel = createScoreLabel(w * 0.30f);
+        table.add(scoreLabel).width(w * 0.30f).pad(w/80);
+        table.add(createRecordLabel()).width(w * 0.30f).pad(w/80);
+        // P1-2: undo button (rewarded)
+        table.add(createUndoBut()).width(w * 0.18f).pad(w/80);
         table.add(createSettingsBut()).width(h/8).pad(w/80);
 
         table.pack();
 //        table.setDebug(true);
         stage.addActor(table);
+    }
+
+    /**
+     * P1-2: 'Undo last move' button. Watches a rewarded video, then reverts the
+     * most recent move. Silently no-ops if no undo snapshot is available
+     * (Di2048Game.undoLastMove guards on canUndo()).
+     *
+     * Visual: re-uses the 'green-but' style with an i18n label ('UNDO' / 'ОТМЕНА')
+     * so we don't need to modify the existing mainatlas.png asset.
+     */
+    private Actor createUndoBut() {
+        TextButton undoBut = new TextButton(Di2048Game.game.bdl().get("undo"),
+                Di2048Game.game.getUiSkin().get("green-but", TextButton.TextButtonStyle.class));
+        undoBut.getLabel().setFontScale(0.9f);
+        undoBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                if (!diGameModel.canUndo()) {
+                    // Nothing to undo — silently ignore
+                    return;
+                }
+                Di2048Game.game.platformListener.showRewardVideo(() -> Di2048Game.game.undoLastMove());
+                Di2048Game.game.platformListener.trackEvent("UndoMoveOnClBut");
+            }
+        });
+        return undoBut;
     }
 
     private Actor createSettingsBut() {

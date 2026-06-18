@@ -9,6 +9,7 @@ import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.LevelField;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,6 +22,13 @@ public class DiGameModel implements Json.Serializable {
     int[][] cells;
     public int score = 0;
 
+    /**
+     * P1-2: snapshot of (cells, score) taken at the start of the last successful
+     * onMove(). Used by {@link #undo()} to revert the board after a rewarded watch.
+     * Null means no snapshot available (e.g. right after a new game / load).
+     */
+    private int[][] prevCells = null;
+    private int prevScore = 0;
 
     List<DiAction> stepActions = new ArrayList<DiAction>();
 
@@ -34,8 +42,11 @@ public class DiGameModel implements Json.Serializable {
     }
 
     public List<DiAction> onMove(Dir dir, boolean afterLoad) {
-        if(!afterLoad)
+        if(!afterLoad) {
+            // P1-2: snapshot before mutating, so undo can revert this exact move
+            saveUndoSnapshot();
             stepActions.clear();
+        }
         runMoveCells(dir);
         runReplaceSameCells();
         if(isGameOverState()) {
@@ -49,6 +60,67 @@ public class DiGameModel implements Json.Serializable {
 
 //        dbprint(cells);
         return stepActions;
+    }
+
+    /**
+     * P1-2: whether undo is currently available (one-shot, last move only).
+     */
+    public boolean canUndo() {
+        return prevCells != null;
+    }
+
+    /**
+     * P1-2: revert the last move.
+     *
+     * Returns a list of DiActions that the caller (LevelField) must apply to
+     * rebuild the visual board from scratch:
+     *   1. GameContinueAction (unpauses the field, clears any game-over overlay)
+     *   2. NewCellAction for every non-zero cell in the restored snapshot
+     *
+     * The caller is responsible for clearing the existing CellModel actors
+     * BEFORE applying these actions, since the new NewCellActions assume an
+     * empty board (otherwise duplicate actors will be added).
+     *
+     * After this call the undo snapshot is consumed (prevCells = null),
+     * so undo cannot be chained.
+     */
+    public List<DiAction> undo() {
+        if (prevCells == null) {
+            return new ArrayList<DiAction>();
+        }
+        cells = prevCells;
+        score = prevScore;
+        prevCells = null;
+        if (score > Storage.getRecord()) {
+            Storage.saveScoreAsRecord(score);
+        }
+        Storage.saveGameState(this);
+
+        stepActions.clear();
+        stepActions.add(new GameContinueAction());
+        for (int x = 0; x < FIELD_SIZE; x++) {
+            for (int y = 0; y < FIELD_SIZE; y++) {
+                if (cells[x][y] != 0) {
+                    stepActions.add(new NewCellAction(new Pos(x, y), cells[x][y]));
+                }
+            }
+        }
+        return stepActions;
+    }
+
+    /**
+     * P1-2: take a deep copy of (cells, score) for undo.
+     */
+    private void saveUndoSnapshot() {
+        if (cells == null) {
+            prevCells = null;
+            return;
+        }
+        prevCells = new int[FIELD_SIZE][];
+        for (int i = 0; i < FIELD_SIZE; i++) {
+            prevCells[i] = Arrays.copyOf(cells[i], cells[i].length);
+        }
+        prevScore = score;
     }
 
     private int countCellsInTheGame() {
@@ -325,6 +397,10 @@ public class DiGameModel implements Json.Serializable {
 
         cells = json.readValue("cells", int[][].class, jsonData);
         score = json.readValue("score", Integer.class, jsonData);
+
+        // P1-2: a freshly loaded game has no undo history
+        prevCells = null;
+        prevScore = 0;
 
         for(int x=0; x<cells.length; x++) {
             for(int y=0; y<cells[x].length; y++) {

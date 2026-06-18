@@ -11,11 +11,12 @@ import com.yandex.mobile.ads.banner.BannerAdSize;
 import com.yandex.mobile.ads.banner.BannerAdView;
 import com.yandex.mobile.ads.common.AdError;
 import com.yandex.mobile.ads.common.AdRequest;
-import com.yandex.mobile.ads.common.AdRequestConfiguration;
 import com.yandex.mobile.ads.common.AdRequestError;
 import com.yandex.mobile.ads.common.ImpressionData;
-import com.yandex.mobile.ads.common.MobileAds;
+import com.yandex.mobile.ads.common.InitializationListener;
+import com.yandex.mobile.ads.common.YandexAds;
 import com.yandex.mobile.ads.interstitial.InterstitialAd;
+import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener;
 import com.yandex.mobile.ads.interstitial.InterstitialAdLoadListener;
 import com.yandex.mobile.ads.interstitial.InterstitialAdLoader;
 import com.yandex.mobile.ads.rewarded.Reward;
@@ -25,16 +26,20 @@ import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener;
 import com.yandex.mobile.ads.rewarded.RewardedAdLoader;
 
 /**
- * AdYandex — single ad provider after P0-7 (AdMob removed).
+ * AdYandex — single ad provider (Yandex Mobile Ads 8.x).
  *
- * Improvements over the legacy version:
- *  - Banner uses BannerAdSize.inlineSize (adaptive width) instead of fixedSize(1000,100)
- *  - Banner is loaded once and left VISIBLE; Yandex SDK manages its own refresh
- *    (previous code reloaded the ad every 30s via Timer which is an anti-pattern)
- *  - Rewarded uses a pending-callback model so different game actions
- *    (del2s, undo, continue-after-game-over) can subscribe to the same ad unit
- *  - Interstitial / rewarded are preloaded on init() and reloaded after each show
- *  - All show paths are wrapped in runOnUiThread and null-safe
+ * Migrated from 7.x to 8.x in P0-7:
+ *  - MobileAds.initialize -> YandexAds.INSTANCE.initialize
+ *  - BannerAdSize.fixedSize/inlineSize -> BannerAdSize.inline
+ *  - BannerAdView.setAdUnitId removed — ad unit id now passed via AdRequest.Builder(id)
+ *  - loader.setAdLoadListener + loadAd(AdRequestConfiguration) -> loader.loadAd(AdRequest, listener)
+ *  - AdRequestConfiguration.Builder(id) -> AdRequest.Builder(id)
+ *
+ * Architecture improvements retained from the 7.x rewrite:
+ *  - Banner uses adaptive inline size and is loaded once
+ *  - Rewarded uses a pending-callback model so different game actions can subscribe
+ *  - Interstitial + Rewarded are preloaded on init and reloaded after each show
+ *  - All show() calls are wrapped in runOnUiThread and null-safe
  */
 public class AdYandex implements UniAd {
     private static final String AD_INTERSTITIAL_ID = "R-M-2252991-3";
@@ -45,10 +50,11 @@ public class AdYandex implements UniAd {
     private final RelativeLayout layout;
 
     private BannerAdView adView;
-    private RewardedAdLoader rewardedLoader;
-    private RewardedAd rewardedAd;
     private InterstitialAdLoader interstitialLoader;
     private InterstitialAd interstitialAd;
+
+    private RewardedAdLoader rewardedLoader;
+    private RewardedAd rewardedAd;
 
     @Nullable private Runnable pendingRewardCallback;
 
@@ -59,23 +65,25 @@ public class AdYandex implements UniAd {
 
     @Override
     public void initAd() {
-        MobileAds.initialize(context, () -> {
-            // SDK ready — preload both full-screen formats
-            loadInterstitial();
-            loadRewarded();
+        YandexAds.INSTANCE.initialize(context, new InitializationListener() {
+            @Override
+            public void onInitializationCompleted() {
+                // SDK ready — preload both full-screen formats
+                loadInterstitial();
+                loadRewarded();
+            }
         });
         initBanner();
     }
 
     private void initBanner() {
         adView = new BannerAdView(context);
-        adView.setAdUnitId(AD_BANNER_ID);
 
         // Adaptive inline banner: width = min(screenWidthDp, 728), height = 100 dp
         int widthPx = context.getResources().getDisplayMetrics().widthPixels;
         float density = context.getResources().getDisplayMetrics().density;
         int widthDp = Math.round(widthPx / density);
-        adView.setAdSize(BannerAdSize.inlineSize(context, Math.min(widthDp, 728), 100));
+        adView.setAdSize(BannerAdSize.inline(context, Math.min(widthDp, 728), 100));
 
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
@@ -88,8 +96,11 @@ public class AdYandex implements UniAd {
     }
 
     private void loadInterstitial() {
-        interstitialLoader = new InterstitialAdLoader(context);
-        interstitialLoader.setAdLoadListener(new InterstitialAdLoadListener() {
+        if (interstitialLoader == null) {
+            interstitialLoader = new InterstitialAdLoader(context);
+        }
+        AdRequest request = new AdRequest.Builder(AD_INTERSTITIAL_ID).build();
+        interstitialLoader.loadAd(request, new InterstitialAdLoadListener() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd ad) {
                 interstitialAd = ad;
@@ -100,12 +111,14 @@ public class AdYandex implements UniAd {
                 interstitialAd = null;
             }
         });
-        interstitialLoader.loadAd(new AdRequestConfiguration.Builder(AD_INTERSTITIAL_ID).build());
     }
 
     private void loadRewarded() {
-        rewardedLoader = new RewardedAdLoader(context);
-        rewardedLoader.setAdLoadListener(new RewardedAdLoadListener() {
+        if (rewardedLoader == null) {
+            rewardedLoader = new RewardedAdLoader(context);
+        }
+        AdRequest request = new AdRequest.Builder(AD_REWARD_ID).build();
+        rewardedLoader.loadAd(request, new RewardedAdLoadListener() {
             @Override
             public void onAdLoaded(@NonNull RewardedAd ad) {
                 ad.setAdEventListener(new RewardedAdEventListener() {
@@ -136,14 +149,14 @@ public class AdYandex implements UniAd {
                 rewardedAd = null;
             }
         });
-        rewardedLoader.loadAd(new AdRequestConfiguration.Builder(AD_REWARD_ID).build());
     }
 
     @Override
     public void showAdsBanner() {
         context.runOnUiThread(() -> {
             if (adView != null) {
-                adView.loadAd(new AdRequest.Builder().build());
+                AdRequest request = new AdRequest.Builder(AD_BANNER_ID).build();
+                adView.loadAd(request);
                 adView.setVisibility(View.VISIBLE);
             }
         });
@@ -177,8 +190,8 @@ public class AdYandex implements UniAd {
                 rewardedAd.show(context);
                 rewardedAd = null;
             } else {
-                // Ad not ready — preload and try to fire the reward immediately as a fallback
-                // so the user is not blocked. For a stricter UX, you may instead show a Toast.
+                // Ad not ready — preload and fire callback as a fallback
+                // so the user is not blocked. For a stricter UX, show a Toast instead.
                 loadRewarded();
                 if (onReward != null) {
                     onReward.run();

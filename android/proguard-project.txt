@@ -42,13 +42,33 @@
 }
 
 # -------------------------------------------------------------------
-# Yandex Mobile Ads
+# Yandex Mobile Ads 8.x (Kotlin-based, depends on AppMetrica + Varioqub)
 # -------------------------------------------------------------------
 -keep class com.yandex.mobile.ads.** { *; }
+-keep class com.yandex.ads.** { *; }
+-keep class com.monetization.** { *; }
 -dontwarn com.yandex.mobile.ads.**
+-dontwarn com.yandex.ads.**
+-dontwarn com.monetization.**
+
+# AppMetrica (Yandex Mobile Ads 8.x transitive dependency)
+-keep class io.appmetrica.analytics.** { *; }
+-dontwarn io.appmetrica.analytics.**
+
+# Varioqub (Yandex experiments framework, transitive dep of Yandex Mobile Ads 8.x)
+-keep class com.yandex.varioqub.** { *; }
+-dontwarn com.yandex.varioqub.**
+
+# Yandex Div (transitive dep of Yandex Mobile Ads 8.x for native ad rendering)
+-keep class com.yandex.div.** { *; }
+-dontwarn com.yandex.div.**
+
 -keepattributes *Annotation*
 -keep class com.android.installreferrer.api.* { *; }
 -dontwarn com.android.installreferrer.api.*
+
+# Kotlin metadata (Yandex Mobile Ads 8.x is Kotlin-first)
+-keepattributes KotlinModule,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,RuntimeVisibleTypeAnnotations
 
 # -------------------------------------------------------------------
 # Google Play Services (AD_ID only — used by Yandex MobileAds on GP builds)

@@ -33,9 +33,11 @@ allprojects {
 }
 
 project(":core") {
-    apply plugin: "java"
+    apply plugin: "java-library"
     dependencies {
-        implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+        // 'api' so that android/desktop modules can see libGDX classes transitively
+        // (matches the upstream libGDX template)
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
     }
 }
 
@@ -63,8 +65,8 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
 
-        // Yandex Mobile Ads — оставляем, обновляем до последней стабильной
-        implementation 'com.yandex.android:mobileads:7.21.0'
+        // Yandex Mobile Ads — latest stable (8.x branch, June 2026)
+        implementation 'com.yandex.android:mobileads:8.1.0'
 
         // MyTracker — обновляем
         implementation 'com.my.tracker:mytracker-sdk:3.4.0'

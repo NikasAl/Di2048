@@ -98,9 +98,14 @@ public class StaticPanel {
 
         // Each stat pane takes half of (width - 3*pad) so two panes + 3 pads = exactly w.
         float statWidth = (w - 3 * pad) / 2f;
-        // Each action button is sized to fit inside row2Height with a 2*pad margin.
-        float actionSize = row2Height - 2 * pad;
-        if (actionSize > h * 0.10f) actionSize = h * 0.10f;  // cap so it doesn't get huge
+
+        // Action button size: must fit BOTH the row height AND the per-button column width.
+        // With 3 buttons + 2 inter-button gaps in row 2, each column gets roughly (w - 4*pad)/3.
+        // The button itself is square and must fit inside the smaller of (row2Height - 2*pad)
+        // and (columnWidth - 2*pad) so it never overflows horizontally or vertically.
+        float columnWidth = (w - 4 * pad) / 3f;
+        float actionSize = Math.min(row2Height - 2 * pad, columnWidth - 2 * pad);
+        if (actionSize < h * 0.04f) actionSize = h * 0.04f;  // floor so it's never invisible
 
         // ----- Row 1: Score | Record -----
         table.row().height(row1Height).padTop(pad);
@@ -111,10 +116,16 @@ public class StaticPanel {
         // ----- Row 2: Sound (icon) | Undo (icon) | Settings (icon) -----
         // Sound is leftmost so it's easy to reach one-handed; undo and settings
         // keep their previous order. Three equal-width columns share row 2.
+        //
+        // Layout technique: each button gets .uniformX().expandX().center() so the
+        // three columns split the available row width into three EQUAL parts and the
+        // button is centered inside its column. The button itself is sized with
+        // .size(actionSize) so it stays square and never overflows its column.
+        // Inter-column spacing comes from .space(pad) on each add() call.
         table.row().height(row2Height).padBottom(pad).padTop(pad / 2f);
-        table.add(createSoundBut()).size(actionSize).top();
-        table.add(createUndoBut()).size(actionSize).top();
-        table.add(createSettingsBut()).size(actionSize).top();
+        table.add(createSoundBut()).size(actionSize).uniformX().expandX().center().space(pad);
+        table.add(createUndoBut()).size(actionSize).uniformX().expandX().center().space(pad);
+        table.add(createSettingsBut()).size(actionSize).uniformX().expandX().center().space(pad);
 
         // Do NOT call table.pack() — it would shrink the table to preferred sizes
         // and undo the explicit width/height we just set.

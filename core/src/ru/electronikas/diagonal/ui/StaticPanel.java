@@ -46,10 +46,19 @@ import ru.electronikas.diagonal.ui.menu.SettingsMenu;
  */
 public class StaticPanel {
 
-    /** Public constants so LevelField can position the board relative to the panel. */
-    public static final float PANEL_TOP_FRACTION = 1f / 5f;     // panel y anchor
-    public static final float PANEL_HEIGHT_FRACTION = 1f / 6f;  // panel height (was 1/7, now 1/6 for more room)
-    public static final float FIELD_TOP_GAP_FRACTION = 0.02f;   // gap between panel bottom and board top
+    /**
+     * Public constants so LevelField can position the board relative to the panel.
+     *
+     * PANEL_HEIGHT_FRACTION was 1/6 — too short: the undo/settings buttons
+     * (sized as row2Height*0.85) were sticking out past the bottom edge of
+     * the blue background by ~50% of their height, because the table's
+     * implicit padding plus the icon's pref size exceeded the assigned row
+     * height. Bumped to 1/5 so the second row has room for the buttons
+     * AND the padding around them.
+     */
+    public static final float PANEL_TOP_FRACTION = 1f / 5f;        // panel y anchor
+    public static final float PANEL_HEIGHT_FRACTION = 1f / 5f;     // panel height (was 1/6, now 1/5)
+    public static final float FIELD_TOP_GAP_FRACTION = 0.02f;      // gap between panel bottom and board top
 
     /** Horizontal padding inside the table (between cells + edge). */
     private static final float CELL_PAD_FRACTION = 0.025f;  // 2.5% of screen width
@@ -78,12 +87,19 @@ public class StaticPanel {
         table.setBackground("bluepane");
 
         float pad = w * CELL_PAD_FRACTION;
-        float row1Height = h * PANEL_HEIGHT_FRACTION * 0.55f;
-        float row2Height = h * PANEL_HEIGHT_FRACTION * 0.45f;
+        // Row heights are now computed so that:
+        //   row1Height + row2Height + 3*pad (top/middle/bottom) <= panelHeight
+        // and the action buttons (actionSize = row2Height - 2*pad) fit inside row2.
+        float panelHeight = h * PANEL_HEIGHT_FRACTION;
+        float row1Height = panelHeight * 0.50f;
+        float row2Height = panelHeight * 0.40f;
+        // Reserve ~10% of panel height for inter-row padding + edge padding.
+
         // Each stat pane takes half of (width - 3*pad) so two panes + 3 pads = exactly w.
         float statWidth = (w - 3 * pad) / 2f;
-        // Each action button is square, sized to row2Height minus a small inner pad.
-        float actionSize = row2Height * 0.85f;
+        // Each action button is sized to fit inside row2Height with a 2*pad margin.
+        float actionSize = row2Height - 2 * pad;
+        if (actionSize > h * 0.10f) actionSize = h * 0.10f;  // cap so it doesn't get huge
 
         // ----- Row 1: Score | Record -----
         table.row().height(row1Height).padTop(pad);

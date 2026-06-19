@@ -64,6 +64,19 @@ public class StaticPanel {
     /** Horizontal padding inside the table (between cells + edge). */
     private static final float CELL_PAD_FRACTION = 0.025f;  // 2.5% of screen width
 
+    /**
+     * Safety margin subtracted from the row-2 height when computing the action-button
+     * size, to account for ImageButton's internal image-padding. Without this margin
+     * the buttons visually overflow the panel's bottom edge by a few pixels even though
+     * their .size() is mathematically inside the row — because libGDX ImageButton draws
+     * its imageUp slightly larger than the assigned cell.
+     *
+     * Expressed as a FRACTION of row2Height so it scales with screen size and density
+     * (the user originally tried an absolute +20 px workaround which would look wrong
+     * on QHD phones and tiny on small phones).
+     */
+    private static final float BUTTON_OVERFLOW_MARGIN_FRACTION = 0.15f;  // 15% of row2Height
+
     private Stage stage;
     private DiGameModel diGameModel;
     float h;
@@ -101,8 +114,20 @@ public class StaticPanel {
 
         // Action button size: bounded by BOTH the row height AND the per-button
         // column width (3 columns inside the nested row2 table).
+        //
+        // IMPORTANT: ImageButton draws its imageUp drawable with its OWN internal
+        // padding (imageUpalignment + libGDX's default ImageButton padding), so the
+        // visible button footprint is slightly larger than the .size() value. If we
+        // make actionSize == row2Height - 2*pad, the buttons visually overflow the
+        // row by a few pixels at the bottom. The fix is a RELATIVE safety margin
+        // (BUTTON_OVERFLOW_MARGIN_FRACTION = 0.15 of row2Height) subtracted from the
+        // vertical bound — this scales correctly across all screen sizes/densities,
+        // unlike the absolute '+ 20 px' workaround the user tested.
         float columnWidth = (w - 4 * pad) / 3f;
-        float actionSize = Math.min(row2Height - 2 * pad, columnWidth - 2 * pad);
+        float verticalBound = row2Height - 2 * pad
+                - row2Height * BUTTON_OVERFLOW_MARGIN_FRACTION;
+        float horizontalBound = columnWidth - 2 * pad;
+        float actionSize = Math.min(verticalBound, horizontalBound);
         if (actionSize < h * 0.04f) actionSize = h * 0.04f;  // floor so it's never invisible
 
         // ----- Row 1: Score | Record (2 cells, exactly matches the table's column count) -----

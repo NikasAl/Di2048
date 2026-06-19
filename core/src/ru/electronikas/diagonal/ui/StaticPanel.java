@@ -20,6 +20,7 @@ import ru.electronikas.diagonal.Di2048Game;
 import ru.electronikas.diagonal.model.CellModel;
 import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Pos;
+import ru.electronikas.diagonal.settings.GameSounds;
 import ru.electronikas.diagonal.settings.Storage;
 import ru.electronikas.diagonal.ui.menu.SettingsMenu;
 
@@ -107,8 +108,11 @@ public class StaticPanel {
         table.add(scoreLabel).width(statWidth).padLeft(pad).padRight(pad).top();
         table.add(createRecordLabel()).width(statWidth).padLeft(pad).padRight(pad).top();
 
-        // ----- Row 2: Undo (icon) | Settings (icon) -----
+        // ----- Row 2: Sound (icon) | Undo (icon) | Settings (icon) -----
+        // Sound is leftmost so it's easy to reach one-handed; undo and settings
+        // keep their previous order. Three equal-width columns share row 2.
         table.row().height(row2Height).padBottom(pad).padTop(pad / 2f);
+        table.add(createSoundBut()).size(actionSize).top();
         table.add(createUndoBut()).size(actionSize).top();
         table.add(createSettingsBut()).size(actionSize).top();
 
@@ -213,6 +217,100 @@ public class StaticPanel {
                 )
         );
         return settingsBut;
+    }
+
+    /**
+     * Sound toggle button — leftmost in row 2 of the top panel.
+     *
+     * Mirrors the logic in SettingsMenu.soundButton() (so the two stay in sync):
+     *   - Tap when sound is ON  -> set volume to 0 (mute), track 'Sound_Off'
+     *   - Tap when sound is OFF -> set volume to DEFAULT_VAL, play a flip sound
+     *                              so the user hears the change immediately,
+     *                              track 'Sound_On'
+     *
+     * The icon used depends on the current state: 'ns128.png' when on,
+     * 'nsoff128.png' when off. We rebuild the ImageButton style each time
+     * the user taps so the icon updates instantly.
+     *
+     * NOTE: this button is re-created on every game recreate (new StaticPanel
+     * is constructed in LevelField.<init>), so the icon always reflects the
+     * latest Storage.getSoundVolume() value at the moment of construction.
+     * If the user mutes via SettingsMenu while a StaticPanel is alive, the
+     * top-panel sound button's icon won't update until the next game recreate
+     * — acceptable for now, can be refined later with a shared observer.
+     */
+    private Actor createSoundBut() {
+        final ImageButton soundBut = new ImageButton(buildSoundStyle());
+        soundBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                if (Storage.getSoundVolume() < Storage.DEFAULT_VAL) {
+                    // Currently muted -> turn ON
+                    Storage.setSoundVolume(Storage.DEFAULT_VAL);
+                    GameSounds.flipSoundPlay();
+                    Di2048Game.game.platformListener.trackEvent("Sound_On");
+                } else {
+                    // Currently ON -> mute
+                    Storage.setSoundVolume(0);
+                    Di2048Game.game.platformListener.trackEvent("Sound_Off");
+                }
+                // Swap the icon in-place so the user sees the new state immediately.
+                soundBut.setStyle(buildSoundStyle());
+            }
+        });
+        return soundBut;
+    }
+
+    /**
+     * Build a fresh ImageButtonStyle whose imageUp reflects the current sound state.
+     * Called at construction time AND after every tap on the sound button.
+     */
+    private ImageButton.ImageButtonStyle buildSoundStyle() {
+        boolean muted = Storage.getSoundVolume() < Storage.DEFAULT_VAL;
+        ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+        style.imageUp = getSoundDrawable(muted);
+        style.imageDown = getSoundDrawable(muted).tint(new Color(1f, 1f, 1f, 0.6f));
+        return style;
+    }
+
+    /** Cached sound-icon drawables (loaded once, reused across recreations). */
+    private static TextureRegionDrawable soundOnDrawable = null;
+    private static TextureRegionDrawable soundOffDrawable = null;
+
+    private static TextureRegionDrawable getSoundDrawable(boolean muted) {
+        return muted ? getSoundOffDrawable() : getSoundOnDrawable();
+    }
+
+    private static TextureRegionDrawable getSoundOnDrawable() {
+        if (soundOnDrawable == null) {
+            soundOnDrawable = loadSoundDrawable("data/skins/ns128.png", "sound_on");
+        }
+        return soundOnDrawable;
+    }
+
+    private static TextureRegionDrawable getSoundOffDrawable() {
+        if (soundOffDrawable == null) {
+            soundOffDrawable = loadSoundDrawable("data/skins/nsoff128.png", "sound_off");
+        }
+        return soundOffDrawable;
+    }
+
+    private static TextureRegionDrawable loadSoundDrawable(String path, String name) {
+        try {
+            Texture tex = new Texture(Gdx.files.internal(path));
+            tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            return new TextureRegionDrawable(new TextureRegion(tex));
+        } catch (Throwable e) {
+            Gdx.app.error("StaticPanel", "Failed to load " + path, e);
+            try {
+                return new TextureRegionDrawable(
+                        Di2048Game.game.getUiSkin().getRegion("settings"));
+            } catch (Throwable e2) {
+                Gdx.app.error("StaticPanel", name + " fallback also failed", e2);
+                return new TextureRegionDrawable(
+                        new TextureRegion(new Texture(
+                                1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888)));
+            }
+        }
     }
 
     private Label createRecordLabel() {

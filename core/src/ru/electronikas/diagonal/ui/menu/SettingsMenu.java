@@ -220,6 +220,12 @@ public class SettingsMenu {
         MoveToAction action = Actions.moveTo(0, h);
         action.setDuration(0.5f);
         rateMenu.addAction(action);
+        // P1-fix: lift the pause as soon as the close animation starts so the
+        // player can resume swiping immediately (the 0.5s slide-out animation
+        // is purely visual, the game state is not affected by it).
+        if (Di2048Game.game != null && Di2048Game.game.levelField != null) {
+            Di2048Game.game.levelField.setPaused(false);
+        }
     }
 
     public void animateHideAndShare() {
@@ -233,12 +239,19 @@ public class SettingsMenu {
                 return true;
             }
         }));
+        if (Di2048Game.game != null && Di2048Game.game.levelField != null) {
+            Di2048Game.game.levelField.setPaused(false);
+        }
     }
 
     public void animateOpen() {
         MoveToAction action = Actions.moveTo(0, 0);
         action.setDuration(0.5f);
         rateMenu.addAction(action);
-
+        // P1-fix: pause the game BEFORE the slide-in animation starts so any
+        // fling that overlaps with the opening transition is also swallowed.
+        if (Di2048Game.game != null && Di2048Game.game.levelField != null) {
+            Di2048Game.game.levelField.setPaused(true);
+        }
     }
 }

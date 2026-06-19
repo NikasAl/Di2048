@@ -144,14 +144,22 @@ public class StaticPanel {
         table.add(createRecordLabel()).width(statWidth).padLeft(pad).padRight(pad).top();
 
         // ----- Row 2: nested table with 3 equal columns of action buttons -----
+        // The nested table's cells use .expandY().center() so each button is
+        // vertically centered inside its column even when actionSize < row2Height
+        // (which is now the case because of BUTTON_OVERFLOW_MARGIN_FRACTION).
+        // Without .expandY(), libGDX defaults the cell's vertical alignment to TOP
+        // and the buttons end up glued to the bottom of the row.
         Table buttonRow = new Table(Di2048Game.game.getUiSkin());
-        buttonRow.add(createSoundBut()).size(actionSize).uniformX().expandX().center().space(pad);
-        buttonRow.add(createUndoBut()).size(actionSize).uniformX().expandX().center().space(pad);
-        buttonRow.add(createSettingsBut()).size(actionSize).uniformX().expandX().center().space(pad);
+        buttonRow.add(createSoundBut()).size(actionSize).uniformX().expandX().expandY().center().space(pad);
+        buttonRow.add(createUndoBut()).size(actionSize).uniformX().expandX().expandY().center().space(pad);
+        buttonRow.add(createSettingsBut()).size(actionSize).uniformX().expandX().expandY().center().space(pad);
 
         // Add the nested button-row as a SINGLE cell spanning both outer columns.
-        // This keeps the outer table at 2 columns and the nested table manages its
-        // own 3-column layout independently.
+        // .colspan(2).growX().center() on the OUTER cell makes the nested table
+        // fill the row horizontally and center vertically within the outer row.
+        // .growY() is NOT used here because row2Height is already fixed via
+        // table.row().height(row2Height); the .center() handles vertical centering
+        // of the nested table inside that fixed-height row.
         table.row().height(row2Height).padBottom(pad).padTop(pad / 2f);
         table.add(buttonRow).colspan(2).growX().center();
 

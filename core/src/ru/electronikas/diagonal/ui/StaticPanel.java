@@ -99,33 +99,36 @@ public class StaticPanel {
         // Each stat pane takes half of (width - 3*pad) so two panes + 3 pads = exactly w.
         float statWidth = (w - 3 * pad) / 2f;
 
-        // Action button size: must fit BOTH the row height AND the per-button column width.
-        // With 3 buttons + 2 inter-button gaps in row 2, each column gets roughly (w - 4*pad)/3.
-        // The button itself is square and must fit inside the smaller of (row2Height - 2*pad)
-        // and (columnWidth - 2*pad) so it never overflows horizontally or vertically.
+        // Action button size: bounded by BOTH the row height AND the per-button
+        // column width (3 columns inside the nested row2 table).
         float columnWidth = (w - 4 * pad) / 3f;
         float actionSize = Math.min(row2Height - 2 * pad, columnWidth - 2 * pad);
         if (actionSize < h * 0.04f) actionSize = h * 0.04f;  // floor so it's never invisible
 
-        // ----- Row 1: Score | Record -----
+        // ----- Row 1: Score | Record (2 cells, exactly matches the table's column count) -----
+        // IMPORTANT: libGDX Table infers the column count from the row with the most
+        // cells. If row 1 has 2 cells and row 2 has 3, the table silently grows to 3
+        // columns and the 2-cell row becomes misaligned (the second cell lands in the
+        // MIDDLE column instead of the right one, leaving the right column empty and
+        // shifting everything left). To avoid this we wrap the 3-button row 2 in a
+        // NESTED Table that occupies a single cell of the outer table — so the outer
+        // table stays at exactly 2 columns and the row-1 cells align correctly.
         table.row().height(row1Height).padTop(pad);
         scoreLabel = createScoreLabel(statWidth);
         table.add(scoreLabel).width(statWidth).padLeft(pad).padRight(pad).top();
         table.add(createRecordLabel()).width(statWidth).padLeft(pad).padRight(pad).top();
 
-        // ----- Row 2: Sound (icon) | Undo (icon) | Settings (icon) -----
-        // Sound is leftmost so it's easy to reach one-handed; undo and settings
-        // keep their previous order. Three equal-width columns share row 2.
-        //
-        // Layout technique: each button gets .uniformX().expandX().center() so the
-        // three columns split the available row width into three EQUAL parts and the
-        // button is centered inside its column. The button itself is sized with
-        // .size(actionSize) so it stays square and never overflows its column.
-        // Inter-column spacing comes from .space(pad) on each add() call.
+        // ----- Row 2: nested table with 3 equal columns of action buttons -----
+        Table buttonRow = new Table(Di2048Game.game.getUiSkin());
+        buttonRow.add(createSoundBut()).size(actionSize).uniformX().expandX().center().space(pad);
+        buttonRow.add(createUndoBut()).size(actionSize).uniformX().expandX().center().space(pad);
+        buttonRow.add(createSettingsBut()).size(actionSize).uniformX().expandX().center().space(pad);
+
+        // Add the nested button-row as a SINGLE cell spanning both outer columns.
+        // This keeps the outer table at 2 columns and the nested table manages its
+        // own 3-column layout independently.
         table.row().height(row2Height).padBottom(pad).padTop(pad / 2f);
-        table.add(createSoundBut()).size(actionSize).uniformX().expandX().center().space(pad);
-        table.add(createUndoBut()).size(actionSize).uniformX().expandX().center().space(pad);
-        table.add(createSettingsBut()).size(actionSize).uniformX().expandX().center().space(pad);
+        table.add(buttonRow).colspan(2).growX().center();
 
         // Do NOT call table.pack() — it would shrink the table to preferred sizes
         // and undo the explicit width/height we just set.

@@ -15,8 +15,6 @@ import com.badlogic.gdx.utils.Align;
 
 import ru.electronikas.diagonal.Di2048Game;
 
-import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
-
 /**
  * Reusable Yes/No confirmation dialog.
  *
@@ -39,17 +37,28 @@ import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
  * the dialog is on screen.
  *
  * Font scaling:
- *  - Title:   uses Utils.textSizeTuning(label, cellWidth, 50) — the same
- *             pattern as SettingsMenu buttons. Produces a scale where the
- *             title's prefWidth <= 50% of cellWidth, so it fits comfortably.
- *  - Message: uses a custom iterative fitMessageFont() that starts at 0.6
- *             and steps down by 0.05 until prefWidth <= cellWidth (so the
- *             wrapped text fits the cell width without overflowing).
- *             Utils.textSizeTuning starts at maxScale=3.0 which is way too
- *             big for a long message — for a single line of body text we
- *             want a much smaller scale (typically 0.3-0.5).
+ *  - We do NOT use Utils.textSizeTuning because that helper has two bugs:
+ *      1) It starts at maxScale=3.0 — for a short title like "Undo last move?"
+ *         the prefWidth at scale=3.0 may already be < width*50% (because the
+ *         cell width on a phone is ~700px), so the while loop NEVER executes
+ *         and the label keeps scale=3.0 (giant).
+ *      2) It has no lower bound, so for long text the loop can drive scale
+ *         negative.
+ *    We instead use a custom fitFontToWidth() that starts SMALL (0.3) and
+ *    GROWS UP until prefWidth > target, then takes the previous step. This
+ *    guarantees we end up at the largest scale that fits, with a sane floor
+ *    (0.2) and ceiling (1.0).
  */
 public class ConfirmDialog {
+
+    /** Floor for the iterative font fit — text never gets smaller than this. */
+    private static final float FONT_SCALE_FLOOR = 0.2f;
+    /** Ceiling for the iterative font fit — text never gets larger than this. */
+    private static final float FONT_SCALE_CEIL  = 1.0f;
+    /** Step size for the iterative font fit. */
+    private static final float FONT_SCALE_STEP  = 0.05f;
+    /** Start scale for the upward search — must be <= FONT_SCALE_FLOOR-ish. */
+    private static final float FONT_SCALE_START = 0.3f;
 
     private final Table dialog;
     private final Skin uiSkin;
@@ -87,7 +96,7 @@ public class ConfirmDialog {
 
         TextButton yesBut = new TextButton(Di2048Game.game.bdl().get("dialogYes"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
-        textSizeTuning(yesBut.getLabel(), yesW, 70);
+        fitButtonFont(yesBut.getLabel(), yesW);
         yesBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 animateHide();
@@ -102,7 +111,7 @@ public class ConfirmDialog {
 
         TextButton noBut = new TextButton(Di2048Game.game.bdl().get("dialogNo"),
                 uiSkin.get("red-but", TextButton.TextButtonStyle.class));
-        textSizeTuning(noBut.getLabel(), noW, 70);
+        fitButtonFont(noBut.getLabel(), noW);
         noBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 animateHide();
@@ -116,58 +125,71 @@ public class ConfirmDialog {
     }
 
     /**
-     * Title label: uses Utils.textSizeTuning(label, cellWidth, 50) so the
-     * title's prefWidth fits in 50% of cellWidth — the same pattern as
-     * SettingsMenu buttons. Produces a comfortable readable scale.
+     * Title label — fitted to ~70% of cellWidth so there's room for the
+     * message below it.
      */
     private Label createTitleLabel(String i18nKey, float cellWidth) {
         Label label = new Label(Di2048Game.game.bdl().get(i18nKey), uiSkin);
         label.setAlignment(Align.center);
         label.setWrap(true);
-        textSizeTuning(label, cellWidth, 50);
+        fitFontToWidth(label, cellWidth * 0.70f);
         return label;
     }
 
     /**
-     * Message label: iterative fit that starts at a small scale (0.6) and
-     * steps down by 0.05 until the message's prefWidth fits inside cellWidth.
-     *
-     * Why not use Utils.textSizeTuning: that helper starts at maxScale=3.0
-     * (way too big for a 60-char message) and steps down by 0.1, so it
-     * would either land on a too-large scale or take many iterations. For
-     * a single-line body message we want a much smaller scale (0.3-0.5
-     * typical), and a finer 0.05 step.
+     * Message label — fitted to ~95% of cellWidth so it can use the full
+     * available width for wrapping.
      */
     private Label createMessageLabel(String i18nKey, float cellWidth) {
         Label label = new Label(Di2048Game.game.bdl().get(i18nKey), uiSkin);
         label.setAlignment(Align.center);
         label.setWrap(true);
-        fitMessageFont(label, cellWidth);
+        fitFontToWidth(label, cellWidth * 0.95f);
         return label;
     }
 
     /**
-     * Iteratively shrink the font scale from 0.6 down to 0.2 (in 0.05 steps)
-     * until the label's preferred width fits inside cellWidth.
-     * The message is wrapped (setWrap(true)), so this controls how many
-     * lines the message takes — smaller scale => fewer lines but smaller
-     * text. We pick the largest scale that still fits the cell width
-     * without overflowing horizontally.
+     * Button label fit — buttons are short ('Yes' / 'No' / 'Да' / 'Нет'),
+     * so we want them big but not absurd. Cap at 0.8 of the button width.
      */
-    private void fitMessageFont(Label label, float cellWidth) {
-        float scale = 0.6f;
-        label.setFontScale(scale);
-        label.layout();
-        // Allow a small horizontal margin (use 95% of cellWidth as the target
-        // so the wrapped text doesn't touch the cell edges).
-        float target = cellWidth * 0.95f;
-        while (scale > 0.2f && label.getPrefWidth() > target) {
-            scale -= 0.05f;
+    private void fitButtonFont(Label label, float buttonWidth) {
+        fitFontToWidth(label, buttonWidth * 0.8f);
+    }
+
+    /**
+     * Iteratively find the largest font scale in [FONT_SCALE_FLOOR, FONT_SCALE_CEIL]
+     * such that the label's preferred width fits inside targetWidth.
+     *
+     * Algorithm: start at FONT_SCALE_START (small), measure prefWidth. If it fits,
+     * try the next step up; if it doesn't fit, stop and use the last scale that
+     * fit. This is the OPPOSITE direction of Utils.textSizeTuning (which starts
+     * at 3.0 and shrinks) — we start small and grow, which guarantees we end up
+     * at a sensible scale even for very short text.
+     *
+     * layout() is called on every step so getPrefWidth() returns fresh data.
+     */
+    private void fitFontToWidth(Label label, float targetWidth) {
+        float bestScale = FONT_SCALE_FLOOR;
+        float scale = FONT_SCALE_START;
+        while (scale <= FONT_SCALE_CEIL) {
             label.setFontScale(scale);
             label.layout();
+            float prefWidth = label.getPrefWidth();
+            if (prefWidth <= targetWidth) {
+                bestScale = scale;
+                scale += FONT_SCALE_STEP;
+            } else {
+                // This scale no longer fits — stop, keep the last good one.
+                break;
+            }
         }
-        Gdx.app.log("ConfirmDialog", "message fontScale=" + scale
-                + " prefWidth=" + label.getPrefWidth() + " target=" + target);
+        // Apply the best scale we found (may be the floor if nothing fit,
+        // or the ceiling if even the largest scale fit).
+        label.setFontScale(bestScale);
+        label.layout();
+        Gdx.app.log("ConfirmDialog", "fitFontToWidth: bestScale=" + bestScale
+                + " prefWidth=" + label.getPrefWidth()
+                + " targetWidth=" + targetWidth);
     }
 
     public void animateHide() {

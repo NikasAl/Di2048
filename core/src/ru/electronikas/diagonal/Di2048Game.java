@@ -29,7 +29,12 @@ public class Di2048Game extends ApplicationAdapter {
         public static Di2048Game game;
 
         public DiGameModel diGameModel;
-        private LevelField levelField;
+        /**
+         * P1-fix: changed from private to public so SettingsMenu can call
+         * setPaused(true/false) on it when the overlay opens/closes.
+         * See SettingsMenu.animateOpen / animateHide.
+         */
+        public LevelField levelField;
         public PlatformListener platformListener;
 
         private I18NBundle myBundle;

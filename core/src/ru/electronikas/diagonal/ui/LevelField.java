@@ -43,8 +43,33 @@ public class LevelField {
     private Stage stage;
     private StaticPanel staticPanel;
     private BottomActionBar bottomActionBar;
-    private boolean isPause = false;
+    private volatile boolean isPause = false;
     private GameOverMenu gameOverMenu;
+
+    /**
+     * P1-fix: public read-accessor for the pause flag. Used by DiGestureListener
+     * to short-circuit fling/pan events while the SettingsMenu (or GameOverMenu)
+     * overlay is open. Without this check the game keeps advancing underneath
+     * the settings panel — the player closes the panel and finds the board
+     * has 'teleported' because DiGameModel.onMove() mutated cells/score even
+     * though applyActions() early-returned on the visual side.
+     */
+    public boolean isPaused() {
+        return isPause;
+    }
+
+    /**
+     * P1-fix: external pause control. Called by SettingsMenu.animateOpen() /
+     * animateHide() so the gesture listener can be neutralised while the
+     * settings overlay is on screen.
+     *
+     * Note: this does NOT affect the GameOverMenu path — that one toggles
+     * isPause directly via the GameOverAction handler in applyActions(), and
+     * is unaffected by this method.
+     */
+    public void setPaused(boolean paused) {
+        this.isPause = paused;
+    }
 
     public void hideGameOverMenu() {
         if(gameOverMenu!=null) {

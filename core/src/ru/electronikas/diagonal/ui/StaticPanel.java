@@ -150,9 +150,9 @@ public class StaticPanel {
         // Without .expandY(), libGDX defaults the cell's vertical alignment to TOP
         // and the buttons end up glued to the bottom of the row.
         Table buttonRow = new Table(Di2048Game.game.getUiSkin());
-        buttonRow.add(createSoundBut()).size(actionSize).uniformX().expandX().expandY().center().space(pad);
-        buttonRow.add(createUndoBut()).size(actionSize).uniformX().expandX().expandY().center().space(pad);
-        buttonRow.add(createSettingsBut()).size(actionSize).uniformX().expandX().expandY().center().space(pad);
+        buttonRow.add(createSoundBut()).size(actionSize).uniformX().expandX().expandY().center();
+        buttonRow.add(createUndoBut()).size(actionSize).uniformX().expandX().expandY().center();
+        buttonRow.add(createSettingsBut()).size(actionSize).uniformX().expandX().expandY().center();
 
         // Add the nested button-row as a SINGLE cell spanning both outer columns.
         // .colspan(2).growX().center() on the OUTER cell makes the nested table
@@ -160,7 +160,7 @@ public class StaticPanel {
         // .growY() is NOT used here because row2Height is already fixed via
         // table.row().height(row2Height); the .center() handles vertical centering
         // of the nested table inside that fixed-height row.
-        table.row().height(row2Height).padBottom(pad).padTop(pad / 2f);
+        table.row().height(row2Height);
         table.add(buttonRow).colspan(2).growX().center();
 
         // Do NOT call table.pack() — it would shrink the table to preferred sizes

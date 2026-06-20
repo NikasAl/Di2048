@@ -22,6 +22,7 @@ import ru.electronikas.diagonal.model.DiGameModel;
 import ru.electronikas.diagonal.model.Pos;
 import ru.electronikas.diagonal.settings.GameSounds;
 import ru.electronikas.diagonal.settings.Storage;
+import ru.electronikas.diagonal.ui.menu.ConfirmDialog;
 import ru.electronikas.diagonal.ui.menu.SettingsMenu;
 
 /**
@@ -113,7 +114,7 @@ public class StaticPanel {
         float statWidth = (w - 3 * pad) / 2f;
 
         // Action button size: bounded by BOTH the row height AND the per-button
-        // column width (3 columns inside the nested row2 table).
+        // column width (4 columns inside the nested row2 table: sound | del2s | undo | settings).
         //
         // IMPORTANT: ImageButton draws its imageUp drawable with its OWN internal
         // padding (imageUpalignment + libGDX's default ImageButton padding), so the
@@ -123,7 +124,7 @@ public class StaticPanel {
         // (BUTTON_OVERFLOW_MARGIN_FRACTION = 0.15 of row2Height) subtracted from the
         // vertical bound — this scales correctly across all screen sizes/densities,
         // unlike the absolute '+ 20 px' workaround the user tested.
-        float columnWidth = (w - 4 * pad) / 3f;
+        float columnWidth = (w - 5 * pad) / 4f;
         float verticalBound = row2Height - 2 * pad
                 - row2Height * BUTTON_OVERFLOW_MARGIN_FRACTION;
         float horizontalBound = columnWidth - 2 * pad;
@@ -143,7 +144,8 @@ public class StaticPanel {
         table.add(scoreLabel).width(statWidth).padLeft(pad).padRight(pad).top();
         table.add(createRecordLabel()).width(statWidth).padLeft(pad).padRight(pad).top();
 
-        // ----- Row 2: nested table with 3 equal columns of action buttons -----
+        // ----- Row 2: nested table with 4 equal columns of action buttons -----
+        // Sound | Del 2s | Undo | Settings
         // The nested table's cells use .expandY().center() so each button is
         // vertically centered inside its column even when actionSize < row2Height
         // (which is now the case because of BUTTON_OVERFLOW_MARGIN_FRACTION).
@@ -151,6 +153,7 @@ public class StaticPanel {
         // and the buttons end up glued to the bottom of the row.
         Table buttonRow = new Table(Di2048Game.game.getUiSkin());
         buttonRow.add(createSoundBut()).size(actionSize).uniformX().expandX().expandY().center();
+        buttonRow.add(createDel2sBut()).size(actionSize).uniformX().expandX().expandY().center();
         buttonRow.add(createUndoBut()).size(actionSize).uniformX().expandX().expandY().center();
         buttonRow.add(createSettingsBut()).size(actionSize).uniformX().expandX().expandY().center();
 
@@ -170,6 +173,35 @@ public class StaticPanel {
 
     /** Cached undo icon drawable (loaded once, reused across recreations). */
     private static TextureRegionDrawable undoDrawable = null;
+
+    /** Cached del2s icon drawable (loaded once, reused across recreations). */
+    private static TextureRegionDrawable del2sDrawable = null;
+
+    /**
+     * Lazy-load the 'delete 2s' icon (a tile with '2' + red X badge) as a
+     * TextureRegionDrawable. Loaded once and cached statically.
+     */
+    private static TextureRegionDrawable getDel2sDrawable() {
+        if (del2sDrawable == null) {
+            try {
+                Texture tex = new Texture(Gdx.files.internal("data/skins/del2s128.png"));
+                tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                del2sDrawable = new TextureRegionDrawable(new TextureRegion(tex));
+            } catch (Throwable e) {
+                Gdx.app.error("StaticPanel", "Failed to load del2s128.png", e);
+                try {
+                    del2sDrawable = new TextureRegionDrawable(
+                            Di2048Game.game.getUiSkin().getRegion("settings"));
+                } catch (Throwable e2) {
+                    Gdx.app.error("StaticPanel", "del2s fallback also failed", e2);
+                    del2sDrawable = new TextureRegionDrawable(
+                            new TextureRegion(new Texture(
+                                    1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888)));
+                }
+            }
+        }
+        return del2sDrawable;
+    }
 
     /**
      * Lazy-load the undo icon as a TextureRegionDrawable. Loaded once and cached
@@ -207,9 +239,14 @@ public class StaticPanel {
     }
 
     /**
-     * P1-2 + v2: 'Undo last move' as an ImageButton with a dedicated undo icon.
-     * Watches a rewarded video, then reverts the most recent move. Silently
-     * no-ops if no undo snapshot is available.
+     * P1-2 + v2 + v4: 'Undo last move' as an ImageButton with a dedicated undo icon.
+     *
+     * v4 change: now opens a ConfirmDialog ("Undo last move? Watch a short ad...")
+     * before firing the rewarded video. The dialog gives the user a chance to
+     * cancel without accidentally triggering a 30s unskippable ad.
+     *
+     * Silently no-ops if no undo snapshot is available (diGameModel.canUndo()
+     * returns false) — in that case we don't even show the dialog.
      */
     private Actor createUndoBut() {
         // Build the ImageButton style in code — safer than declaring a skin style
@@ -233,14 +270,61 @@ public class StaticPanel {
         undoBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 if (!diGameModel.canUndo()) {
-                    // Nothing to undo — silently ignore
+                    // Nothing to undo — silently ignore, no dialog.
                     return;
                 }
-                Di2048Game.game.platformListener.showRewardVideo(() -> Di2048Game.game.undoLastMove());
-                Di2048Game.game.platformListener.trackEvent("UndoMoveOnClBut");
+                // Show a confirmation dialog. On 'Yes', fire the rewarded video.
+                ConfirmDialog dlg = new ConfirmDialog(stage,
+                        "undoDialogTitle", "undoDialogMessage",
+                        () -> {
+                            Di2048Game.game.platformListener.showRewardVideo(() -> Di2048Game.game.undoLastMove());
+                            Di2048Game.game.platformListener.trackEvent("UndoMoveOnClBut");
+                        });
+                dlg.animateOpen();
             }
         });
         return undoBut;
+    }
+
+    /**
+     * v4: 'Delete 2s' as an ImageButton with a dedicated del2s icon.
+     *
+     * Same flow as the existing 'Del 2s Continue' button in GameOverMenu, but
+     * available mid-game from the top HUD: opens a ConfirmDialog, on 'Yes'
+     * fires a rewarded video and on reward calls Di2048Game.del2s() which
+     * removes every 2-tile from the board.
+     *
+     * Useful when the board is filling up with low-value 2-tiles and the
+     * player wants to free up space without ending the game.
+     */
+    private Actor createDel2sBut() {
+        ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+        style.imageUp = getDel2sDrawable();
+        style.imageDown = getDel2sDrawable().tint(new Color(1f, 1f, 1f, 0.6f));
+
+        final ImageButton del2sBut = new ImageButton(style);
+        final Color baseColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        final Color dimColor  = new Color(1.0f, 1.0f, 1.0f, 0.7f);
+        del2sBut.addAction(
+                Actions.forever(
+                        Actions.sequence(
+                                Actions.color(baseColor, 1.4f),
+                                Actions.color(dimColor, 1.4f)
+                        )
+                )
+        );
+        del2sBut.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                ConfirmDialog dlg = new ConfirmDialog(stage,
+                        "del2sDialogTitle", "del2sDialogMessage",
+                        () -> {
+                            Di2048Game.game.platformListener.showRewardVideo(() -> Di2048Game.game.del2s());
+                            Di2048Game.game.platformListener.trackEvent("Del2sOnClBut");
+                        });
+                dlg.animateOpen();
+            }
+        });
+        return del2sBut;
     }
 
     private Actor createSettingsBut() {

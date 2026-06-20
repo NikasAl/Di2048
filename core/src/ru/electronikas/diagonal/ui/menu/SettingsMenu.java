@@ -66,7 +66,10 @@ public class SettingsMenu {
         rateMenu.add(closeSettingsButton()).colspan(4).pad(padg).width(realW);
 
         rateMenu.row().height(h / 10);
-        rateMenu.add(selectGameTypeButton()).colspan(4).pad(padg).width(realW);
+        // P4: .center() on the cell centers the SelectBox horizontally inside its
+        // (realW-wide) cell — without it, libGDX defaults to left alignment and the
+        // SelectBox hugs the left edge of the settings panel.
+        rateMenu.add(selectGameTypeButton()).colspan(4).pad(padg).width(realW).center();
         rateMenu.clip();
         rateMenu.row().height(h / 10);
         rateMenu.add(newGameButton()).pad(padg).width(realW/2).colspan(2);
@@ -152,6 +155,8 @@ public class SettingsMenu {
         selectBox.setItems("3x3","4x4", "5x5", "6x6", "7x7", "8x8", "9x9", "10x10", "11x11", "12x12");
         int fieldTypeIndex = Storage.getCurrentFieldType() - 3;
         selectBox.setSelectedIndex(fieldTypeIndex);
+        // P4: center the selected-item text inside the SelectBox (was left-aligned).
+        selectBox.setAlignment(Align.center);
         selectBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

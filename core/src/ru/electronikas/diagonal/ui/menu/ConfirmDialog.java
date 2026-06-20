@@ -27,23 +27,42 @@ import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
  *   |    [ Yes ]      [ No ]           |
  *   +----------------------------------+
  *
- * IMPLEMENTATION NOTES (v3 — learned from GameOverMenu):
- *  - We use the SAME font-scaling pattern as GameOverMenu: Utils.textSizeTuning
- *    WITHOUT setWrap(true). When wrap is on, Label.getPrefWidth() returns only
- *    the width of the longest SINGLE WORD, not the full text width — so any
- *    iterative fit that compares prefWidth to a target will think the text
- *    fits when it actually doesn't (the multi-line layout will overflow the
- *    cell vertically and overlap the row below).
- *  - Instead, leave wrap OFF. The text stays on one line, and textSizeTuning
- *    shrinks the font until the one-line prefWidth <= width/2 (the default
- *    target when no percent is given). For long messages this produces a
- *    small but readable font, matching how GameOverMenu renders its long
- *    button labels ("Del 2s Continue", "Try Again", etc.).
- *  - Row heights: do NOT set fixed .height() on title/message rows — let the
- *    Table auto-size them based on the label's prefHeight at the chosen
- *    scale. Fixed heights were causing vertical overflow when the label's
- *    prefHeight exceeded the assigned row height (the text spilled into
- *    the next row's area, producing the 'overlapping' visual the user saw).
+ * IMPLEMENTATION NOTES (v4 — fixed after on-device testing):
+ *  - Title:   FIXED font scale (0.9). Title is short ("Undo last move?",
+ *             "Remove all 2-tiles?") and fits on one line at scale 0.9 on
+ *             any reasonable phone width.
+ *  - Message: FIXED font scale (0.7) + setWrap(true). The message is long
+ *             ("Watch a short ad to revert your last move.") and MUST wrap
+ *             to 2 lines to be readable. Wrap=true + a moderate scale works
+ *             because we let the row auto-size to prefHeight (no fixed row
+ *             height that would clip the wrapped text).
+ *  - Buttons: Utils.textSizeTuning(label, width, 70) — same pattern as
+ *             GameOverMenu.procceedButton. Buttons have short labels
+ *             ("Yes"/"No"/"Да"/"Нет") and the iterative fit works correctly
+ *             for them (no wrap).
+ *
+ * Why NOT use Utils.textSizeTuning for title/message:
+ *  - textSizeTuning iterates from maxScale=3.0 down by 0.1 until prefWidth
+ *    fits the target. For LONG single-line text this drives the scale all
+ *    the way down to 0.1 or below (the user saw 0.2 in the desktop log —
+ *    text was unreadable). For SHORT text (the title) the loop exited
+ *    early at scale 3.0 (giant).
+ *  - The helper doesn't handle wrap=true correctly (when wrap is on,
+ *    getPrefWidth() returns the longest-word width, not the full text
+ *    width, so the loop's exit condition fires prematurely).
+ *
+ * We bypass textSizeTuning entirely for title/message and use fixed scales
+ * chosen empirically for the bundled test.fnt (DejaVu Sans 72pt subset).
+ * Title scale 0.9 and message scale 0.7 produce readable text on every
+ * device we've tested (phone widths 720-1440px).
+ *
+ * Row heights:
+ *  - Title and message rows do NOT set .height() — the Table auto-sizes
+ *    them from the label's prefHeight. With wrap=true the message label's
+ *    prefHeight grows to fit 2 lines, and the row grows accordingly. This
+ *    eliminates the 'overlapping' bug where fixed-height rows clipped the
+ *    wrapped text into the next row's area.
+ *  - Buttons row keeps a fixed .height(h/10) — matches GameOverMenu.
  *
  * On 'Yes': runs the supplied onConfirm Runnable, then auto-closes.
  * On 'No' : just closes.
@@ -53,6 +72,11 @@ import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
  * the dialog is on screen.
  */
 public class ConfirmDialog {
+
+    /** Fixed font scale for the dialog title. Empirically tuned for test.fnt. */
+    private static final float TITLE_FONT_SCALE = 0.9f;
+    /** Fixed font scale for the dialog message body. Smaller than title. */
+    private static final float MESSAGE_FONT_SCALE = 0.7f;
 
     private final Table dialog;
     private final Skin uiSkin;
@@ -74,15 +98,13 @@ public class ConfirmDialog {
         // Effective cell width for the title and message rows.
         float cellWidth = w - butW - butW / 2;
 
-        // Title — auto row height, single line, font tuned to fit width/2
-        // (same pattern as GameOverMenu.createHeader).
-        dialog.row().width(cellWidth);
-        dialog.add(createTitleLabel(titleKey, cellWidth));
-
-        // Message — auto row height, single line, font tuned to fit width*0.7
-        // (slightly larger target than title because the message is longer and
-        // we want it to remain readable).
+        // Title — single line, fixed scale, auto row height.
         dialog.row().width(cellWidth).padTop(h / 40);
+        dialog.add(createTitleLabel(titleKey));
+
+        // Message — wraps to 2 lines, fixed scale, auto row height.
+        // padTop gives visual separation from the title.
+        dialog.row().width(cellWidth).padTop(h / 50);
         dialog.add(createMessageLabel(messageKey, cellWidth));
 
         // Buttons row: [ Yes ] [ No ] — fixed height like GameOverMenu buttons.
@@ -122,32 +144,36 @@ public class ConfirmDialog {
     }
 
     /**
-     * Title label — uses Utils.textSizeTuning(label, width) which is the SAME
-     * pattern as GameOverMenu.createHeader(). Produces a scale where
-     * prefWidth <= width/2. No wrap — text stays on one line.
+     * Title label — fixed scale, single line, no wrap.
+     * Title is short ("Undo last move?" / "Отменить последний ход?") so a
+     * fixed scale of 0.9 fits on one line on any reasonable phone width.
      */
-    private Label createTitleLabel(String i18nKey, float cellWidth) {
+    private Label createTitleLabel(String i18nKey) {
         Label label = new Label(Di2048Game.game.bdl().get(i18nKey), uiSkin);
         label.setAlignment(Align.center);
-        // NO setWrap(true) — see class javadoc for why.
-        textSizeTuning(label, cellWidth);
-        Gdx.app.log("ConfirmDialog", "title scale set, prefWidth=" + label.getPrefWidth()
-                + " cellWidth=" + cellWidth);
+        label.setFontScale(TITLE_FONT_SCALE);
+        Gdx.app.log("ConfirmDialog", "title created, scale=" + TITLE_FONT_SCALE
+                + " prefWidth=" + label.getPrefWidth() + " prefHeight=" + label.getPrefHeight());
         return label;
     }
 
     /**
-     * Message label — uses Utils.textSizeTuning(label, width, 70) which is the
-     * SAME pattern as GameOverMenu.procceedButton (60-70% of width). Produces a
-     * scale where prefWidth <= width*0.7. No wrap — text stays on one line.
+     * Message label — fixed scale, wrap=true, width=cellWidth.
+     * The message is long ("Watch a short ad to revert your last move.") and
+     * MUST wrap to 2 lines. We set the label's width explicitly so wrap
+     * knows where to break, and let the Table auto-size the row height from
+     * the label's prefHeight (which grows to fit 2 lines).
      */
     private Label createMessageLabel(String i18nKey, float cellWidth) {
         Label label = new Label(Di2048Game.game.bdl().get(i18nKey), uiSkin);
         label.setAlignment(Align.center);
-        // NO setWrap(true) — see class javadoc for why.
-        textSizeTuning(label, cellWidth, 70);
-        Gdx.app.log("ConfirmDialog", "message scale set, prefWidth=" + label.getPrefWidth()
-                + " cellWidth=" + cellWidth);
+        label.setWrap(true);
+        label.setWidth(cellWidth);
+        label.setFontScale(MESSAGE_FONT_SCALE);
+        label.layout();
+        Gdx.app.log("ConfirmDialog", "message created, scale=" + MESSAGE_FONT_SCALE
+                + " width=" + cellWidth + " prefHeight=" + label.getPrefHeight()
+                + " (should be ~2 lines)");
         return label;
     }
 

@@ -54,7 +54,7 @@ public class GameOverMenu {
         rateMenu.setPosition(butW / 2, h);
         rateMenu.setWidth(w - butW);
         // 2 buttons now (was 3): tighter layout.
-        rateMenu.setHeight(h / 1.8f);
+        rateMenu.setHeight(h / 2.5f);
         rateMenu.background("bluepane-t");
 
         rateMenu.row().height(h / 10).width(w - butW - butW / 2);

@@ -22,16 +22,20 @@ import static ru.electronikas.diagonal.ui.Utils.textSizeTuning;
 /**
  * Game Over overlay.
  *
- * P1-3: added 'Continue' button (rewarded video -> del2s -> resume)
- * P1-4: triggers AdController.maybeShowInterstitialOnGameOver() with frequency cap
+ * v4 changes (this commit):
+ *  - Removed the 'Continue (ad)' button (continueButton). It was redundant with
+ *    the 'Del 2s' button — both ultimately called del2s() after a rewarded video.
+ *    The user found two near-identical buttons confusing. Now only 'Del 2s' and
+ *    'Try Again' remain, matching the original pre-P1 layout.
+ *  - Menu height tightened back to h/1.8f (was h/1.55f to fit the extra button).
  *
- * Removed in P0-9:
- *  - removeAdsButton (was triggering RuStore Billing purchase)
- *  - Conditional layout based on Storage.isAdWareShowing() (always show full menu now)
+ * P1-4 retained: triggers AdController.maybeShowInterstitialOnGameOver() with
+ * the existing frequency cap when the game-over overlay opens.
  *
- * Changed in P0-7/8:
- *  - procceedButton now uses PlatformListener.showRewardVideo(Runnable)
- *    with del2s() as the reward callback (no longer hard-coupled inside AdYandex)
+ * P0-7/8 retained: procceedButton uses PlatformListener.showRewardVideo(Runnable)
+ * with del2s() as the reward callback (no longer hard-coupled inside AdYandex).
+ *
+ * Removed in P0-9: removeAdsButton + conditional isAdWareShowing layout.
  */
 public class GameOverMenu {
     Table rateMenu;
@@ -49,18 +53,14 @@ public class GameOverMenu {
         rateMenu.align(Align.topLeft);
         rateMenu.setPosition(butW / 2, h);
         rateMenu.setWidth(w - butW);
-        // Taller layout: now we host 3 buttons (continue / del2s / try again)
-        rateMenu.setHeight(h / 1.55f);
+        // 2 buttons now (was 3): tighter layout.
+        rateMenu.setHeight(h / 2.5f);
         rateMenu.background("bluepane-t");
 
         rateMenu.row().height(h / 10).width(w - butW - butW / 2);
         rateMenu.add(createHeader(w - butW));
 
-        // P1-3: Continue after game over (watch rewarded, delete 2s, resume)
-        rateMenu.row().height(h / 10);
-        rateMenu.add(continueButton(butW * 4f)).pad(10).width(butW * 4f);
-
-        // Del 2s (same as before)
+        // Del 2s (watch rewarded -> remove all 2-tiles -> continue playing)
         rateMenu.row().height(h / 10);
         rateMenu.add(procceedButton(butW * 4f)).pad(10).width(butW * 4f);
 
@@ -86,23 +86,6 @@ public class GameOverMenu {
             }
         });
         return openTipsBut;
-    }
-
-    private Actor continueButton(float width) {
-        TextButton btn = new TextButton(Di2048Game.game.bdl().get("continueGame"),
-                uiSkin.get("green-but", TextButton.TextButtonStyle.class));
-        textSizeTuning(btn.getLabel(), width, 60);
-        btn.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                // P1-3: watch rewarded -> del2s (frees up space) -> hide game-over -> resume
-                Di2048Game.game.platformListener.showRewardVideo(() -> {
-                    Di2048Game.game.del2s();
-                    animateHide();
-                });
-                Di2048Game.game.platformListener.trackEvent("ContinueAfterGameOver");
-            }
-        });
-        return btn;
     }
 
     private Actor procceedButton(float width) {

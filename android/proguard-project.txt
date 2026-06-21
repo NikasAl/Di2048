@@ -24,8 +24,32 @@
 -keep class com.badlogic.gdx.controllers.android.AndroidControllers
 -keep class com.badlogic.gdx.graphics.g2d.BitmapFont
 -keep class com.badlogic.gdx.graphics.Color
+
+# Critical: keep ALL libGDX Scene2D UI classes AND their members.
+# Without this, R8 may inline/rename methods/fields in Label (the base
+# class of our CustomShaderLabel), causing VerifyError at class-load
+# time on the subclass. The error manifests only in release builds
+# (debug builds don't run R8). Reported as:
+#   java.lang.VerifyError: Rejecting class ru.electronikas.diagonal.ui.actors.CustomShaderLabel
+#   that attempts to sub-type erroneous class com.badlogic.gdx.scenes.scene2d.ui.Label
 -keep class com.badlogic.gdx.scenes.scene2d.ui.** { *; }
+-keepclassmembers class com.badlogic.gdx.scenes.scene2d.ui.** { *; }
+-keepattributes Signature,InnerClasses,EnclosingMethod
+
+# Our custom actors that subclass libGDX UI classes — keep all
+# constructors and methods so R8 doesn't strip anything that
+# the verifier expects to find.
 -keep class ru.electronikas.diagonal.ui.actors.** { *; }
+-keepclassmembers class ru.electronikas.diagonal.ui.actors.** { *; }
+
+# Keep all our application classes — the project is small (≈30 classes)
+# and the APK size benefit from obfuscating them is negligible (<100 KB),
+# while the risk of R8 breaking reflection-based skin/i18n loading or
+# subclass initialization (like the CustomShaderLabel VerifyError) is high.
+# This is the standard recommendation for libGDX projects in the official
+# libGDX wiki: https://github.com/libgdx/libgdx/wiki/Setting-up-your-project
+-keep class ru.electronikas.diagonal.** { *; }
+-keepclassmembers class ru.electronikas.diagonal.** { *; }
 
 -keepclassmembers class com.badlogic.gdx.backends.android.AndroidInput* {
    <init>(com.badlogic.gdx.Application, android.content.Context, java.lang.Object, com.badlogic.gdx.backends.android.AndroidApplicationConfiguration);

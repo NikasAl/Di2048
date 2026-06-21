@@ -60,7 +60,21 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
-            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+            // P1-fix: use 'proguard-android.txt' (NO optimization) instead of
+            // 'proguard-android-optimize.txt'. The optimize variant runs
+            // '-optimizationpasses 5' which inlines methods in libGDX Scene2D UI
+            // classes (notably Label), causing VerifyError when our
+            // CustomShaderLabel subclass tries to load:
+            //   java.lang.VerifyError: Rejecting class
+            //   ru.electronikas.diagonal.ui.actors.CustomShaderLabel that
+            //   attempts to sub-type erroneous class
+            //   com.badlogic.gdx.scenes.scene2d.ui.Label
+            // The non-optimize variant still does shrinking (removes unused
+            // classes) but does NOT inline or rearrange method bodies, which
+            // is what was breaking the verifier.
+            // We also explicitly pass -dontoptimize in proguard-project.txt
+            // as a belt-and-suspenders measure.
+            proguardFile getDefaultProguardFile('proguard-android.txt')
             proguardFile 'proguard-project.txt'
         }
 

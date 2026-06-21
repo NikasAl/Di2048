@@ -92,14 +92,14 @@ public class ConfirmDialog {
         dialog.align(Align.topLeft);
         dialog.setPosition(butW / 2, h);
         dialog.setWidth(w - butW);
-        dialog.setHeight(h / 2.3f);
+        dialog.setHeight(h / 2.7f);
         dialog.background("bluepane-t");
 
         // Effective cell width for the title and message rows.
         float cellWidth = w - butW - butW / 2;
 
         // Title — single line, fixed scale, auto row height.
-        dialog.row().width(cellWidth).padTop(h / 40);
+        dialog.row().width(cellWidth).padTop(h / 50);
         dialog.add(createTitleLabel(titleKey));
 
         // Message — wraps to 2 lines, fixed scale, auto row height.
@@ -108,14 +108,13 @@ public class ConfirmDialog {
         dialog.add(createMessageLabel(messageKey, cellWidth));
 
         // Buttons row: [ Yes ] [ No ] — fixed height like GameOverMenu buttons.
-        dialog.row().height(h / 10).padTop(h / 30);
+        dialog.row().height(h / 10).padTop(h / 50);
         Table buttonRow = new Table(uiSkin);
         float yesW = butW * 1.8f;
         float noW = butW * 1.8f;
 
         TextButton yesBut = new TextButton(Di2048Game.game.bdl().get("dialogYes"),
                 uiSkin.get("green-but", TextButton.TextButtonStyle.class));
-        textSizeTuning(yesBut.getLabel(), yesW, 70);
         yesBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 animateHide();
@@ -130,7 +129,6 @@ public class ConfirmDialog {
 
         TextButton noBut = new TextButton(Di2048Game.game.bdl().get("dialogNo"),
                 uiSkin.get("red-but", TextButton.TextButtonStyle.class));
-        textSizeTuning(noBut.getLabel(), noW, 70);
         noBut.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 animateHide();

@@ -58,9 +58,42 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            minifyEnabled true
-            shrinkResources true
-            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+            // P1-fix: disable R8 entirely (minifyEnabled=false + shrinkResources=false).
+            //
+            // R8 was causing VerifyError at class-load time for our CustomShaderLabel
+            // subclass of libGDX's Label, even after:
+            //   - Adding -keepclassmembers rules for all Scene2D UI classes
+            //   - Switching from proguard-android-optimize.txt to proguard-android.txt
+            //   - Adding -dontoptimize and -dontpreverify directives
+            //
+            // The error was:
+            //   java.lang.VerifyError: Rejecting class
+            //   ru.electronikas.diagonal.ui.actors.CustomShaderLabel that
+            //   attempts to sub-type erroneous class
+            //   com.badlogic.gdx.scenes.scene2d.ui.Label
+            //   (declaration appears in base.apk!classes2.dex)
+            //
+            // Root cause is likely a combination of:
+            //   - libGDX 1.12.1 compiled with Java 11 bytecode being processed
+            //     by R8 in a Java 17 toolchain
+            //   - Multidex (classes2.dex) interacting badly with R8's class
+            //     splitting for our custom actors
+            //   - Some R8 default behavior that -keep rules cannot override
+            //
+            // Trade-off: APK grows from ~12 MB to ~15 MB (R8 was removing
+            // ~3 MB of unused SDK code from Yandex MobileAds' transitive
+            // dependencies). For a 12 MB game this is acceptable; reliability
+            // is more important than 25% size reduction.
+            //
+            // Future: if APK size becomes critical, re-enable R8 and bisect
+            // which specific -keep rule or R8 pass is breaking Label. The
+            // official libGDX wiki ProGuard config is a starting point:
+            //   https://github.com/libgdx/libgdx/wiki/Setting-up-your-project#proguard
+            minifyEnabled false
+            shrinkResources false
+            // proguardFiles are kept here for documentation but have no effect
+            // when minifyEnabled=false.
+            proguardFile getDefaultProguardFile('proguard-android.txt')
             proguardFile 'proguard-project.txt'
         }
 

@@ -12,6 +12,23 @@
 -verbose
 
 # -------------------------------------------------------------------
+# Disable R8 optimization entirely.
+# R8's optimization pass (-optimizationpasses) inlines method bodies and
+# rearranges bytecode. For libGDX Scene2D UI classes (notably Label),
+# this can break the JVM verifier: when our CustomShaderLabel subclass
+# loads, the verifier checks that Label has the expected inherited
+# methods, and if R8 has inlined or removed them, verification fails
+# with java.lang.VerifyError at class-load time.
+# Shrinking (removal of unused classes) is still active — only the
+# optimization pass is disabled. This is the standard recommendation
+# for libGDX projects per the official wiki.
+# -------------------------------------------------------------------
+-dontoptimize
+# Also disable preverification — it's only needed for Java ME / old JVMs
+# and can interact badly with R8 on Android.
+-dontpreverify
+
+# -------------------------------------------------------------------
 # libGDX
 # -------------------------------------------------------------------
 -dontwarn android.support.**

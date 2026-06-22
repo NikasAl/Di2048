@@ -38,6 +38,13 @@ public class LevelField {
     /** Vertical offset of the board's bottom edge from the bottom of the screen. */
     public static float DY;
 
+    /**
+     * Horizontal offset of the board's left edge from the left of the screen.
+     * Non-zero when the board is constrained by height (wide screens) and needs
+     * to be centered horizontally. Read by createFields() and CellModel.
+     */
+    public static float BOARD_X_OFFSET = 0;
+
     public static List<CellModel> cells;
     private DiGameModel diGameModel;
     private Stage stage;
@@ -134,19 +141,25 @@ public class LevelField {
      * metrics should not change during undo, but the call is cheap and protects
      * against future refactors).
      *
-     *   CellModel.size = screen width / FIELD_SIZE
-     *   DY             = board_bottom (anchored above the bottom action bar + ad banner)
+     * P1-fix: the board is now constrained by BOTH width AND height:
+     *   - Width bound:  size = sw / FIELD_SIZE  (board spans full screen width)
+     *   - Height bound: size = availableHeight / FIELD_SIZE  (board fits between
+     *     the top panel and the bottom action bar)
+     * We take the SMALLER of the two so the board never overflows vertically
+     * into the top panel (which happened on wide screens where sw was large
+     * but availableHeight was small).
      *
-     * The board is CENTERED vertically in the available space between the
-     * StaticPanel (top) and the BottomActionBar + ad banner (bottom), so the
-     * empty gap is split evenly above and below the board instead of all
-     * piling up at the bottom.
+     * When the height bound is smaller than the width bound, the board no
+     * longer spans the full screen width — so we center it horizontally via
+     * BOARD_X_OFFSET (a static field read by createFields() and CellModel).
+     *
+     * DY is the vertical offset of the board's bottom edge from the bottom
+     * of the screen. The board is centered in the available vertical space
+     * between the StaticPanel (top) and the BottomActionBar + ad banner (bottom).
      */
     public static void recomputeMetrics() {
         float sw = Gdx.graphics.getWidth();
         float sh = Gdx.graphics.getHeight();
-        // Cell size: width-based, so the board spans the full screen width.
-        CellModel.size = sw / DiGameModel.FIELD_SIZE;
 
         // Top constraint: bottom edge of the StaticPanel.
         float panelBottom = sh - sh * StaticPanel.PANEL_TOP_FRACTION;
@@ -162,17 +175,36 @@ public class LevelField {
 
         // Vertical space available for the board itself.
         float availableHeight = availableTop - availableBottom;
-        float boardHeight = CellModel.size * DiGameModel.FIELD_SIZE;
 
-        // Center the board in the available vertical space. If the board is
-        // taller than the available space (very small screens / large FIELD_SIZE),
-        // DY can go negative — clamp it so the board never gets pushed below the
-        // ad banner reserve.
+        // Cell size: take the SMALLER of the width-bound and height-bound so
+        // the board fits BOTH dimensions. On portrait phones the width bound
+        // is usually smaller; on wide screens (landscape, desktop resize) the
+        // height bound becomes smaller and prevents the board from overlapping
+        // the top panel.
+        float widthBound  = sw / DiGameModel.FIELD_SIZE;
+        float heightBound = availableHeight / DiGameModel.FIELD_SIZE;
+        CellModel.size = Math.min(widthBound, heightBound);
+
+        float boardHeight = CellModel.size * DiGameModel.FIELD_SIZE;
+        float boardWidth  = boardHeight; // square board
+
+        // Horizontal centering: when the board is narrower than the screen
+        // (height-bound was smaller than width-bound), offset it so it sits
+        // in the horizontal center of the screen.
+        BOARD_X_OFFSET = (sw - boardWidth) / 2f;
+        if (BOARD_X_OFFSET < 0) BOARD_X_OFFSET = 0; // defensive: never negative
+
+        // Center the board vertically in the available space.
         DY = availableBottom + Math.max(0f, (availableHeight - boardHeight) / 2f);
         // Defensive: never let the board overlap the ad banner reserve.
         if (DY < bottomReserve) {
             DY = bottomReserve;
         }
+
+        Gdx.app.log("LevelField", "recomputeMetrics: size=" + CellModel.size
+                + " boardW=" + boardWidth + " boardH=" + boardHeight
+                + " xOffset=" + BOARD_X_OFFSET + " DY=" + DY
+                + " availH=" + availableHeight);
     }
 
     private void createFields() {
@@ -180,7 +212,9 @@ public class LevelField {
         for(int x=0; x < DiGameModel.FIELD_SIZE; x++) {
             for(int y=0; y < DiGameModel.FIELD_SIZE; y++) {
                 Image img = new Image(Di2048Game.game.getUiSkin().getPatch("graypane"));
-                img.setPosition(x * size, y * size + DY);
+                // P1-fix: apply BOARD_X_OFFSET so the board is horizontally centered
+                // when it's narrower than the screen (height-constrained on wide displays).
+                img.setPosition(BOARD_X_OFFSET + x * size, y * size + DY);
                 img.setSize(size,size);
                 stage.addActor(img);
             }

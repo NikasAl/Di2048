@@ -74,13 +74,16 @@ public class CellModel {
     }
 
     public void moveToNewPos() {
+        // P1-fix: apply BOARD_X_OFFSET so cells move to the correct horizontal
+        // position when the board is centered (height-constrained on wide displays).
         cell.addAction(Actions.moveTo(
-                pos.x * size, pos.y * size + LevelField.DY, 0.1f));
+                LevelField.BOARD_X_OFFSET + pos.x * size, pos.y * size + LevelField.DY, 0.1f));
     }
 
     private void setPositionByPosXY(Pos pos) {
         cell.setSize(size,size);
-        cell.setPosition(pos.x * size, pos.y * size + LevelField.DY);
+        // P1-fix: apply BOARD_X_OFFSET (see moveToNewPos above).
+        cell.setPosition(LevelField.BOARD_X_OFFSET + pos.x * size, pos.y * size + LevelField.DY);
     }
 
     public static final float dt = 0.3f;

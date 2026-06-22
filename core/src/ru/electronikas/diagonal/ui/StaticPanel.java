@@ -140,9 +140,17 @@ public class StaticPanel {
         // NESTED Table that occupies a single cell of the outer table — so the outer
         // table stays at exactly 2 columns and the row-1 cells align correctly.
         table.row().height(row1Height).padTop(pad);
-        scoreLabel = createScoreLabel(statWidth);
+        // P1-fix: calibrate the font scale ONCE using the LONGEST of the two
+        // texts ("Счет\n..." vs "Рекорд\n...") so both labels end up at the
+        // SAME scale. Without this, textSizeTuning would pick a larger scale
+        // for the shorter "Счет" and a smaller one for "Рекорд", making the
+        // two panes look mismatched.
+        // The scale is also capped by the row height so the text never
+        // overflows the pane vertically when the window is very wide.
+        float scoreRecordScale = calibrateScoreRecordScale(statWidth, row1Height);
+        scoreLabel = createScoreLabel(statWidth, scoreRecordScale);
         table.add(scoreLabel).width(statWidth).padLeft(pad).padRight(pad).top();
-        table.add(createRecordLabel(statWidth)).width(statWidth).padLeft(pad).padRight(pad).top();
+        table.add(createRecordLabel(statWidth, scoreRecordScale)).width(statWidth).padLeft(pad).padRight(pad).top();
 
         // ----- Row 2: nested table with 4 equal columns of action buttons -----
         // Sound | Del 2s | Undo | Settings
@@ -455,17 +463,50 @@ public class StaticPanel {
         }
     }
 
-    private Label createRecordLabel(float width) {
+    /**
+     * P1-fix: compute a single font scale to be shared by both the Score and
+     * Record labels, so they render at the SAME size.
+     *
+     * Algorithm:
+     *  1. Build a temporary label with the LONGEST of the two texts
+     *     ("Рекорд\n..." is always >= "Счет\n..." in width because "Рекорд"
+     *     has more characters than "Счет").
+     *  2. Iteratively shrink from 0.6 down by 0.05 until prefWidth <= 70% of
+     *     paneWidth AND prefHeight <= 80% of rowHeight. The height check
+     *     prevents the text from overflowing the pane vertically when the
+     *     window is very wide (wide panes -> large width budget -> large
+     *     scale -> text taller than the row).
+     *  3. Return the scale; both createScoreLabel and createRecordLabel
+     *     receive it as a parameter and apply it via setFontScale.
+     */
+    private float calibrateScoreRecordScale(float paneWidth, float rowHeight) {
+        // Use the Record text as the reference — it's always >= Score in width.
+        String refText = getRecordText();
+        Label ref = new Label(refText, Di2048Game.game.getUiSkin()
+                .get("score-lbl", Label.LabelStyle.class));
+        ref.setAlignment(Align.center);
+
+        float targetWidth = paneWidth * 0.70f;
+        float targetHeight = rowHeight * 0.80f;
+        float scale = 0.6f;
+        while (scale > 0.2f) {
+            ref.setFontScale(scale);
+            ref.layout();
+            if (ref.getPrefWidth() <= targetWidth && ref.getPrefHeight() <= targetHeight) {
+                break;
+            }
+            scale -= 0.05f;
+        }
+        Gdx.app.log("StaticPanel", "score/record scale=" + scale
+                + " prefW=" + ref.getPrefWidth() + "/" + targetWidth
+                + " prefH=" + ref.getPrefHeight() + "/" + targetHeight);
+        return scale;
+    }
+
+    private Label createRecordLabel(float width, float scale) {
         Label label = new Label(getRecordText(), Di2048Game.game.getUiSkin().get("score-lbl", Label.LabelStyle.class));
         label.setAlignment(Align.center);
-        // P1-fix: use Utils.textSizeTuning (same pattern as GameOverMenu) so
-        // the font scale recalculates on every resize() recreation. The previous
-        // fixed 0.55f was fine for one resolution but stayed the same when the
-        // window was resized, causing "Рекорд..." to overflow or underflow the
-        // pane on different screen sizes.
-        // Target = 70% of the pane width — leaves 30% margin inside the green
-        // pane background that's baked into the 'score-lbl' LabelStyle.
-        Utils.textSizeTuning(label, width, 70);
+        label.setFontScale(scale);
         return label;
     }
 
@@ -473,14 +514,11 @@ public class StaticPanel {
         return Di2048Game.game.bdl().get("record") + "\n" + Storage.getRecord();
     }
 
-    private Label createScoreLabel(float width) {
+    private Label createScoreLabel(float width, float scale) {
         Label label = new Label(getScoreText(), Di2048Game.game.getUiSkin()
                 .get("score-lbl", Label.LabelStyle.class));
         label.setAlignment(Align.center);
-        // P1-fix: same as createRecordLabel — use Utils.textSizeTuning so the
-        // scale recalculates on resize. Previously a fixed 0.55f that didn't
-        // adapt to different screen widths.
-        Utils.textSizeTuning(label, width, 70);
+        label.setFontScale(scale);
         return label;
     }
 
@@ -495,7 +533,11 @@ public class StaticPanel {
     public void animatePlusScore(int value, Pos pos) {
         final Label scoreAnimLabel = new Label("+" + value, Di2048Game.game.getUiSkin());
         scoreAnimLabel.setColor(Utils.getRandomColor());
-        scoreAnimLabel.setPosition(pos.x * CellModel.size + CellModel.size / 4, pos.y * CellModel.size + CellModel.size);
+        // P1-fix: apply BOARD_X_OFFSET so the "+score" animation appears at the
+        // correct horizontal position when the board is centered.
+        scoreAnimLabel.setPosition(
+                LevelField.BOARD_X_OFFSET + pos.x * CellModel.size + CellModel.size / 4,
+                pos.y * CellModel.size + CellModel.size);
         scoreAnimLabel.pack();
         stage.addActor(scoreAnimLabel);
         scoreAnimLabel.addAction(Actions.fadeOut(1f));

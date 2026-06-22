@@ -103,7 +103,7 @@ public class BottomActionBar {
 
         // Field-size label
         float fieldLabelWidth = w * 0.30f;
-        fieldSizeLabel = createFieldSizeLabel(fieldLabelWidth);
+        fieldSizeLabel = createFieldSizeLabel(fieldLabelWidth, barHeight);
         switcher.add(fieldSizeLabel).width(fieldLabelWidth).pad(w * 0.005f);
 
         // Right arrow (icon)
@@ -163,14 +163,28 @@ public class BottomActionBar {
         }
     }
 
-    private Label createFieldSizeLabel(float width) {
+    private Label createFieldSizeLabel(float width, float rowHeight) {
         Label label = new Label(getFieldSizeText(),
                 Di2048Game.game.getUiSkin().get("score-lbl", Label.LabelStyle.class));
         label.setAlignment(Align.center);
-        // P1-fix: use Utils.textSizeTuning (same pattern as GameOverMenu buttons)
-        // so the font scale recalculates on every resize() recreation. Previously
-        // a fixed 0.6f that didn't adapt to different screen widths.
-        Utils.textSizeTuning(label, width, 70);
+        // P1-fix: iteratively fit font scale to BOTH width (70% of label width)
+        // AND height (80% of row height). Without the height check, wide windows
+        // produce a scale that makes the 2-line text ("Поле\n4x4") taller than
+        // the bar, causing vertical overflow.
+        float targetWidth = width * 0.70f;
+        float targetHeight = rowHeight * 0.80f;
+        float scale = 0.6f;
+        while (scale > 0.2f) {
+            label.setFontScale(scale);
+            label.layout();
+            if (label.getPrefWidth() <= targetWidth && label.getPrefHeight() <= targetHeight) {
+                break;
+            }
+            scale -= 0.05f;
+        }
+        Gdx.app.log("BottomActionBar", "fieldSize scale=" + scale
+                + " prefW=" + label.getPrefWidth() + "/" + targetWidth
+                + " prefH=" + label.getPrefHeight() + "/" + targetHeight);
         return label;
     }
 

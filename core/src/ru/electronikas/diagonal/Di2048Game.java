@@ -124,6 +124,7 @@ public class Di2048Game extends ApplicationAdapter {
 
         @Override
         public void resize(int width, int height) {
+                // Убрал ресайз т.к. он был нужен только временно для Desktop версии и вызывает баг с удалением двоек.
                 // P1-fix: Android calls resize() not only on real window-size changes
                 // but also when returning from a fullscreen ad — the ad's
                 // fullscreen-flags flip the window metrics and trigger a resize event.
@@ -138,31 +139,31 @@ public class Di2048Game extends ApplicationAdapter {
                 // LevelField.cells (the source of truth at any moment). After this
                 // sync, recreating from diGameModel produces the same tiles the
                 // player was seeing right before the resize.
-                if (levelField != null && diGameModel != null
-                                && ru.electronikas.diagonal.ui.LevelField.cells != null) {
-                        diGameModel.syncFromLevelField();
-                }
+                // if (levelField != null && diGameModel != null
+                //                 && ru.electronikas.diagonal.ui.LevelField.cells != null) {
+                //         diGameModel.syncFromLevelField();
+                // }
 
-                // Update viewport to new window size
-                stage.getViewport().update(width, height, true);
+                // // Update viewport to new window size
+                // stage.getViewport().update(width, height, true);
 
-                // Clear cached drawables that depend on screen size
-                ru.electronikas.diagonal.ui.StaticPanel.clearCachedDrawables();
-                ru.electronikas.diagonal.ui.BottomActionBar.clearCachedDrawables();
+                // // Clear cached drawables that depend on screen size
+                // ru.electronikas.diagonal.ui.StaticPanel.clearCachedDrawables();
+                // ru.electronikas.diagonal.ui.BottomActionBar.clearCachedDrawables();
 
-                // Clear stage and recreate UI elements with new dimensions
-                stage.clear();
+                // // Clear stage and recreate UI elements with new dimensions
+                // stage.clear();
 
-                // Recreate LevelField (which creates StaticPanel and BottomActionBar).
-                // The game model (diGameModel) is preserved AND synced above, so the
-                // recreated board will show the exact tiles that were on screen.
-                levelField = new LevelField(diGameModel, stage);
+                // // Recreate LevelField (which creates StaticPanel and BottomActionBar).
+                // // The game model (diGameModel) is preserved AND synced above, so the
+                // // recreated board will show the exact tiles that were on screen.
+                // levelField = new LevelField(diGameModel, stage);
 
-                // Re-setup input processor
-                DiGestureListener gestureListener = new DiGestureListener(levelField);
-                Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
+                // // Re-setup input processor
+                // DiGestureListener gestureListener = new DiGestureListener(levelField);
+                // Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
 
-                Gdx.app.log("Di2048", "resize: " + width + "x" + height);
+                // Gdx.app.log("Di2048", "resize: " + width + "x" + height);
         }
 
         public void del2s() {

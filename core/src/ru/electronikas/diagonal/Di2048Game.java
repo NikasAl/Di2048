@@ -122,6 +122,29 @@ public class Di2048Game extends ApplicationAdapter {
                 stage.act();
         }
 
+        @Override
+        public void resize(int width, int height) {
+                // Update viewport to new window size
+                stage.getViewport().update(width, height, true);
+                
+                // Clear cached drawables that depend on screen size
+                ru.electronikas.diagonal.ui.StaticPanel.clearCachedDrawables();
+                ru.electronikas.diagonal.ui.BottomActionBar.clearCachedDrawables();
+                
+                // Clear stage and recreate UI elements with new dimensions
+                stage.clear();
+                
+                // Recreate LevelField (which creates StaticPanel and BottomActionBar)
+                // The game model (diGameModel) is preserved, so progress is not lost
+                levelField = new LevelField(diGameModel, stage);
+                
+                // Re-setup input processor
+                DiGestureListener gestureListener = new DiGestureListener(levelField);
+                Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(gestureListener)));
+                
+                Gdx.app.log("Di2048", "resize: " + width + "x" + height);
+        }
+
         public void del2s() {
                 levelField.applyActions(diGameModel.del2s());
                 levelField.hideGameOverMenu();

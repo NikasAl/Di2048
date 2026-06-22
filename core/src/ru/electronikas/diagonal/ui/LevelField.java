@@ -82,6 +82,16 @@ public class LevelField {
         this.stage = stage;
 
         Gdx.app.log("LevelField", "ctor start, FIELD_SIZE=" + DiGameModel.FIELD_SIZE);
+        
+        // Clear any previous cells list to avoid duplicates on resize
+        if (cells != null) {
+            for (CellModel cm : cells) {
+                if (cm.cell != null && cm.cell.getStage() != null) {
+                    cm.cell.remove();
+                }
+            }
+        }
+        
         // Recompute CellModel.size + DY FIRST, so both createFields() and the
         // StaticPanel constructor see consistent values.
         recomputeMetrics();

@@ -142,7 +142,7 @@ public class StaticPanel {
         table.row().height(row1Height).padTop(pad);
         scoreLabel = createScoreLabel(statWidth);
         table.add(scoreLabel).width(statWidth).padLeft(pad).padRight(pad).top();
-        table.add(createRecordLabel()).width(statWidth).padLeft(pad).padRight(pad).top();
+        table.add(createRecordLabel(statWidth)).width(statWidth).padLeft(pad).padRight(pad).top();
 
         // ----- Row 2: nested table with 4 equal columns of action buttons -----
         // Sound | Del 2s | Undo | Settings
@@ -455,11 +455,17 @@ public class StaticPanel {
         }
     }
 
-    private Label createRecordLabel() {
+    private Label createRecordLabel(float width) {
         Label label = new Label(getRecordText(), Di2048Game.game.getUiSkin().get("score-lbl", Label.LabelStyle.class));
         label.setAlignment(Align.center);
-        label.setFontScale(0.55f);
-        // Do NOT call label.pack() — it would override the table-assigned width.
+        // P1-fix: use Utils.textSizeTuning (same pattern as GameOverMenu) so
+        // the font scale recalculates on every resize() recreation. The previous
+        // fixed 0.55f was fine for one resolution but stayed the same when the
+        // window was resized, causing "Рекорд..." to overflow or underflow the
+        // pane on different screen sizes.
+        // Target = 70% of the pane width — leaves 30% margin inside the green
+        // pane background that's baked into the 'score-lbl' LabelStyle.
+        Utils.textSizeTuning(label, width, 70);
         return label;
     }
 
@@ -471,11 +477,10 @@ public class StaticPanel {
         Label label = new Label(getScoreText(), Di2048Game.game.getUiSkin()
                 .get("score-lbl", Label.LabelStyle.class));
         label.setAlignment(Align.center);
-        // Conservative fixed scale: "Счет\n123456" must fit inside half the screen.
-        // Previous code called Utils.textSizeTuning which over-scaled for the
-        // available width because it didn't account for the green-pane background
-        // padding built into the 'score-lbl' style.
-        label.setFontScale(0.55f);
+        // P1-fix: same as createRecordLabel — use Utils.textSizeTuning so the
+        // scale recalculates on resize. Previously a fixed 0.55f that didn't
+        // adapt to different screen widths.
+        Utils.textSizeTuning(label, width, 70);
         return label;
     }
 

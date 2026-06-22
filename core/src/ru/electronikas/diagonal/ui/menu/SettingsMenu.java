@@ -3,6 +3,7 @@ package ru.electronikas.diagonal.ui.menu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -28,6 +29,9 @@ public class SettingsMenu {
     Table rateMenu;
     Skin uiSkin;
     float h = 0;
+    /** Effective content width — saved as a field so helper methods
+     *  (selectGameTypeButton, etc.) can use it for font fitting. */
+    float realW = 0;
 
     private Float scaleForButtons;
 
@@ -43,7 +47,7 @@ public class SettingsMenu {
         rateMenu.setHeight(h);
         rateMenu.background("bluepane-t");
 
-        float realW = w - w / 10;
+        realW = w - w / 10;
         float padg = w/90;
         rateMenu.row().height(h / 10);
         rateMenu.add(createHeader((realW))).width(realW*0.75f).colspan(3);
@@ -151,7 +155,52 @@ public class SettingsMenu {
     }
 
     private Actor selectGameTypeButton() {
-        final SelectBox<String> selectBox = new SelectBox<String>(uiSkin);
+        // P1-fix: build a custom SelectBoxStyle whose font has a scale that
+        // adapts to the available width. The default skin style uses test.fnt
+        // (DejaVu Sans 72pt) at scale 1.0 which is way too big for most screens
+        // and doesn't recalibrate on resize().
+        //
+        // We clone the default style, clone its font, and iteratively fit the
+        // font scale to ~70% of the cell width (same target as GameOverMenu
+        // buttons). The longest item in the list ("12x12" — 5 chars) is used
+        // as the fit reference so all items render at the same scale.
+        SelectBox.SelectBoxStyle style = new SelectBox.SelectBoxStyle(
+                uiSkin.get(SelectBox.SelectBoxStyle.class));
+
+        // Clone the font by loading it fresh from the .fnt file — this avoids
+        // mutating the shared skin font (which other UI elements use).
+        BitmapFont scaledFont = new BitmapFont(
+                Gdx.files.internal("data/skins/test.fnt"),
+                Gdx.files.internal("data/skins/test.png"),
+                false);
+        // Iteratively fit scale to the longest list item ("12x12").
+        // Use a temporary GlyphLayout to measure text width at each scale.
+        String longestItem = "12x12";  // longest among "3x3".."12x12"
+        float targetWidth = realW * 0.7f;
+        float scale = 0.6f;
+        com.badlogic.gdx.graphics.g2d.GlyphLayout layout =
+                new com.badlogic.gdx.graphics.g2d.GlyphLayout();
+        scaledFont.getData().setScale(scale);
+        layout.setText(scaledFont, longestItem);
+        while (scale > 0.2f && layout.width > targetWidth) {
+            scale -= 0.05f;
+            scaledFont.getData().setScale(scale);
+            layout.setText(scaledFont, longestItem);
+        }
+        Gdx.app.log("SettingsMenu", "SelectBox font scale=" + scale
+                + " textWidth=" + layout.width + " target=" + targetWidth);
+        style.font = scaledFont;
+
+        // Also scale the list-style font so the dropdown items render at the
+        // same scale as the selected item.
+        if (style.listStyle != null && style.listStyle.font != null) {
+            BitmapFont listFont = style.listStyle.font;
+            // Clone the list font too — but it's the same default-font, so
+            // we can just reuse the scaledFont reference.
+            style.listStyle.font = scaledFont;
+        }
+
+        final SelectBox<String> selectBox = new SelectBox<String>(style);
         selectBox.setItems("3x3","4x4", "5x5", "6x6", "7x7", "8x8", "9x9", "10x10", "11x11", "12x12");
         int fieldTypeIndex = Storage.getCurrentFieldType() - 3;
         selectBox.setSelectedIndex(fieldTypeIndex);

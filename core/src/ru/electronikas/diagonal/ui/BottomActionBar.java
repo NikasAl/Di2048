@@ -102,8 +102,9 @@ public class BottomActionBar {
         switcher.add(leftArrow).size(barHeight * 0.7f).padRight(w * 0.02f);
 
         // Field-size label
-        fieldSizeLabel = createFieldSizeLabel();
-        switcher.add(fieldSizeLabel).width(w * 0.30f).pad(w * 0.005f);
+        float fieldLabelWidth = w * 0.30f;
+        fieldSizeLabel = createFieldSizeLabel(fieldLabelWidth);
+        switcher.add(fieldSizeLabel).width(fieldLabelWidth).pad(w * 0.005f);
 
         // Right arrow (icon)
         Image rightArrow = new Image(getArrowRightDrawable());
@@ -162,11 +163,14 @@ public class BottomActionBar {
         }
     }
 
-    private Label createFieldSizeLabel() {
+    private Label createFieldSizeLabel(float width) {
         Label label = new Label(getFieldSizeText(),
                 Di2048Game.game.getUiSkin().get("score-lbl", Label.LabelStyle.class));
         label.setAlignment(Align.center);
-        label.setFontScale(0.6f);
+        // P1-fix: use Utils.textSizeTuning (same pattern as GameOverMenu buttons)
+        // so the font scale recalculates on every resize() recreation. Previously
+        // a fixed 0.6f that didn't adapt to different screen widths.
+        Utils.textSizeTuning(label, width, 70);
         return label;
     }
 

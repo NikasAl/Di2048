@@ -241,7 +241,16 @@ public class LevelField {
 
                 case delCell:
                     CellModel cellModel1 = diAction.cellModel();
-                    cellModel1.remove();
+                    // P1-fix: remove the cell's actor from the stage SYNCHRONOUSLY
+                    // (was async via cell.addAction which waited for other actions
+                    // to finish first). The async removal caused LevelField.cells
+                    // to be out of sync with DiGameModel.cells after del2s():
+                    // the CellModel was removed from the list immediately, but the
+                    // Actor stayed on stage for a few frames, and the next onMove
+                    // could still find it via getCellModelsByDir() and try to move
+                    // a cell whose actor was about to be removed — leading to the
+                    // crash the user reported after the second swipe post-del2s.
+                    cellModel1.cell.remove();
                     cells.remove(cellModel1);
                     break;
 

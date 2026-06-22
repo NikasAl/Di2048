@@ -414,12 +414,30 @@ public class DiGameModel implements Json.Serializable {
     public List<DiAction> del2s() {
         stepActions.clear();
         stepActions.add(new GameContinueAction());
-        for(CellModel cellModel : LevelField.cells) {
+        // Iterate over a COPY of LevelField.cells — the for-each loop below
+        // mutates LevelField.cells indirectly (applyActions calls cells.remove
+        // for each DeleteCellAction), and ConcurrentModificationException would
+        // crash the game. The copy is just for reading which cells to delete;
+        // the actual mutation happens via the DeleteCellAction list.
+        java.util.List<CellModel> snapshot = new java.util.ArrayList<CellModel>(LevelField.cells);
+        for(CellModel cellModel : snapshot) {
             if(cellModel.value == 2) {
                 cells[cellModel.pos.x][cellModel.pos.y] = 0;
                 stepActions.add(new DeleteCellAction(cellModel));
             }
         }
+        // P1-fix: invalidate the undo snapshot. The pre-del2s state is no
+        // longer a valid undo target because the visual cells have been
+        // removed from the stage — restoring the old cells[][] array would
+        // create CellModel actors that don't exist on stage, breaking the
+        // next onMove which relies on LevelField.cells. Clearing prevCells
+        // disables undo until the next onMove() takes a fresh snapshot.
+        prevCells = null;
+        // P1-fix: persist the new state so a restart / process-death reload
+        // doesn't resurrect the deleted 2-tiles. Without this, Storage would
+        // still have the pre-del2s snapshot, and the next launch would show
+        // the 2-tiles again — exactly the bug the user reported.
+        Storage.saveGameState(this);
         return stepActions;
     }
 

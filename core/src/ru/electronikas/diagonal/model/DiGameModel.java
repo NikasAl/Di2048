@@ -411,6 +411,47 @@ public class DiGameModel implements Json.Serializable {
         }
     }
 
+    /**
+     * P1-fix: rebuild the model's cells[][] array from the CURRENT LevelField.cells.
+     *
+     * Why this exists: after del2s() (or any other operation that mutates
+     * LevelField.cells without going through onMove), DiGameModel.cells is out
+     * of sync with what's actually on screen. When resize() recreates the
+     * LevelField from diGameModel, the recreated board would be wrong (e.g.
+     * empty after del2s).
+     *
+     * This method makes diGameModel.cells match the current LevelField.cells,
+     * so a subsequent LevelField recreation produces the same tiles the player
+     * was seeing.
+     *
+     * Also invalidates the undo snapshot (prevCells = null) because the
+     * pre-sync state is no longer meaningful as an undo target.
+     */
+    public void syncFromLevelField() {
+        if (cells == null) {
+            cells = new int[FIELD_SIZE][FIELD_SIZE];
+        } else {
+            for (int x = 0; x < FIELD_SIZE; x++) {
+                for (int y = 0; y < FIELD_SIZE; y++) {
+                    cells[x][y] = 0;
+                }
+            }
+        }
+        if (ru.electronikas.diagonal.ui.LevelField.cells != null) {
+            for (CellModel cm : ru.electronikas.diagonal.ui.LevelField.cells) {
+                if (cm.pos.x >= 0 && cm.pos.x < FIELD_SIZE
+                        && cm.pos.y >= 0 && cm.pos.y < FIELD_SIZE) {
+                    cells[cm.pos.x][cm.pos.y] = cm.value;
+                }
+            }
+        }
+        // The undo snapshot is no longer valid as a restore target after this
+        // sync — restoring it would create CellModel positions that don't
+        // exist on stage. Disable undo until the next onMove takes a fresh
+        // snapshot.
+        prevCells = null;
+    }
+
     public List<DiAction> del2s() {
         stepActions.clear();
         stepActions.add(new GameContinueAction());

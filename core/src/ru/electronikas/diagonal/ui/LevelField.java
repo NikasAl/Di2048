@@ -241,16 +241,16 @@ public class LevelField {
 
                 case delCell:
                     CellModel cellModel1 = diAction.cellModel();
-                    // P1-fix: remove the cell's actor from the stage SYNCHRONOUSLY
-                    // (was async via cell.addAction which waited for other actions
-                    // to finish first). The async removal caused LevelField.cells
-                    // to be out of sync with DiGameModel.cells after del2s():
-                    // the CellModel was removed from the list immediately, but the
-                    // Actor stayed on stage for a few frames, and the next onMove
-                    // could still find it via getCellModelsByDir() and try to move
-                    // a cell whose actor was about to be removed — leading to the
-                    // crash the user reported after the second swipe post-del2s.
-                    cellModel1.cell.remove();
+                    // P1-fix: use the original async remove() (which animates the
+                    // actor off-stage via a libGDX Action) — this is what gives
+                    // the merge animation its visual effect. The syncFromLevelField()
+                    // method in DiGameModel now handles the model/view sync issue
+                    // that previously required synchronous removal here.
+                    // The CellModel is still removed from the list immediately,
+                    // so LevelField.cells stays in sync with DiGameModel.cells
+                    // at the model level; only the Actor's visual removal is
+                    // delayed by a few frames for the fade-out animation.
+                    cellModel1.remove();
                     cells.remove(cellModel1);
                     break;
 

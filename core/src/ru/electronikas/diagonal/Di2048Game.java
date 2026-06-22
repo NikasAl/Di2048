@@ -69,6 +69,11 @@ public class Di2048Game extends ApplicationAdapter {
         public void create () {
                 game = this;
                 Gdx.app.log("Di2048", "create() start");
+                
+                // Clear cached drawables to avoid black icons after resolution change
+                ru.electronikas.diagonal.ui.StaticPanel.clearCachedDrawables();
+                ru.electronikas.diagonal.ui.BottomActionBar.clearCachedDrawables();
+                
                 spriteBatch = new SpriteBatch();
 
                 Viewport viewport = new ScreenViewport();

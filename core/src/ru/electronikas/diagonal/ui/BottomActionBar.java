@@ -62,6 +62,15 @@ public class BottomActionBar {
     private static TextureRegionDrawable arrowLeftDrawable = null;
     private static TextureRegionDrawable arrowRightDrawable = null;
 
+    /**
+     * Clear cached arrow drawables. Must be called when the GL context is lost
+     * (e.g., resolution change via adb wm size) to avoid black square icons.
+     */
+    public static void clearCachedDrawables() {
+        arrowLeftDrawable = null;
+        arrowRightDrawable = null;
+    }
+
     public BottomActionBar(Stage stage) {
         this.stage = stage;
 

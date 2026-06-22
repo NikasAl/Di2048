@@ -407,6 +407,17 @@ public class StaticPanel {
     private static TextureRegionDrawable soundOnDrawable = null;
     private static TextureRegionDrawable soundOffDrawable = null;
 
+    /**
+     * Clear all cached drawables. Must be called when the GL context is lost
+     * (e.g., resolution change via adb wm size) to avoid black square icons.
+     */
+    public static void clearCachedDrawables() {
+        undoDrawable = null;
+        del2sDrawable = null;
+        soundOnDrawable = null;
+        soundOffDrawable = null;
+    }
+
     private static TextureRegionDrawable getSoundDrawable(boolean muted) {
         return muted ? getSoundOffDrawable() : getSoundOnDrawable();
     }

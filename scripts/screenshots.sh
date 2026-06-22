@@ -56,17 +56,18 @@ if [[ $SET_RES =~ ^[Yy]$ ]]; then
     echo -e "${YELLOW}Установка разрешения ${WIDTH}x${HEIGHT}...${NC}"
     adb shell wm size ${WIDTH}x${HEIGHT}
     
-    # Проверка установленного разрешения
+    # Проверка установленного разрешения (с небольшой задержкой для применения)
+    sleep 1.0
     NEW_RES=$(adb shell wm size | grep -oP '\d+x\d+')
     if [[ "$NEW_RES" == "${WIDTH}x${HEIGHT}" ]]; then
         echo -e "${GREEN}Разрешение успешно установлено: $NEW_RES${NC}"
     else
         echo -e "${RED}Не удалось установить разрешение. Текущее: $NEW_RES${NC}"
-        echo -e "${YELLOW}Продолжаем с текущим разрешением...${NC}"
+        echo -e "${YELLOW}Возможно, требуется перезапуск приложения для применения.${NC}"
     fi
     echo ""
     
-    # Предложение восстановить разрешение после завершения
+    # Сохраняем исходное разрешение для восстановления
     ORIGINAL_RES="$CURRENT_RES"
     trap "restore_resolution" EXIT
     

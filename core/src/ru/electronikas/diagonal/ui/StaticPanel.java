@@ -75,8 +75,12 @@ public class StaticPanel {
      * Expressed as a FRACTION of row2Height so it scales with screen size and density
      * (the user originally tried an absolute +20 px workaround which would look wrong
      * on QHD phones and tiny on small phones).
+     *
+     * P1-fix: bumped from 0.15 to 0.25 after user feedback that buttons still
+     * protruded past the bottom edge of the blue panel. 25% gives a more
+     * comfortable margin so the icon buttons sit fully inside the panel.
      */
-    private static final float BUTTON_OVERFLOW_MARGIN_FRACTION = 0.15f;  // 15% of row2Height
+    private static final float BUTTON_OVERFLOW_MARGIN_FRACTION = 0.25f;  // 25% of row2Height
 
     private Stage stage;
     private DiGameModel diGameModel;
@@ -471,13 +475,17 @@ public class StaticPanel {
      *  1. Build a temporary label with the LONGEST of the two texts
      *     ("Рекорд\n..." is always >= "Счет\n..." in width because "Рекорд"
      *     has more characters than "Счет").
-     *  2. Iteratively shrink from 0.6 down by 0.05 until prefWidth <= 70% of
-     *     paneWidth AND prefHeight <= 80% of rowHeight. The height check
+     *  2. Iteratively shrink from 0.8 down by 0.05 until prefWidth <= 85% of
+     *     paneWidth AND prefHeight <= 90% of rowHeight. The height check
      *     prevents the text from overflowing the pane vertically when the
      *     window is very wide (wide panes -> large width budget -> large
      *     scale -> text taller than the row).
      *  3. Return the scale; both createScoreLabel and createRecordLabel
      *     receive it as a parameter and apply it via setFontScale.
+     *
+     * P1-fix v2: bumped start scale 0.6 -> 0.8 and targets 70/80 -> 85/90
+     * so the labels are bigger and fill more of the green pane (user
+     * feedback: 'чуть увеличить шрифты').
      */
     private float calibrateScoreRecordScale(float paneWidth, float rowHeight) {
         // Use the Record text as the reference — it's always >= Score in width.
@@ -486,9 +494,9 @@ public class StaticPanel {
                 .get("score-lbl", Label.LabelStyle.class));
         ref.setAlignment(Align.center);
 
-        float targetWidth = paneWidth * 0.70f;
-        float targetHeight = rowHeight * 0.80f;
-        float scale = 0.6f;
+        float targetWidth = paneWidth * 0.85f;
+        float targetHeight = rowHeight * 0.90f;
+        float scale = 0.8f;
         while (scale > 0.2f) {
             ref.setFontScale(scale);
             ref.layout();

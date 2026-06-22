@@ -167,13 +167,17 @@ public class BottomActionBar {
         Label label = new Label(getFieldSizeText(),
                 Di2048Game.game.getUiSkin().get("score-lbl", Label.LabelStyle.class));
         label.setAlignment(Align.center);
-        // P1-fix: iteratively fit font scale to BOTH width (70% of label width)
-        // AND height (80% of row height). Without the height check, wide windows
+        // P1-fix: iteratively fit font scale to BOTH width (85% of label width)
+        // AND height (90% of row height). Without the height check, wide windows
         // produce a scale that makes the 2-line text ("Поле\n4x4") taller than
         // the bar, causing vertical overflow.
-        float targetWidth = width * 0.70f;
-        float targetHeight = rowHeight * 0.80f;
-        float scale = 0.6f;
+        //
+        // P1-fix v2: bumped start scale 0.6 -> 0.8 and targets 70/80 -> 85/90
+        // so the label is bigger and fills more of the green pane (user
+        // feedback: 'чуть увеличить шрифты').
+        float targetWidth = width * 0.85f;
+        float targetHeight = rowHeight * 0.90f;
+        float scale = 0.8f;
         while (scale > 0.2f) {
             label.setFontScale(scale);
             label.layout();

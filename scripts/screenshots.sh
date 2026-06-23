@@ -413,7 +413,7 @@ case "${1:-}" in
         cmd_screenshot "${2:-manual}"
         ;;
     video)
-        cmd_video "${2:-promo}" "${3:-30}"
+        cmd_video "${2:-promo}" "${3:-30}" "${4:-0}"
         ;;
     ""|menu|interactive)
         cmd_interactive

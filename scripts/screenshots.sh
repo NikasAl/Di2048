@@ -56,6 +56,9 @@ check_deps() {
             ffmpeg)
                 command -v ffmpeg >/dev/null 2>&1 || missing+=("ffmpeg")
                 ;;
+            scrcpy)
+                command -v scrcpy >/dev/null 2>&1 || missing+=("scrcpy")
+                ;;
             pil)
                 python3 -c "from PIL import Image" 2>/dev/null || missing+=("python3-pil (Pillow)")
                 ;;
@@ -66,7 +69,7 @@ check_deps() {
     done
     if [[ "${#missing[@]}" -gt 0 ]]; then
         echo -e "${RED}Отсутствуют зависимости: ${missing[*]}${NC}"
-        echo "Установите: sudo apt install adb python3-pil ffmpeg"
+        echo "Установите: sudo apt install adb python3-pil ffmpeg scrcpy"
         exit 1
     fi
 }
@@ -230,38 +233,62 @@ cmd_screenshot() {
 }
 
 # =====================================================================
-# КОМАНДА: video — запись промо-видео с экрана устройства
+# КОМАНДА: video — запись промо-видео с экрана устройства через scrcpy
 # =====================================================================
-# Использует adb shell screenrecord (встроен в Android 4.4+).
-# Ограничения screenrecord:
-#   - Максимум 3 минуты на файл (можно продлить параметром --time-limit)
-#   - Максимум 1080p
-#   - Не записывает аудио
-# После записи ffmpeg обрезает видео в 9:16 по центру.
+# Использует scrcpy (https://github.com/Genymobile/scrcpy) — надежнее
+# чем adb shell screenrecord, который падает на некоторых устройствах
+# (Android 9 + UMIDIGI: 'Encoder failed (err=-38)').
+#
+# Синтаксис:
+#   ./scripts/screenshots.sh video [name] [duration] [vshift]
+#
+# Параметры:
+#   name     — имя файла (default: promo)
+#   duration — длительность в секундах (default: 30, max: 180)
+#   vshift   — сдвиг окна обрезки по вертикали в пикселях (default: 0)
+#              Положительное число — сдвиг вниз (видна нижняя часть экрана).
+#              Отрицательное — сдвиг вверх (видна верхняя часть).
+#              Например: 'video scr 10 30' — сдвинуть окно обрезки на 30px
+#              вниз от центра.
+#
+# После записи ffmpeg обрезает видео в 9:16 (по центру + vshift) и
+# масштабирует до 1080x1920.
 # =====================================================================
 cmd_video() {
-    echo -e "${BLUE}=== Запись промо-видео ===${NC}"
-    check_deps "adb python3 pil ffmpeg"
+    echo -e "${BLUE}=== Запись промо-видео (scrcpy) ===${NC}"
+    check_deps "adb python3 pil ffmpeg scrcpy"
     check_device
     ensure_dirs
 
     local name="${1:-promo}"
     local duration="${2:-30}"
+    local vshift="${3:-0}"
     local timestamp
     timestamp=$(date +%Y%m%d_%H%M%S)
     local filename="video_${name}_${timestamp}.mp4"
     local filepath="$VIDEOS_DIR/$filename"
     local raw_path="${VIDEOS_DIR}/${filename}.raw.mp4"
 
-    echo -e "${YELLOW}Запись ${duration}s видео с экрана устройства...${NC}"
+    echo -e "${YELLOW}Запись ${duration}s видео через scrcpy (vshift=${vshift}px)...${NC}"
     echo -e "${BLUE}Подготовьте экран (откройте нужный игровой сценарий).${NC}"
     read -p "Нажмите Enter для начала записи (${duration}s)..."
 
-    # screenrecord пишет на устройство; затем pull на хост
-    adb shell screenrecord --time-limit "$duration" --bit-rate 8000000 "$TEMP_DEVICE_PATH.mp4"
-    echo -e "${YELLOW}Загрузка видео с устройства...${NC}"
-    adb pull "$TEMP_DEVICE_PATH.mp4" "$raw_path"
-    adb shell rm "$TEMP_DEVICE_PATH.mp4"
+    # scrcpy записывает напрямую в файл на хосте (без окна превью).
+    # --no-window      : не показывать окно превью
+    # --no-audio       : отключить аудио (не поддерживается на Android < 11)
+    # --record         : путь к выходному файлу
+    # --max-size 1920  : ограничить максимальную сторону 1920px
+    # --time-limit     : длительность записи в секундах
+    scrcpy --no-window --no-audio \
+           --record="$raw_path" \
+           --max-size=1920 \
+           --time-limit="$duration" 2>&1 | tail -5
+
+    if [[ ! -f "$raw_path" ]] || [[ ! -s "$raw_path" ]]; then
+        echo -e "${RED}scrcpy не записал видео. Проверьте вывод выше.${NC}"
+        rm -f "$raw_path"
+        exit 1
+    fi
 
     # Получаем размеры исходного видео
     local dims
@@ -271,39 +298,45 @@ cmd_video() {
     vh=$(echo "$dims" | cut -d',' -f2)
     echo -e "${YELLOW}Исходное видео: ${vw}x${vh}${NC}"
 
-    # Обрезка в 9:16 через ffmpeg crop filter (по центру)
-    # crop=W:H:X:Y — W и H целевые, X/Y — смещение
-    # Для 9:16 из видео vw x vh:
-    #   если vw/vh > 9/16 (слишком широкое): new_w = vh*9/16, new_h = vh, x=(vw-new_w)/2, y=0
-    #   если vw/vh < 9/16 (слишком узкое/высокое): new_w = vw, new_h = vw*16/9, x=0, y=(vh-new_h)/2
-    local new_w new_h crop_x crop_y
-    python3 - "$vw" "$vh" <<'PYEOF' > /tmp/di2048_crop.txt
+    # Обрезка в 9:16 через ffmpeg crop filter.
+    # crop=W:H:X:Y — W/H целевые, X/Y — смещение левого верхнего угла.
+    # Базовое положение — по центру. Затем применяем vshift к Y-координате:
+    #   положительный vshift → окно сдвигается вниз (видна нижняя часть)
+    #   отрицательный vshift → окно сдвигается вверх (видна верхняя часть)
+    # Y ограничивается так, чтобы окно не выходило за пределы кадра.
+    local crop_filter
+    crop_filter=$(python3 - "$vw" "$vh" "$vshift" <<'PYEOF'
 import sys
 vw = int(sys.argv[1])
 vh = int(sys.argv[2])
+vshift = int(sys.argv[3])
 target = 9.0 / 16.0
 current = vw / vh
 if current > target:
-    # слишком широкое — обрезаем по ширине
+    # слишком широкое — обрезаем по ширине, высота = vh
     new_w = int(vh * target)
-    # сделаем new_w чётным (требование ffmpeg)
     if new_w % 2 == 1: new_w -= 1
     new_h = vh
     x = (vw - new_w) // 2
     y = 0
 else:
-    # слишком высокое — обрезаем по высоте
+    # слишком высокое — обрезаем по высоте, ширина = vw
     new_w = vw
     new_h = int(vw / target)
     if new_h % 2 == 1: new_h -= 1
     x = 0
     y = (vh - new_h) // 2
+# Применяем вертикальный сдвиг к Y
+y = y + vshift
+# Ограничиваем Y так, чтобы окно не выходило за пределы кадра
+if y < 0:
+    y = 0
+if y + new_h > vh:
+    y = vh - new_h
 print(f"{new_w}:{new_h}:{x}:{y}")
 PYEOF
-    local crop_filter
-    crop_filter=$(cat /tmp/di2048_crop.txt)
-    rm -f /tmp/di2048_crop.txt
-    echo -e "${YELLOW}Обрезка ffmpeg crop=$crop_filter...${NC}"
+)
+    echo -e "${YELLOW}Обрезка ffmpeg crop=$crop_filter (vshift=${vshift}px)...${NC}"
 
     # Масштабируем до 1080x1920 с сохранением пропорций, затем кодируем
     ffmpeg -y -i "$raw_path" \
@@ -334,8 +367,8 @@ cmd_interactive() {
     echo "Команды:"
     echo "  1  — сделать скриншот (с обрезкой 9:16)"
     echo "  2  — обрезать ВСЕ существующие скриншоты в 9:16"
-    echo "  3  — записать промо-видео (${duration}s по умолчанию)"
-    echo "  4  — записать промо-видео с указанием длительности"
+    echo "  3  — записать промо-видео 30s (через scrcpy)"
+    echo "  4  — записать промо-видео со своими параметрами"
     echo "  q  — выход"
     echo ""
 
@@ -351,11 +384,12 @@ cmd_interactive() {
                 cmd_crop_all
                 ;;
             3)
-                cmd_video "promo" "30"
+                cmd_video "promo" "30" "0"
                 ;;
             4)
                 read -p "Длительность в секундах (макс 180): " DUR
-                cmd_video "promo" "${DUR:-30}"
+                read -p "Сдвиг обрезки по вертикали (px, +=вниз, -=вверх, 0=центр): " VSHIFT
+                cmd_video "promo" "${DUR:-30}" "${VSHIFT:-0}"
                 ;;
             q|Q)
                 exit 0
@@ -385,13 +419,22 @@ case "${1:-}" in
         cmd_interactive
         ;;
     *)
-        echo "Использование: $0 [crop|screenshot [name]|video [name] [duration]|menu]"
+        echo "Использование: $0 [crop|screenshot [name]|video [name] [duration] [vshift]|menu]"
         echo ""
         echo "Команды:"
-        echo "  crop                    — обрезать все PNG в Materials/screens в 9:16"
-        echo "  screenshot [name]       — сделать скриншот с обрезкой"
-        echo "  video [name] [duration] — записать промо-видео с обрезкой"
-        echo "  menu                    — интерактивное меню (по умолчанию)"
+        echo "  crop                              — обрезать все PNG в Materials/screens в 9:16"
+        echo "  screenshot [name]                 — сделать скриншот с обрезкой 9:16"
+        echo "  video [name] [duration] [vshift]  — записать промо-видео через scrcpy"
+        echo "                                       vshift: вертикальный сдвиг окна обрезки (px)"
+        echo "                                       +=вниз, -=вверх, 0=центр (default)"
+        echo "  menu                              — интерактивное меню (по умолчанию)"
+        echo ""
+        echo "Примеры:"
+        echo "  $0 crop                           — обрезать все скриншоты"
+        echo "  $0 screenshot game_over           — скриншот экрана game over"
+        echo "  $0 video scr 10                   — 10-секундное видео, обрезка по центру"
+        echo "  $0 video scr 10 30                — 10s видео, окно обрезки сдвинуто на 30px вниз"
+        echo "  $0 video scr 10 -50               — 10s видео, окно обрезки сдвинуто на 50px вверх"
         exit 1
         ;;
 esac
